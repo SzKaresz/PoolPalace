@@ -135,9 +135,14 @@ if (isset($_SESSION['user_email'])) {
                     <?php endforeach; ?>
                 </tbody>
             </table>
-            <div class="cart-summary">
-                <h3>Összesen: <?= number_format($osszesen, 0, ',', ' ') ?> Ft</h3>
-                <button class="checkout-btn">Tovább a fizetéshez</button>
+            <div class="row">
+                <div class="col cart-delete">
+                    <button type="button" class="delete-btn">Rendeles törlése</button>
+                </div>
+                <div class="col cart-summary">
+                    <h3>Összesen: <?= number_format($osszesen, 0, ',', ' ') ?> Ft</h3>
+                    <button type="button" class="checkout-btn">Tovább a fizetéshez</button>
+                </div>
             </div>
         <?php endif; ?>
         <p class="empty-cart-message" style="display: none;">A kosár üres.</p>

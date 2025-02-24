@@ -16,6 +16,14 @@ document.addEventListener("DOMContentLoaded", function () {
             removeItem(termekId);
         });
     });
+
+    document.querySelectorAll(".delete-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            if (confirm("Biztosan törölni szeretnéd az összes terméket a kosárból?")) {
+                removeAllItems();
+            }
+        });
+    });
 });
 
 function updateQuantity(termekId, change) {
@@ -83,6 +91,30 @@ function removeItem(termekId) {
     });
 }
 
+function removeAllItems() {
+    fetch('../php/kosarMuvelet.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            action: 'removeAll'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const allRows = document.querySelectorAll(".cart-table tbody tr");
+            allRows.forEach(row => row.remove());
+            updateCartTotal();
+            updateCartCount();
+        } else {
+            console.error("Hiba történt az összes elem törlésénél: " + data.error);
+        }
+    })
+    .catch(error => {
+        console.error("Hiba:", error);
+    });
+}
+
 function updateRowTotal(row, quantity) {
     let unitPriceElement = row.querySelector(".discounted-price");
     let unitPrice;
@@ -115,15 +147,18 @@ function updateCartTotal() {
     const totalElement = document.querySelector(".cart-summary h3");
     const table = document.querySelector(".cart-table");
     const summary = document.querySelector(".cart-summary");
+    const deletebtn = document.querySelector(".cart-delete");
     const emptyMessage = document.querySelector(".empty-cart-message");
 
     if (total === 0 || rows.length === 0) {
         if (table) table.style.display = "none";
         if (summary) summary.style.display = "none";
+        if (deletebtn) deletebtn.style.display = "none";
         if (emptyMessage) emptyMessage.style.display = "block";
     } else {
         if (table) table.style.display = "table";
         if (summary) summary.style.display = "block";
+        if (deletebtn) deletebtn.style.display = "block";
         if (emptyMessage) emptyMessage.style.display = "none";
         totalElement.textContent = "Összesen: " + total.toLocaleString() + " Ft";
     }

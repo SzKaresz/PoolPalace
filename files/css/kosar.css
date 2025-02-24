@@ -97,7 +97,12 @@ h2 {
     color: #293144;
 }
 
-.checkout-btn {
+.cart-delete{
+    text-align: left;
+    margin-top: 58px;
+}
+
+.checkout-btn, .delete-btn {
     background: #293144;
     color: white;
     padding: 12px 20px;
@@ -108,7 +113,7 @@ h2 {
     transition: 0.3s;
 }
 
-.checkout-btn:hover {
+.checkout-btn:hover, .delete-btn:hover {
     background: #1e2530;
 }
 

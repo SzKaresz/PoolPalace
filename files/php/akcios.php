@@ -11,13 +11,14 @@
     <link rel="icon" href="../img/logo_icon.ico" type="image/x-icon">
     <title>PoolPalace - Akciós termékek</title>
     <script defer src="../js/akcios.js"></script>
+    <script defer src="../js/termekek.js"></script>
 </head>
 
 <body>
+    <?php include './navbar.php'; ?>
     <div class="container">
         <div class="row">
             <div class="col">
-                <?php include './navbar.php'; ?>
             </div>
         </div>
         <div class="row" id="kartyak"></div>
