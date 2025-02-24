@@ -44,6 +44,7 @@ if (isset($_SESSION['user_email'])) {
 
         $osszesen += $row['darabszam'] * $ar;
     }
+    
 } else {
     if (!empty($_SESSION['kosar'])) {
         foreach ($_SESSION['kosar'] as $termek_id => $darabszam) {
