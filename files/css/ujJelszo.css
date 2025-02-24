@@ -1,0 +1,213 @@
+body {
+    background-image: url('../img/hatterkep.jpg');
+    background-size: cover;
+    background-position: top center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 70px;
+    overflow: auto;
+}
+.alert {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.form-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 1000px;
+    width: 90%;
+    text-align: center;
+}
+
+h4 {
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+#ujJelszo-urlap {
+    margin-top: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group-text {
+    width: 42px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.jelszo-logo,
+.jelszo-ujra-logo {
+    max-width: 100%;
+    max-height: 24px;
+}
+
+.form-control {
+    height: 48px;
+    padding: 10px 15px;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0 auto;
+}
+
+.error {
+    color: red;
+    font-size: 18px;
+    margin-left: 10px;
+    display: none;
+    flex-basis: 100%;
+}
+
+
+@media (min-width: 1600px) {
+    .form-container {
+        max-width: 60%;
+    }
+
+    .col-md-4 {
+        padding: 0 20px;
+    }
+
+    .form-control {
+        font-size: 1.2rem;
+        height: 52px;
+    }
+
+    .input-group-text {
+        height: 52px;
+    }
+
+    h3 {
+        font-size: 2.5rem;
+    }
+
+    h4 {
+        font-size: 2rem;
+    }
+
+    .regiszt-kep {
+        width: 100px;
+        height: 100px;
+    }
+
+    .form-check-input {
+        font-size: x-large;
+    }
+
+    .btn-primary {
+        width: 45%;
+        font-size: 1.2rem;
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 1599px) {
+    .form-container {
+        max-width: 80%;
+    }
+
+    .col-md-4 {
+        padding: 0 15px;
+    }
+
+    .form-control {
+        font-size: 1.1rem;
+        height: 50px;
+    }
+
+    .input-group-text {
+        height: 50px;
+    }
+
+    h3 {
+        font-size: 2rem;
+    }
+
+    h4 {
+        font-size: 1.8rem;
+    }
+
+    .regiszt-kep {
+        width: 90px;
+        height: 90px;
+    }
+
+    .btn-primary {
+        width: 40%;
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 1199px) {
+    .form-container {
+        max-width: 90%;
+        padding: 20px;
+    }
+
+    .col-md-4 {
+        padding: 0 10px;
+    }
+
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    h4 {
+        font-size: 1.5rem;
+    }
+
+    .regiszt-kep {
+        width: 80px;
+        height: 80px;
+    }
+
+    .btn-primary {
+        width: 70%;
+        font-size: 1rem;
+    }
+
+    .row.g-3 {
+        flex-direction: column;
+    }
+
+    .col-md-4 {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    #egyezo-adatok {
+        margin-bottom: 15px;
+    }
+
+    .error {
+        font-size: 16px;
+    }
+}
