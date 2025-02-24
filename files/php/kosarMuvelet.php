@@ -55,6 +55,11 @@ if (isset($_SESSION['user_email'])) {
             $stmt->bind_param("ss", $termek_id, $user_email);
             break;
 
+        case 'removeAll':
+            $stmt = $db->prepare("DELETE FROM kosar WHERE felhasznalo_id = ?");
+            $stmt->bind_param("s", $user_email);
+            break;
+
         case 'getCount': // Új ág hozzáadása a getCount művelethez
             if (isset($_SESSION['user_email'])) {
                 $user_email = $_SESSION['user_email'];
