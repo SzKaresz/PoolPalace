@@ -142,7 +142,7 @@ if (isset($_SESSION['user_email'])) {
                 </div>
                 <div class="col cart-summary">
                     <h3>Összesen: <?= number_format($osszesen, 0, ',', ' ') ?> Ft</h3>
-                    <button type="button" class="checkout-btn">Tovább a fizetéshez</button>
+                    <button type="button" class="checkout-btn" onclick="window.location.href='megrendeles.php'">Tovább a fizetéshez</button>
                 </div>
             </div>
         <?php endif; ?>
@@ -150,7 +150,6 @@ if (isset($_SESSION['user_email'])) {
     </div>
 
     <?php include './navbar.php'; ?>
-    <?php include './back-to-top.php'; ?>
     <?php include './footer.php'; ?>
 </body>
 
