@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Feb 24. 22:49
+-- Létrehozás ideje: 2025. Feb 25. 10:39
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -193,11 +193,18 @@ INSERT INTO `log` (`id`, `datum`, `tabla_nev`, `tabla_id`) VALUES
 DROP TABLE IF EXISTS `megrendeles`;
 CREATE TABLE IF NOT EXISTS `megrendeles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `felhasznalo_id` varchar(254) NOT NULL,
+  `felhasznalo_id` varchar(254) DEFAULT NULL,
+  `email` varchar(254) NOT NULL,
+  `nev` varchar(255) NOT NULL,
+  `telefonszam` varchar(15) NOT NULL,
+  `szallitasi_cim_id` int(11) NOT NULL,
+  `szamlazasi_cim_id` int(11) NOT NULL,
   `datum` datetime NOT NULL DEFAULT current_timestamp(),
   `osszeg` double NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `felhasznalo_id` (`felhasznalo_id`)
+  KEY `felhasznalo_id` (`felhasznalo_id`),
+  KEY `szallitasi_cim_id` (`szallitasi_cim_id`),
+  KEY `szamlazasi_cim_id` (`szamlazasi_cim_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 -- --------------------------------------------------------
@@ -414,7 +421,9 @@ ALTER TABLE `kosar`
 -- Megkötések a táblához `megrendeles`
 --
 ALTER TABLE `megrendeles`
-  ADD CONSTRAINT `megrendeles_ibfk_1` FOREIGN KEY (`felhasznalo_id`) REFERENCES `felhasznalok` (`email`);
+  ADD CONSTRAINT `megrendeles_ibfk_1` FOREIGN KEY (`felhasznalo_id`) REFERENCES `felhasznalok` (`email`),
+  ADD CONSTRAINT `megrendeles_ibfk_2` FOREIGN KEY (`szamlazasi_cim_id`) REFERENCES `szamlazasi_cim` (`id`),
+  ADD CONSTRAINT `megrendeles_ibfk_3` FOREIGN KEY (`szallitasi_cim_id`) REFERENCES `szallitasi_cim` (`id`);
 
 --
 -- Megkötések a táblához `termekek`
