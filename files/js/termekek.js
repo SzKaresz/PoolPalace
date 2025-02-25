@@ -11,38 +11,43 @@ const szuresButton = document.getElementById("szures-button");
 document.addEventListener("DOMContentLoaded", function () {
     const szuroButton = document.getElementById("szures-button");
     const szuroContainer = document.getElementById("szuro-container");
-    const kartyakContainer = document.getElementById("kartyak-container");
+    
+    // Alapállapot: ha kis képernyő, akkor legyen rejtve
+    let szuroLathato = !(window.innerWidth <= 1200); // Kis képernyőn false, nagy képernyőn true
 
-    let szuroLathato = true;
+    if (window.innerWidth <= 1200) {
+        szuroContainer.style.display = "none"; // Az elején teljesen rejtve
+        szuroButton.innerText = "Szűrők megjelenítése";
+    } else {
+        szuroButton.innerText = "Szűrők elrejtése";
+    }
 
     szuroButton.addEventListener("click", function () {
         if (szuroLathato) {
-            // Szűrőpanel és kártyák egyszerre mozognak
-            szuroContainer.style.transition = "transform 0.5s ease-in-out, opacity 0.5s ease-in-out";
-            kartyakContainer.style.transition = "width 0.5s ease-in-out";
-
-            szuroContainer.style.transform = "translateX(-100%)";
+            // Ha mobilnézet, felfelé csúszik, ha asztali, balra
+            if (window.innerWidth <= 1200) {
+                szuroContainer.style.transform = "translateY(-100%)";
+            } else {
+                szuroContainer.style.transform = "translateX(-100%)";
+            }
             szuroContainer.style.opacity = "0";
-            kartyakContainer.classList.add("expanded");
 
-            // Teljes elrejtés az animáció után
-            szuroContainer.addEventListener("transitionend", function hideFilter() {
+            setTimeout(() => {
                 szuroContainer.style.display = "none";
-                szuroContainer.removeEventListener("transitionend", hideFilter);
-            });
+            }, 500);
 
             szuroButton.innerText = "Szűrők megjelenítése";
         } else {
-            // Szűrőpanel visszahozása
             szuroContainer.style.display = "block";
             setTimeout(() => {
-                szuroContainer.style.transition = "transform 0.5s ease-in, opacity 0.5s ease-in";
-                kartyakContainer.style.transition = "width 0.5s ease-in";
-
-                szuroContainer.style.transform = "translateX(0)";
                 szuroContainer.style.opacity = "1";
-                kartyakContainer.classList.remove("expanded");
-            }, 300);
+                szuroContainer.style.height = "auto"; // Automatikus magasság beállítás
+                if (window.innerWidth <= 1200) {
+                    szuroContainer.style.transform = "translateY(0)";
+                } else {
+                    szuroContainer.style.transform = "translateX(0)";
+                }
+            }, 50);
 
             szuroButton.innerText = "Szűrők elrejtése";
         }

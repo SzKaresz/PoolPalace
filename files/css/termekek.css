@@ -12,39 +12,39 @@ body {
     display: flex;
     gap: 20px;
     align-items: flex-start;
+    margin-bottom: 50px;
     width: 100%;
     transition: all 0.5s ease-in-out;
 }
 
-/* Szűrőpanel */
 #szuro-container {
+    opacity: 1;
+    position: sticky; /* Rögzített pozíció a görgetés során */
+    top: 20px; /* Mindig a képernyő tetejéhez igazodik */
     flex: 0 0 300px;
     max-width: 300px;
     min-width: 280px;
-    min-height: 650px;
     background-color: #f9f9f9;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    height: fit-content;
     box-sizing: border-box;
-    position: relative;
     margin-top: 20px;
-    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    height: fit-content; /* Csak akkora, amekkora szükséges */
+    transform: translateX(0);
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, height 0.5s ease-in-out;
 }
 
-/* Szűrőpanel elrejtése */
+/* Szűrő elrejtése asztali nézetben */
 #szuro-container.hidden {
     opacity: 0;
     transform: translateX(-100%);
-    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
 }
 
-/* Szűrőpanel visszahozása gyorsabban */
+/* Visszajövő állapot */
 #szuro-container.show {
     opacity: 1;
     transform: translateX(0);
-    transition: transform 0.5s ease-in, opacity 0.5s ease-in;
 }
 
 /* Kártyák konténerének animációja */
@@ -54,7 +54,7 @@ body {
     flex-wrap: wrap;
     gap: 12px;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     transition: width 0.5s ease-in-out;
     width: calc(100% - 320px); /* Figyelembe veszi a szűrő méretét */
 }
@@ -69,8 +69,9 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(246px, 1fr));
     gap: 12px; /* Alap távolság */
-    justify-content: center;
+    justify-content: center; /* Kártyák középre igazítása */
     width: 100%;
+    margin: 0 auto; /* Teljes szélesség középre helyezve */
 }
 
 /* Kisebb kijelzők esetén csökkentjük a távolságot */
@@ -388,25 +389,36 @@ a:hover {
     background-color: #f0f0f0;
 }
 
-@media (max-width: 768px) {
-    #szuro-container.show {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
+@media (max-width: 1200px) {
     #termekek-container {
         flex-direction: column;
     }
 
     #szuro-container {
+        opacity: 0;
+        transform: translateY(-100%);
+        position: relative;
         width: 100%;
         max-width: 100%;
-        position: relative;
-        transform: translateY(0);
+        top: 0;
+        left: 0;
+        z-index: 999;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+        display: none;
     }
 
+    /* Kis képernyőn alapból el van rejtve */
     #szuro-container.hidden {
+        opacity: 0;
         transform: translateY(-100%);
+    }
+
+    /* Megjelenéskor visszacsúszik */
+    #szuro-container.show {
+        opacity: 1;
+        transform: translateY(0);
+        display: block;
     }
 
     #kartyak-container {
@@ -433,6 +445,12 @@ a:hover {
         margin-top: 0; /* Ne legyen extra távolság felül */
         align-self: center; /* Balra igazítás */
         margin-top: 10px;
+    }
+
+    #kartyak {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Mobilon is középre igazítva */
+        justify-content: center; /* Kártyák mindig középre */
+        gap: 8px; /* Szűkebb távolság kis kijelzőkön */
     }
 }
 
