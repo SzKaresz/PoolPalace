@@ -20,61 +20,61 @@ ob_start();
 
 <body>
     <div id="kontener" class="container-fluid">
-        <div style="width: 100%; margin: 0" class="row">
-            <div id="szuro-container" class="col-md-2 col-12">
-                <div id="filter_div">
-                    <div class="szurofejlec">
-                        <div class="fejlec_szoveg">
-                            <h4>Szűrés</h4>
-                        </div>
-                        <div id="szuro_kep">
-                            <img style="height: 20px;" src="../img/filter.png" alt="Szűrő ikon">
-                        </div>
+        <div id="termekek-container">
+            <!-- Szűrőpanel -->
+            <div id="szuro-container">
+                <div class="szurofejlec">
+                    <div class="fejlec_szoveg">
+                        <h4>Szűrés</h4>
                     </div>
-                    <div class="szuroContent">
-                        <a href="javascript:void(0)" id="clear-filters" class="clear-filters-link">Paraméterek törlése</a>
+                    <div id="szuro_kep">
+                        <img style="height: 20px;" src="../img/filter.png" alt="Szűrő ikon">
+                    </div>
+                </div>
+                <div class="szuroContent">
+                    <a href="javascript:void(0)" id="clear-filters" class="clear-filters-link">Paraméterek törlése</a>
+                    <div class="szuroSector">
+                        <div id="kategoriak"></div>
+                    </div>
+                    <form action="" method="post">
                         <div class="szuroSector">
-                            <div id="kategoriak"></div>
+                            <div id="gyartok"></div>
                         </div>
-                        <form action="" method="post">
-                            <div class="szuroSector">
-                                <div id="gyartok"></div>
-                            </div>
-                            <div class="szuroSector">
-                                <div id="ar">
-                                    <h6>Ár</h6>
-                                    <div class="range_container">
-                                        <div class="sliders_control">
-                                            <input id="fromSlider" type="range" value="0" min="0" max="5000000" />
-                                            <input id="toSlider" type="range" value="5000000" min="0" max="5000000" />
+                        <div class="szuroSector">
+                            <div id="ar">
+                                <h6>Ár</h6>
+                                <div class="range_container">
+                                    <div class="sliders_control">
+                                        <input id="fromSlider" type="range" value="0" min="0" max="5000000" />
+                                        <input id="toSlider" type="range" value="5000000" min="0" max="5000000" />
+                                    </div>
+                                    <div class="form_control">
+                                        <div class="form_control_container">
+                                            <div class="form_control_container__time">Min</div>
+                                            <input class="form_control_container__time__input" type="number" id="fromInput" value="0" min="0" max="5000000">
                                         </div>
-                                        <div class="form_control">
-                                            <div class="form_control_container">
-                                                <div class="form_control_container__time">Min</div>
-                                                <input class="form_control_container__time__input" type="number" id="fromInput" value="0" min="0" max="5000000">
-                                            </div>
-                                            <div class="form_control_container">
-                                                <div class="form_control_container__time">Max</div>
-                                                <input class="form_control_container__time__input" type="number" id="toInput" value="5000000" min="0" max="5000000">
-                                            </div>
+                                        <div class="form_control_container">
+                                            <div class="form_control_container__time">Max</div>
+                                            <input class="form_control_container__time__input" type="number" id="toInput" value="5000000" min="0" max="5000000">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="szuroSector">
-                                <input type="button" value="Szűrés" id="szures_button">
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="szuroSector">
+                            <input type="button" value="Szűrés" id="szures_button">
+                        </div>
+                    </form>
                 </div>
             </div>
 
-            <div id="kartyak-container" class="col-md-10 col-12">
-                <div id="fejlec-container" class="d-flex justify-content-between align-items-center mb-3">
+            <!-- Termékkártyák -->
+            <div id="kartyak-container">
+                <div id="fejlec-container">
                     <div id="talalatok">
                         Találatok: <span id="talalatok-szam">0</span> termék
                     </div>
-                    <div class="d-flex gap-2">
+                    <div id="fejlec-rendezes">
                         <button id="szures-button" class="btn btn-dark">Szűrők elrejtése</button>
                         <div class="dropdown">
                             <button id="dropdown-button" class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false" onclick="toggleDropdown()">
@@ -90,7 +90,7 @@ ob_start();
                     </div>
                 </div>
 
-                <div id="kartyak" class="row"></div>
+                <div id="kartyak"></div>
             </div>
         </div>
     </div>
@@ -102,4 +102,5 @@ ob_start();
     ob_end_flush();
     ?>
 </body>
+
 </html>

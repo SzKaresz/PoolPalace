@@ -3,32 +3,52 @@ let kartyak = document.getElementById("kartyak");
 
 // Gomb a szűrőpanel ki-be csúsztatásához
 const toggleButton = document.getElementById("szures-button");
-const filterPanel = document.getElementById("filter_div");
+const filterPanel = document.getElementById("szuro-container");
 const cardContainer = document.getElementById("kartyak-container");
 const szuroContainer = document.getElementById("szuro-container");
 const szuresButton = document.getElementById("szures-button");
 
-toggleButton.addEventListener("click", function () {
-    // Ha el van rejtve, akkor megjelenítjük
-    if (filterPanel.classList.contains("hidden")) {
-        szuroContainer.classList.remove("hidden");
-        cardContainer.classList.remove("expanded");
-        szuresButton.textContent = "Szűrők elrejtése";
+document.addEventListener("DOMContentLoaded", function () {
+    const szuroButton = document.getElementById("szures-button");
+    const szuroContainer = document.getElementById("szuro-container");
+    const kartyakContainer = document.getElementById("kartyak-container");
 
-        setTimeout(function () {
-            filterPanel.classList.remove("hidden"); // Elrejtés eltávolítása
-        }, 150);
-    } else {
-        // Ha látszik, akkor elrejtjük
-        filterPanel.classList.add("hidden");
-        szuresButton.textContent = "Szűrők megjelenítése";
+    let szuroLathato = true;
 
-        // Késleltetett eltűntetés
-        setTimeout(function () {
-            szuroContainer.classList.add("hidden");
-            cardContainer.classList.add("expanded"); // Kártyák szélességének növelése, amikor a szűrő eltűnt
-        }, 500); // 1000ms késleltetés (1 másodperc), hogy az animáció lefusson
-    }
+    szuroButton.addEventListener("click", function () {
+        if (szuroLathato) {
+            // Szűrőpanel és kártyák egyszerre mozognak
+            szuroContainer.style.transition = "transform 0.5s ease-in-out, opacity 0.5s ease-in-out";
+            kartyakContainer.style.transition = "width 0.5s ease-in-out";
+
+            szuroContainer.style.transform = "translateX(-100%)";
+            szuroContainer.style.opacity = "0";
+            kartyakContainer.classList.add("expanded");
+
+            // Teljes elrejtés az animáció után
+            szuroContainer.addEventListener("transitionend", function hideFilter() {
+                szuroContainer.style.display = "none";
+                szuroContainer.removeEventListener("transitionend", hideFilter);
+            });
+
+            szuroButton.innerText = "Szűrők megjelenítése";
+        } else {
+            // Szűrőpanel visszahozása
+            szuroContainer.style.display = "block";
+            setTimeout(() => {
+                szuroContainer.style.transition = "transform 0.5s ease-in, opacity 0.5s ease-in";
+                kartyakContainer.style.transition = "width 0.5s ease-in";
+
+                szuroContainer.style.transform = "translateX(0)";
+                szuroContainer.style.opacity = "1";
+                kartyakContainer.classList.remove("expanded");
+            }, 300);
+
+            szuroButton.innerText = "Szűrők elrejtése";
+        }
+
+        szuroLathato = !szuroLathato;
+    });
 });
 
 document.getElementById('clear-filters').addEventListener('click', function () {
@@ -357,9 +377,6 @@ function kosarbaTesz(termekId) {
 function feltolesKartyakkal(adatok) {
     kartyak.innerHTML = "";
     for (const adat of adatok) {
-        let col = document.createElement("div");
-        col.classList.add("col-12", "col-sm-6", "col-md-4", "col-lg-3");
-
         let card = document.createElement("div");
         card.classList.add("card");
         card.style.cursor = "pointer"; // Mutató kurzor hozzáadása, hogy kattinthatónak tűnjön
@@ -438,9 +455,8 @@ function feltolesKartyakkal(adatok) {
         cardBody.appendChild(buttonContainer);
 
         card.appendChild(cardBody);
-        col.appendChild(card);
 
-        kartyak.appendChild(col);
+        kartyak.appendChild(card);
     }
 
     frissitTalalatokSzama(adatok.length);
