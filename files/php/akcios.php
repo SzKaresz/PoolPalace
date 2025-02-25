@@ -16,11 +16,7 @@
 
 <body>
     <?php include './navbar.php'; ?>
-    <div class="container">
-        <div class="row">
-            <div class="col">
-            </div>
-        </div>
+    <div class="container-fluid kontener">
         <div class="row" id="kartyak"></div>
     </div>
 
