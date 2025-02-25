@@ -1,0 +1,137 @@
+body {
+    background-image: url('../img/hatterkep.jpg');
+    background-size: cover;
+    background-position: top center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.kontener {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.card {
+    height: 500px;
+    width: 250px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin: 10px, 0px, 10px, 10px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.card-header img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: auto;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+
+.card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-start;
+}
+
+.card-body h5 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.card-body h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #293144;
+    margin: 0;
+}
+
+.card-body p {
+    font-size: 0.875rem;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.card-body .btn {
+    text-decoration: none;
+    padding: 10px 20px;
+    background-color: #293144;
+    color: #fff;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+    margin-top: auto;
+}
+
+.card-body .btn:active {
+    background-color: #293144;
+}
+
+.card-body .eredeti-ar {
+    text-decoration: line-through;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.card-body .akcios-ar {
+    color: #d9534f;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.card-header .badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #22ff26;
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: red;
+    margin-right: 5px;
+}
+
+.discounted-price {
+    color: #22ff26;
+    font-weight: bold;
+}
