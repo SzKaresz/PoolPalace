@@ -7,6 +7,11 @@ body {
     box-sizing: border-box;
 }
 
+#kontener {
+    padding: 0;
+    padding-right: calc(var(--bs-gutter-x)* .5);
+}
+
 /* Fő konténer */
 #termekek-container {
     display: flex;
@@ -19,8 +24,8 @@ body {
 
 #szuro-container {
     opacity: 1;
-    position: sticky; /* Rögzített pozíció a görgetés során */
-    top: 20px; /* Mindig a képernyő tetejéhez igazodik */
+    position: fixed;
+    left: 0;
     flex: 0 0 300px;
     max-width: 300px;
     min-width: 280px;
@@ -29,25 +34,28 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
     box-sizing: border-box;
-    margin-top: 20px;
-    height: fit-content; /* Csak akkora, amekkora szükséges */
-    transform: translateX(0);
+    height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto;
     transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, height 0.5s ease-in-out;
 }
 
-/* Szűrő elrejtése asztali nézetben */
 #szuro-container.hidden {
     opacity: 0;
     transform: translateX(-100%);
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
 }
 
-/* Visszajövő állapot */
 #szuro-container.show {
     opacity: 1;
     transform: translateX(0);
+    height: calc(100vh - 80px);
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
 }
 
-/* Kártyák konténerének animációja */
+/* Ha a szűrő látható, a kártyák figyelembe veszik a szélességét */
 #kartyak-container {
     flex: 1;
     display: flex;
@@ -55,13 +63,15 @@ body {
     gap: 12px;
     justify-content: center;
     align-items: center;
-    transition: width 0.5s ease-in-out;
-    width: calc(100% - 320px); /* Figyelembe veszi a szűrő méretét */
+    transition: all 0.5s ease-in-out; /* Animáció a szélesség változására */
+    width: calc(100% - 320px);
+    margin-left: 320px;
 }
 
-/* Ha a szűrőpanel rejtve van, a kártyák kitöltik a teljes szélességet */
+/* Ha a szűrő eltűnik, a kártyák teljes szélességet kapnak */
 #kartyak-container.expanded {
     width: 100%;
+    margin-left: 15px;
 }
 
 /* Kártyák konténer */
@@ -253,9 +263,47 @@ input[type="range"]::-moz-range-thumb {
     transform: scale(1.1);
 }
 
-/* Szűrő szektorok */
+#szuro-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 80px); /* A navbar magasságának levonása */
+    overflow-y: auto;
+}
+
+/* Szűrő tartalom megfelelő elosztása */
+.szuroContent {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+    min-height: max-content; /* Biztosítjuk, hogy a teljes teret kitöltse */
+    transition: all 0.3s ease-in-out;
+}
+
+/* Szűrő szektorok egységes elosztása */
 .szuroSector {
-    margin-bottom: 20px;
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 0; /* Fontos! Megakadályozza az összenyomódást */
+    transition: all 0.3s ease-in-out;
+}
+
+/* Szűrőpanel visszatérési állapotának helyes beállítása */
+#szuro-container.show .szuroContent {
+    justify-content: space-between;
+}
+
+.szuroSector:last-child {
+    margin-top: auto;
+}
+
+#szures_form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
 }
 
 /* Ár szűrő */
@@ -316,6 +364,8 @@ input[type='range'] {
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-top: auto; /* Mindig a szűrőpanel aljára kerül */
+    align-self: stretch;
 }
 
 #szures_button:hover {
@@ -395,17 +445,22 @@ a:hover {
     }
 
     #szuro-container {
-        opacity: 0;
-        transform: translateY(-100%);
         position: relative;
         width: 100%;
         max-width: 100%;
+        height: auto;
         top: 0;
         left: 0;
-        z-index: 999;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+        transform: translateY(-100%);
+        opacity: 0;
         display: none;
+    }
+
+    #szuro-container.show {
+        opacity: 1;
+        transform: translateY(0);
+        display: block;
     }
 
     /* Kis képernyőn alapból el van rejtve */
@@ -414,15 +469,9 @@ a:hover {
         transform: translateY(-100%);
     }
 
-    /* Megjelenéskor visszacsúszik */
-    #szuro-container.show {
-        opacity: 1;
-        transform: translateY(0);
-        display: block;
-    }
-
     #kartyak-container {
         width: 100%;
+        margin-left: 0;
     }
 
     .row {

@@ -33,14 +33,14 @@ ob_start();
                 </div>
                 <div class="szuroContent">
                     <a href="javascript:void(0)" id="clear-filters" class="clear-filters-link">Paraméterek törlése</a>
-                    <div class="szuroSector">
-                        <div id="kategoriak"></div>
-                    </div>
-                    <form action="" method="post">
-                        <div class="szuroSector">
+                    <form id="szures_form" method="post">
+                        <div class="szuroSector kategoriak">
+                            <div id="kategoriak"></div>
+                        </div>
+                        <div class="szuroSector gyartok">
                             <div id="gyartok"></div>
                         </div>
-                        <div class="szuroSector">
+                        <div class="szuroSector ar">
                             <div id="ar">
                                 <h6>Ár</h6>
                                 <div class="range_container">
