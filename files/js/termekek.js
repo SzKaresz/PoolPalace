@@ -77,6 +77,21 @@ document.getElementById('clear-filters').addEventListener('click', function () {
     document.getElementById('toSlider').style.background = 'rgb(37, 218, 165)';
 });
 
+function frissitSzuroMagassag() {
+    const szuroContainer = document.getElementById("szuro-container");
+    szuroContainer.style.height = "calc(100vh - 80px)"; // Biztosítja, hogy mindig megfelelő legyen a méret
+    szuroContainer.style.overflowY = "auto"; // Görgethető legyen, ha szükséges
+}
+
+// Automatikusan meghatározza a megjelenítendő elemek számát a képernyőméret szerint
+function getMaxVisibleElements() {
+    const screenHeight = window.innerHeight;
+    if (screenHeight > 1200) return 10; // Nagy képernyő
+    if (screenHeight > 1000) return 9;
+    if (screenHeight > 800) return 4; // Közepes képernyő
+    return 8; // Kis képernyő
+}
+
 // Kategóriák feltöltése
 async function kategoriafeltolt() {
     try {
@@ -86,13 +101,8 @@ async function kategoriafeltolt() {
         let valasz = await eredmeny.json();
         let div = document.getElementById('kategoriak');
 
-        // Elmentjük az aktuálisan bejelölt checkboxokat
-        let kivalasztottak = new Set();
-        document.querySelectorAll('input[name="kategoriak"]:checked').forEach(checkbox => {
-            kivalasztottak.add(checkbox.value);
-        });
-        div.innerHTML = "<h6>Kategóriák</h6>"; // Ezt meghagyjuk, hogy a fejléceket beállítsuk.
-        const maxVisible = 4;
+        div.innerHTML = "<h6>Kategóriák</h6>";
+        const maxVisible = getMaxVisibleElements();
 
         function hozzaadKategoria(adat) {
             let checkbox = document.createElement("input");
@@ -101,28 +111,21 @@ async function kategoriafeltolt() {
             checkbox.value = adat.kategoria_nev;
             checkbox.style.marginRight = "10px";
 
-            // Ha korábban be volt jelölve, újra bejelöljük
-            if (kivalasztottak.has(adat.kategoria_nev)) {
-                checkbox.checked = true;
-            }
-
-            div.appendChild(checkbox);
-
             let label = document.createElement('label');
             let kategoriaNev = adat.kategoria_nev.length > 22 ? adat.kategoria_nev.slice(0, 22) + '...' : adat.kategoria_nev;
-            label.innerHTML = `${kategoriaNev} (${adat.darabszam})`;
+            label.innerHTML = kategoriaNev;
+
+            div.appendChild(checkbox);
             div.appendChild(label);
             div.appendChild(document.createElement('br'));
         }
 
-        // Első 4 kategória megjelenítése
         valasz.slice(0, maxVisible).forEach(hozzaadKategoria);
 
         if (valasz.length > maxVisible) {
             let tovabbi = document.createElement('a');
             tovabbi.innerHTML = `További ${valasz.length - maxVisible} megjelenítése`;
             tovabbi.href = "#";
-            tovabbi.style.color = "blue";
             tovabbi.classList.add('tovabbi-gomb');
 
             tovabbi.addEventListener("click", (e) => {
@@ -141,6 +144,9 @@ async function kategoriafeltolt() {
                 });
 
                 div.appendChild(bezaras);
+
+                // **🔹 Frissítjük a szűrőpanel magasságát**
+                frissitSzuroMagassag();
             });
 
             div.appendChild(tovabbi);
@@ -309,7 +315,7 @@ async function gyartoFeltolt() {
 
         // Töröljük a div tartalmát, de a kiválasztott értékeket megőrizzük
         div.innerHTML = "<h6>Gyártók</h6>";
-        const maxVisible = 4;
+        const maxVisible = getMaxVisibleElements();
 
         function hozzaadGyarto(adat) {
             let checkbox = document.createElement("input");
@@ -323,22 +329,22 @@ async function gyartoFeltolt() {
                 checkbox.checked = true;
             }
 
-            div.appendChild(checkbox);
-
             let label = document.createElement('label');
             label.innerHTML = adat.gyarto_nev;
+
+            div.appendChild(checkbox);
             div.appendChild(label);
             div.appendChild(document.createElement('br'));
         }
 
-        // Első 4 gyártó megjelenítése
+        // Az első 8 gyártó megjelenítése
         valasz.slice(0, maxVisible).forEach(hozzaadGyarto);
 
         if (valasz.length > maxVisible) {
             let tovabbi = document.createElement('a');
             tovabbi.innerHTML = `További ${valasz.length - maxVisible} megjelenítése`;
             tovabbi.href = "#";
-            tovabbi.style.color = "blue";
+            tovabbi.classList.add('tovabbi-gomb');
 
             tovabbi.addEventListener("click", (e) => {
                 e.preventDefault();
@@ -356,6 +362,9 @@ async function gyartoFeltolt() {
                 });
 
                 div.appendChild(bezaras);
+
+                // **🔹 Frissítjük a szűrőpanel magasságát**
+                frissitSzuroMagassag();
             });
 
             div.appendChild(tovabbi);

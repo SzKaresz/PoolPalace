@@ -23,23 +23,27 @@ body {
 }
 
 #szuro-container {
-    opacity: 1;
+    display: flex;
+    flex-direction: column;
     position: fixed;
     left: 0;
     flex: 0 0 300px;
     max-width: 300px;
     min-width: 280px;
     background-color: #f9f9f9;
-    border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
     box-sizing: border-box;
-    height: calc(100vh - 80px);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow-y: auto;
-    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, height 0.5s ease-in-out;
+    height: calc(100vh - 80px); /* Teljes elérhető magasság */
+    overflow-y: auto; /* Görgethető, ha túl hosszú */
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+/* Ha a szűrőpanel látható, ne nyomja össze a tartalmát */
+#szuro-container.show {
+    opacity: 1;
+    transform: translateX(0);
+    min-height: auto; /* Megengedjük, hogy akkora legyen, amekkora kell */
 }
 
 #szuro-container.hidden {
@@ -48,11 +52,8 @@ body {
     transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
 }
 
-#szuro-container.show {
-    opacity: 1;
-    transform: translateX(0);
-    height: calc(100vh - 80px);
-    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+#szuro-container.expanded {
+    min-height: auto; /* A panel magasságát az új tartalomhoz igazítja */
 }
 
 /* Ha a szűrő látható, a kártyák figyelembe veszik a szélességét */
@@ -274,20 +275,18 @@ input[type="range"]::-moz-range-thumb {
 .szuroContent {
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
-    justify-content: space-between;
-    min-height: max-content; /* Biztosítjuk, hogy a teljes teret kitöltse */
-    transition: all 0.3s ease-in-out;
+    height: 100%; /* Kitölti a teljes rendelkezésre álló teret */
+    justify-content: space-between; /* Egyenletesen elosztott elemek */
 }
 
-/* Szűrő szektorok egységes elosztása */
+/* Egyes szűrési szekciók elrendezése */
 .szuroSector {
-    flex: 1; 
+    flex-grow: 1; /* Egyenletes eloszlás */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    min-height: 0; /* Fontos! Megakadályozza az összenyomódást */
-    transition: all 0.3s ease-in-out;
+    justify-content: center; /* Középre igazítás */
+    min-height: 100px; /* Alapértelmezett minimális magasság */
+    padding-bottom: 2vh; /* Dinamikus térköz a szekciók között */
 }
 
 /* Szűrőpanel visszatérési állapotának helyes beállítása */
@@ -302,8 +301,8 @@ input[type="range"]::-moz-range-thumb {
 #szures_form {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     flex-grow: 1;
+    justify-content: flex-end;
 }
 
 /* Ár szűrő */
@@ -354,7 +353,7 @@ input[type='range'] {
 }
 
 #szures_button {
-    width: 100%;
+    margin-top: auto; /* Az aljára nyomja a többi tartalmat */
     padding: 10px;
     background-color: #262d3f;
     color: #fff;
@@ -364,8 +363,7 @@ input[type='range'] {
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-top: auto; /* Mindig a szűrőpanel aljára kerül */
-    align-self: stretch;
+    width: 100%;
 }
 
 #szures_button:hover {
@@ -440,6 +438,11 @@ a:hover {
 }
 
 @media (max-width: 1200px) {
+    .szuroSector {
+        min-height: 80px;
+        padding-bottom: 1vh;
+    }
+
     #termekek-container {
         flex-direction: column;
     }
@@ -512,19 +515,19 @@ a:hover {
 }
 
 #kategoriak a:hover, #gyartok a:hover {
-    color: #007bff;
+    color: blue;
 }
 
 /* További gombok */
 #kategoriak a:last-child, #gyartok a:last-child {
     font-weight: bold;
-    color: #007bff;
+    color: blue;
     cursor: pointer;
 }
 
 /* Hover állapot további gombnál */
 #kategoriak a:last-child:hover, #gyartok a:last-child:hover {
-    color: #0056b3;
+    color: blue;
 }
 
 /* Szűrőpanel kibővített állapota */
