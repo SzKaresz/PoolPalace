@@ -227,20 +227,60 @@ function rendezes(sortType) {
     const kartyakContainer = document.getElementById('kartyak');
     const kartyak = Array.from(kartyakContainer.children);
 
+    // A magyar ABC helyes sorrendje
+    const magyarABC = [
+        "a", "á", "b", "c", "cs", "d", "dz", "dzs", "e", "é", "f", "g", "gy", "h",
+        "i", "í", "j", "k", "l", "m", "n", "ny", "o", "ó", "ö", "ő", "p", "q", "r",
+        "s", "sz", "t", "ty", "u", "ú", "ü", "ű", "v", "w", "x", "y", "z", "zs"
+    ];
+
+    function compareHungarian(a, b) {
+        a = a.toLowerCase();
+        b = b.toLowerCase();
+
+        let minLength = Math.min(a.length, b.length);
+        let i = 0;
+
+        while (i < minLength) {
+            let charA = a[i];
+            let charB = b[i];
+
+            // Ha a karakterek megegyeznek, akkor folytatjuk a következő betűvel
+            if (charA === charB) {
+                i++;
+                continue;
+            }
+
+            // Megnézzük az aktuális karakterek ABC szerinti pozícióját
+            let indexA = magyarABC.indexOf(charA);
+            let indexB = magyarABC.indexOf(charB);
+
+            // Ha az egyik karakter nincs az ABC-ben (pl. szám vagy speciális karakter), akkor hagyjuk az alap JavaScript összehasonlítást
+            if (indexA === -1 || indexB === -1) {
+                return charA.localeCompare(charB, "hu", { sensitivity: "base" });
+            }
+
+            // A betűsorrend alapján visszaadjuk a különbséget
+            return indexA - indexB;
+        }
+
+        // Ha az első karakterek megegyeznek, a rövidebb szó előrébb kerül
+        return a.length - b.length;
+    }
+
     kartyak.sort((a, b) => {
         const adatA = {
-            nev: a.querySelector('h5').innerText,
+            nev: a.querySelector('h5') ? a.querySelector('h5').innerText.trim().toLowerCase() : '',
             akciosAr: a.querySelector('.discounted-price') ? parseInt(a.querySelector('.discounted-price').innerText.replace(/[^0-9]/g, ''), 10) : null,
-            eredetiAr: parseInt(a.querySelector('h6').innerText.replace(/[^0-9]/g, ''), 10) || 0
+            eredetiAr: a.querySelector('h6') ? parseInt(a.querySelector('h6').innerText.replace(/[^0-9]/g, ''), 10) : 0
         };
 
         const adatB = {
-            nev: b.querySelector('h5').innerText,
+            nev: b.querySelector('h5') ? b.querySelector('h5').innerText.trim().toLowerCase() : '',
             akciosAr: b.querySelector('.discounted-price') ? parseInt(b.querySelector('.discounted-price').innerText.replace(/[^0-9]/g, ''), 10) : null,
-            eredetiAr: parseInt(b.querySelector('h6').innerText.replace(/[^0-9]/g, ''), 10) || 0
+            eredetiAr: b.querySelector('h6') ? parseInt(b.querySelector('h6').innerText.replace(/[^0-9]/g, ''), 10) : 0
         };
 
-        // Ha van akciós ár, azt használjuk az összehasonlításra
         const arA = adatA.akciosAr !== null ? adatA.akciosAr : adatA.eredetiAr;
         const arB = adatB.akciosAr !== null ? adatB.akciosAr : adatB.eredetiAr;
 
@@ -249,17 +289,20 @@ function rendezes(sortType) {
         } else if (sortType === 'ar-novekvo') {
             return arA - arB;
         } else if (sortType === 'nev-az') {
-            return adatA.nev.localeCompare(adatB.nev);
+            return compareHungarian(adatA.nev, adatB.nev);
         } else if (sortType === 'nev-za') {
-            return adatB.nev.localeCompare(adatA.nev);
+            return compareHungarian(adatB.nev, adatA.nev);
         }
         return 0;
     });
 
-    kartyakContainer.innerHTML = '';
-    kartyak.forEach(kartya => kartyakContainer.appendChild(kartya));
+    // DOM újrarenderelése optimalizált módon
+    const fragment = document.createDocumentFragment();
+    kartyak.forEach(kartya => fragment.appendChild(kartya));
+    kartyakContainer.innerHTML = ''; 
+    kartyakContainer.appendChild(fragment);
 
-    frissitTalalatokSzama(kartyak.length); // Találatok számának frissítése
+    frissitTalalatokSzama(kartyak.length);
 }
 
 function frissitTalalatokSzama(darab) {
