@@ -12,49 +12,30 @@ document.addEventListener("DOMContentLoaded", function () {
     const szuroButton = document.getElementById("szures-button");
     const szuroContainer = document.getElementById("szuro-container");
     const kartyakContainer = document.getElementById("kartyak-container");
-    const szuroContent = document.querySelector(".szuroContent");
-    const szuroSectors = document.querySelectorAll(".szuroSector");
 
     let szuroLathato = !(window.innerWidth <= 1200);
 
-    if (window.innerWidth <= 1200) {
-        szuroContainer.style.display = "none";
-        szuroButton.innerText = "Szűrők megjelenítése";
-    } else {
-        szuroButton.innerText = "Szűrők elrejtése";
-    }
-
+    // Nyitás/zárás kezelése
     szuroButton.addEventListener("click", function () {
         if (szuroLathato) {
-            szuroContainer.style.transform = "translateX(-100%)";
-            szuroContainer.style.opacity = "0";
+            szuroContainer.classList.add("hidden");
+            szuroContainer.classList.remove("show");
             kartyakContainer.classList.add("expanded");
-
-            setTimeout(() => {
-                szuroContainer.style.display = "none";
-            }, 500);
-
             szuroButton.innerText = "Szűrők megjelenítése";
         } else {
-            szuroContainer.style.display = "block";
+            szuroContainer.classList.add("show");
+            szuroContainer.classList.remove("hidden");
+            kartyakContainer.classList.remove("expanded");
 
+            // 🔹 Frissítjük a magasságot, hogy ne ugorjon meg
             setTimeout(() => {
-                szuroContainer.style.opacity = "1";
-                szuroContainer.style.transform = "translateX(0)";
-                kartyakContainer.classList.remove("expanded");
-
-                // **Itt jön a lényeg:** Késleltetéssel kényszerítjük az újrarenderelést
-                setTimeout(() => {
-                    szuroContent.style.justifyContent = "space-between";
-                    szuroSectors.forEach(sector => {
-                        sector.style.justifyContent = "space-evenly";
-                    });
-                }, 300);
-            }, 50);
+                szuroContainer.style.height = "calc(100vh - 80px)";
+                szuroContainer.style.maxHeight = "calc(100vh - 80px)";
+                szuroContainer.style.overflowY = "auto";
+            }, 350);
 
             szuroButton.innerText = "Szűrők elrejtése";
         }
-
         szuroLathato = !szuroLathato;
     });
 });
