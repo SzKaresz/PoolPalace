@@ -27,9 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $szamlazasi_cim_id = null;
         $szallitasi_cim_id = null;
 
-        // **Ha vendég és regisztrálni akar, akkor mentjük a címeket és a felhasználót**
+        // Ha vendég és regisztrálni akar, akkor mentjük a címeket és a felhasználót
         if ($is_guest && $register) {
-            // **Számlázási cím mentése**
+            // Számlázási cím mentése
             $stmt = $db->prepare("INSERT INTO szamlazasi_cim (iranyitoszam, telepules, utca_hazszam) VALUES (?, ?, ?)");
             $stmt->bind_param("sss", $data['postal_code'], $data['city'], $data['address']);
 
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $szamlazasi_cim_id = $stmt->insert_id;
 
-            // **Szállítási cím mentése**
+            // Szállítási cím mentése
             $stmt = $db->prepare("INSERT INTO szallitasi_cim (iranyitoszam, telepules, utca_hazszam) VALUES (?, ?, ?)");
             $stmt->bind_param("sss", $data['postal_code'], $data['city'], $data['address']);
 
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $szallitasi_cim_id = $stmt->insert_id;
 
-            // **Felhasználó mentése a két cím kapcsolásával**
+            // Felhasználó mentése a két cím kapcsolásával
             $password_hash = password_hash($data['password'], PASSWORD_DEFAULT);
             $stmt = $db->prepare("INSERT INTO felhasznalok (email, nev, telefonszam, jelszo, szamlazasi_cim_id, szallitasi_cim_id) 
                                   VALUES (?, ?, ?, ?, ?, ?)");
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // **Ha be van jelentkezve, lekérdezzük az adatait az adatbázisból**
+        // Ha be van jelentkezve, lekérdezzük az adatait az adatbázisból
         if (!$is_guest) {
             $stmt = $db->prepare("SELECT f.nev, f.telefonszam, sz.iranyitoszam, sz.telepules, sz.utca_hazszam
                                   FROM felhasznalok f
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($result->num_rows > 0) {
                 $row = $result->fetch_assoc();
 
-                // **Ha az input mezők üresek, az adatbázisból pótoljuk**
+                // Ha az input mezők üresek, az adatbázisból pótoljuk
                 $data['name'] = $data['name'] ?: $row['nev'];
                 $data['phone'] = $data['phone'] ?: $row['telefonszam'];
                 $data['postal_code'] = $data['postal_code'] ?: $row['iranyitoszam'];
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // **Megrendelés mentése**
+        // Megrendelés mentése
         $stmt = $db->prepare("INSERT INTO megrendeles (felhasznalo_id, nev, email, telefonszam, iranyitoszam, telepules, utca_hazszam, osszeg) 
                               VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("sssssssd", $felhasznalo_email, $data['name'], $data['email'], $data['phone'], $data['postal_code'], $data['city'], $data['address'], $data['total']);
@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $megrendeles_id = $stmt->insert_id;
 
-        // **Rendelési tételek mentése**
+        // Rendelési tételek mentése
         foreach ($data['cart_items'] as $item) {
             $stmt = $db->prepare("INSERT INTO tetelek (megrendeles_id, termek_id, darabszam, egysegar) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("isid", $megrendeles_id, $item['cikkszam'], $item['darabszam'], $item['ar']);
@@ -104,13 +104,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
 
-            // **Készlet frissítése**
+            // Készlet frissítése
             $stmt = $db->prepare("UPDATE termekek SET darabszam = darabszam - ? WHERE cikkszam = ?");
             $stmt->bind_param("is", $item['darabszam'], $item['cikkszam']);
             if (!$stmt->execute()) {
                 echo json_encode(["success" => false, "error" => "Hiba történt a készlet frissítése során"]);
                 exit;
             }
+        }
+
+        // **Kosár ürítése rendelés után**
+        if (!$is_guest) {
+            // Bejelentkezett felhasználónál az adatbázisból töröljük a kosarat
+            $stmt = $db->prepare("DELETE FROM kosar WHERE felhasznalo_id = ?");
+            $stmt->bind_param("s", $felhasznalo_email);
+            $stmt->execute();
+        } else {
+            // Vendég felhasználónál a session-ből töröljük a kosarat
+            unset($_SESSION['kosar']);
         }
 
         echo json_encode(["success" => true, "order_id" => $megrendeles_id]);

@@ -17,13 +17,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    document.querySelectorAll(".delete-btn").forEach(button => {
-        button.addEventListener("click", function () {
-            if (confirm("Biztosan törölni szeretnéd az összes terméket a kosárból?")) {
-                removeAllItems();
-            }
-        });
-    });
+    document.getElementById("confirmClearCart").addEventListener("click", function () {
+        removeAllItems();
+    });    
 });
 
 function updateQuantity(termekId, change) {
@@ -102,8 +98,14 @@ function removeAllItems() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Modal bezárása
+            let clearCartModal = bootstrap.Modal.getInstance(document.getElementById("clearCartModal"));
+            clearCartModal.hide();
+
+            // Kosár tartalom törlése a felületen
             const allRows = document.querySelectorAll(".cart-table tbody tr");
             allRows.forEach(row => row.remove());
+
             updateCartTotal();
             updateCartCount();
         } else {

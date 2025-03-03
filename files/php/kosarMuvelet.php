@@ -55,20 +55,10 @@ if (isset($_SESSION['user_email'])) {
             $stmt->bind_param("ss", $termek_id, $user_email);
             break;
 
-        case 'removeAll':
+        case 'removeAll': // **Kosár teljes kiürítése bejelentkezett felhasználónál**
             $stmt = $db->prepare("DELETE FROM kosar WHERE felhasznalo_id = ?");
             $stmt->bind_param("s", $user_email);
             break;
-
-        case 'getCount': // Új ág hozzáadása a getCount művelethez
-            if (isset($_SESSION['user_email'])) {
-                $user_email = $_SESSION['user_email'];
-                $uj_mennyiseg = getUserCartCount($db, $user_email);
-            } else {
-                $uj_mennyiseg = array_sum($_SESSION['kosar']);
-            }
-            echo json_encode(["success" => true, "uj_mennyiseg" => $uj_mennyiseg]);
-            exit;
 
         default:
             echo json_encode(["success" => false, "error" => "Ismeretlen művelet"]);
@@ -102,12 +92,13 @@ if (isset($_SESSION['user_email'])) {
         case 'remove':
             unset($_SESSION['kosar'][$termek_id]);
             break;
-        case 'removeAll':
-            unset($_SESSION['kosar']);
+
+        case 'removeAll': // **Kosár teljes kiürítése vendégeknél**
+            $_SESSION['kosar'] = [];
             break;
     }
 
-    $uj_mennyiseg = array_sum($_SESSION['kosar']);
+    $uj_mennyiseg = array_sum($_SESSION['kosar'] ?? []);
     echo json_encode(["success" => true, "uj_mennyiseg" => $uj_mennyiseg]);
 }
 

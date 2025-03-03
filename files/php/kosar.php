@@ -44,7 +44,6 @@ if (isset($_SESSION['user_email'])) {
 
         $osszesen += $row['darabszam'] * $ar;
     }
-    
 } else {
     if (!empty($_SESSION['kosar'])) {
         foreach ($_SESSION['kosar'] as $termek_id => $darabszam) {
@@ -131,14 +130,20 @@ if (isset($_SESSION['user_email'])) {
                                 <button class="quantity-btn plus" onclick="updateQuantity(<?= str_pad($termek['cikkszam'], 6, '0', STR_PAD_LEFT) ?>, 1)">+</button>
                             </td>
                             <td><?= number_format($termek['darabszam'] * $termek['ar'], 0, ',', ' ') ?> Ft</td>
-                            <td><button class="remove-btn">❌</button></td>
+                            <td>
+                                <button class="remove-btn btn btn-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
             <div class="row">
                 <div class="col cart-delete">
-                    <button type="button" class="delete-btn">Rendeles törlése</button>
+                    <button type="button" class="delete-btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#clearCartModal">
+                        Kosár kiürítése
+                    </button>
                 </div>
                 <div class="col cart-summary">
                     <h3>Összesen: <?= number_format($osszesen, 0, ',', ' ') ?> Ft</h3>
@@ -151,6 +156,25 @@ if (isset($_SESSION['user_email'])) {
 
     <?php include './navbar.php'; ?>
     <?php include './footer.php'; ?>
+
+    <!-- Kosár kiürítése megerősítő modal -->
+    <div class="modal fade" id="clearCartModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kosár kiürítése</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Biztosan ki szeretné üríteni a kosarat? Ez a művelet nem visszavonható.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                    <button type="button" class="btn btn-danger" id="confirmClearCart">Igen, ürítse</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
