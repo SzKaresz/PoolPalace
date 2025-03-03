@@ -1,3 +1,13 @@
+body{
+    background-image: url('../img/hatterkep.jpg');
+    background-size: auto;
+    background-position: top;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    overflow: auto;
+}
+
 #rolunk_szoveg{
     border: 2px solid black;
     border-radius: 15px;

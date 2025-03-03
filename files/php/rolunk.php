@@ -21,7 +21,7 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
     <script defer src="../js/rolunk.js"></script>
 </head>
 
-<body style="background-image: url('../img/hatterkep.jpg');background-size: cover;background-position: top center;background-repeat: no-repeat;min-height: 100vh;display: flex;overflow: auto;">
+<body>
     <div class="container">
         <div class="row">
             <div class="col">

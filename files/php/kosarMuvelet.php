@@ -102,6 +102,9 @@ if (isset($_SESSION['user_email'])) {
         case 'remove':
             unset($_SESSION['kosar'][$termek_id]);
             break;
+        case 'removeAll':
+            unset($_SESSION['kosar']);
+            break;
     }
 
     $uj_mennyiseg = array_sum($_SESSION['kosar']);
