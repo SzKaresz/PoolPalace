@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Feb 25. 10:39
+-- Létrehozás ideje: 2025. Már 03. 23:15
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -29,7 +29,6 @@ USE `poolpalace`;
 -- Tábla szerkezet ehhez a táblához `felhasznalok`
 --
 
-DROP TABLE IF EXISTS `felhasznalok`;
 CREATE TABLE IF NOT EXISTS `felhasznalok` (
   `email` varchar(254) NOT NULL,
   `nev` varchar(255) NOT NULL,
@@ -47,18 +46,15 @@ CREATE TABLE IF NOT EXISTS `felhasznalok` (
 --
 
 INSERT INTO `felhasznalok` (`email`, `nev`, `jelszo`, `telefonszam`, `szallitasi_cim_id`, `szamlazasi_cim_id`) VALUES
-('guest', 'guest', '', '', 2, 2),
 ('info.poolpalace@gmail.com', 'Admin', '$2y$10$GAVPPqKoVgFkV5kMgn/8ROKu2LNiYTCen0PSCcPo3jDf79UyiAdF6', '', 1, 1);
 
 --
 -- Eseményindítók `felhasznalok`
 --
-DROP TRIGGER IF EXISTS `email_toLower`;
 DELIMITER $$
 CREATE TRIGGER `email_toLower` BEFORE INSERT ON `felhasznalok` FOR EACH ROW SET NEW.email = lower(NEW.email)
 $$
 DELIMITER ;
-DROP TRIGGER IF EXISTS `uj_felhasznalo`;
 DELIMITER $$
 CREATE TRIGGER `uj_felhasznalo` AFTER INSERT ON `felhasznalok` FOR EACH ROW INSERT INTO `log`(`tabla_nev`, `tabla_id`) VALUES ('felhasznalok', new.email)
 $$
@@ -70,7 +66,6 @@ DELIMITER ;
 -- Tábla szerkezet ehhez a táblához `gyarto`
 --
 
-DROP TABLE IF EXISTS `gyarto`;
 CREATE TABLE IF NOT EXISTS `gyarto` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nev` varchar(25) NOT NULL,
@@ -110,7 +105,6 @@ INSERT INTO `gyarto` (`id`, `nev`) VALUES
 -- Tábla szerkezet ehhez a táblához `kategoria`
 --
 
-DROP TABLE IF EXISTS `kategoria`;
 CREATE TABLE IF NOT EXISTS `kategoria` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nev` varchar(55) NOT NULL,
@@ -150,7 +144,6 @@ INSERT INTO `kategoria` (`id`, `nev`) VALUES
 -- Tábla szerkezet ehhez a táblához `kosar`
 --
 
-DROP TABLE IF EXISTS `kosar`;
 CREATE TABLE IF NOT EXISTS `kosar` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `felhasznalo_id` varchar(254) NOT NULL,
@@ -167,22 +160,20 @@ CREATE TABLE IF NOT EXISTS `kosar` (
 -- Tábla szerkezet ehhez a táblához `log`
 --
 
-DROP TABLE IF EXISTS `log`;
 CREATE TABLE IF NOT EXISTS `log` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `datum` datetime NOT NULL DEFAULT current_timestamp(),
   `tabla_nev` varchar(15) NOT NULL,
   `tabla_id` varchar(254) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `log`
 --
 
 INSERT INTO `log` (`id`, `datum`, `tabla_nev`, `tabla_id`) VALUES
-(1, '2025-02-20 11:38:38', 'felhasznalok', 'info.poolpalace@gmail.com'),
-(2, '2025-02-24 20:48:59', 'felhasznalok', 'guest');
+(1, '2025-02-20 11:38:38', 'felhasznalok', 'info.poolpalace@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -190,21 +181,19 @@ INSERT INTO `log` (`id`, `datum`, `tabla_nev`, `tabla_id`) VALUES
 -- Tábla szerkezet ehhez a táblához `megrendeles`
 --
 
-DROP TABLE IF EXISTS `megrendeles`;
 CREATE TABLE IF NOT EXISTS `megrendeles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `felhasznalo_id` varchar(254) DEFAULT NULL,
   `email` varchar(254) NOT NULL,
   `nev` varchar(255) NOT NULL,
   `telefonszam` varchar(15) NOT NULL,
-  `szallitasi_cim_id` int(11) NOT NULL,
-  `szamlazasi_cim_id` int(11) NOT NULL,
   `datum` datetime NOT NULL DEFAULT current_timestamp(),
   `osszeg` double NOT NULL,
+  `iranyitoszam` varchar(10) NOT NULL,
+  `telepules` varchar(255) NOT NULL,
+  `utca_hazszam` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `felhasznalo_id` (`felhasznalo_id`),
-  KEY `szallitasi_cim_id` (`szallitasi_cim_id`),
-  KEY `szamlazasi_cim_id` (`szamlazasi_cim_id`)
+  KEY `felhasznalo_id` (`felhasznalo_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 -- --------------------------------------------------------
@@ -213,22 +202,20 @@ CREATE TABLE IF NOT EXISTS `megrendeles` (
 -- Tábla szerkezet ehhez a táblához `szallitasi_cim`
 --
 
-DROP TABLE IF EXISTS `szallitasi_cim`;
 CREATE TABLE IF NOT EXISTS `szallitasi_cim` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `iranyitoszam` varchar(7) NOT NULL,
   `telepules` varchar(58) NOT NULL,
   `utca_hazszam` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `szallitasi_cim`
 --
 
 INSERT INTO `szallitasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`) VALUES
-(1, '', '', ''),
-(2, '', '', '');
+(1, '', '', '');
 
 -- --------------------------------------------------------
 
@@ -236,22 +223,20 @@ INSERT INTO `szallitasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`)
 -- Tábla szerkezet ehhez a táblához `szamlazasi_cim`
 --
 
-DROP TABLE IF EXISTS `szamlazasi_cim`;
 CREATE TABLE IF NOT EXISTS `szamlazasi_cim` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `iranyitoszam` varchar(7) NOT NULL,
   `telepules` varchar(58) NOT NULL,
   `utca_hazszam` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `szamlazasi_cim`
 --
 
 INSERT INTO `szamlazasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`) VALUES
-(1, '', '', ''),
-(2, '', '', '');
+(1, '', '', '');
 
 -- --------------------------------------------------------
 
@@ -259,7 +244,6 @@ INSERT INTO `szamlazasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`)
 -- Tábla szerkezet ehhez a táblához `termekek`
 --
 
-DROP TABLE IF EXISTS `termekek`;
 CREATE TABLE IF NOT EXISTS `termekek` (
   `cikkszam` varchar(6) NOT NULL,
   `nev` varchar(70) NOT NULL,
@@ -299,14 +283,14 @@ INSERT INTO `termekek` (`cikkszam`, `nev`, `egysegar`, `akcios_ar`, `leiras`, `g
 ('056118', 'INVERECO DE18', 269000, -1, 'InverEco DE18\r\nInverteres szivattyú lakossági medencékhez. Az inverteres technológiának köszönhetően a motor fordulatszáma 1 fordulatonként pontosan szabályozható.\r\nAmikor visszamosásra van szükség, a szivattyú 100%-os kapacitással működhet. A napi szűrési, vízforgatási igény esetén, amely alacsonyabb térfogatáramot igényel, a szivattyú kisebb teljesítménnyel működhet, aminek köszönhetően rendkívül csendes és energiatakarékos. Az Aquagem inverteres technológiának köszönhetően a szivattyú élettartama is hosszabb lesz.\r\n\r\nTulajdonságok\r\nEgyszerű érintőkijelzős kezelőfelület\r\nNaponta 4 különböző időzíthető program\r\nSzabályozható teljesítmény: 30% ~ 100%\r\nEnergiafogyasztás megjelenítése\r\nVisszamosás gombnyomásra', 10, 17, 67),
 ('056225', 'InverMaster IM25', 609850, -1, 'InverMaster IM25\r\nAquagem inverteres szivattyú. Az Aquagem kombinálta az InverSilence technológiát a vízhűtéssel, így megalkotva egy ventilátormentes szivattyút. Ennek eredménye, hogy a működési zaj 30 dBA@1m-ig csökkent, ami 40-szer csendesebb a hagyományos szivattyúkhoz képest.\r\n\r\nTulajdonságok\r\nMaximum 3m-el a vízszint fölé szerelhető\r\nIE5 kefe nélküli DC motor\r\n20x energiamegtakarítás\r\nAuto Inverter/Manual Inverter üzemmód\r\nAktuális térfogatáram megjelenítése\r\nKülső vezérlési lehetőségek: applikáció, digitális jel, RS485\r\nSósvízhez alkalmas, max 5g/l só koncentrációig\r\n40x csöndesebb, mint egy hagyományos szivattyú\r\nAktuális energiafogyasztás megjelenítése\r\nWi-Fi / Bluetooth', 11, 17, 86),
 ('060005', 'D-KWT D50 RAGASZTHATÓ CSATLAKOZÓ', 5800, -1, 'Hőcserélőhöz ragasztható csatlakozó D-KWT típusú hőcserélő csatlakoztatásához szükséges cilinder, prémium minőségű műanyagból. Jellemzők: - Átmérő: D50 mm.', 12, 3, 26),
-('080003', 'NYOMÓCSŐ - 3 MÉTER/SZÁL D 020', 2049, 1854, 'Nyomócső - D20 Kiváló minőségű, ragasztható, könnyű PVC-U nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok: - Átmérője: 20 mm - Hosszúsága: 3 méter PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, 49),
-('080004', 'NYOMÓCSŐ - 3 MÉTER/SZÁL D 025', 3270, -1, 'Nyomócső - D25 Kiváló minőségű, ragasztható, könnyű PVC-U nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok: - Átmérője: 25 mm - Hosszúsága: 3 méter PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, 69),
-('080005', 'NYOMÓCSŐ - 3 MÉTER/SZÁL D 032', 3570, -1, 'Nyomócső - D32 Kiváló minőségű, ragasztható, könnyű PVC-U nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok: - Átmérője: 32 mm - Hosszúsága: 3 méter PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, 77),
-('080106', 'NYOMÓCSŐ - 3 MÉTER/SZÁL D 040', 3570, -1, 'Nyomócső - D40 Kiváló minőségű, ragasztható, könnyű PVC-U nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok: - Átmérője: 40 mm - Hosszúsága: 3 méter PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, 65),
+('080003', 'NYOMÓCSŐ - 3 MÉTER/SZÁL D 020', 2049, 1854, 'Nyomócső - D20 Kiváló minőségű, ragasztható, könnyű PVC-U nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok: - Átmérője: 20 mm - Hosszúsága: 3 méter PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, 31),
+('080004', 'NYOMÓCSŐ - 3 MÉTER/SZÁL D 025', 3270, -1, 'Nyomócső - D25 Kiváló minőségű, ragasztható, könnyű PVC-U nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok: - Átmérője: 25 mm - Hosszúsága: 3 méter PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, 53),
+('080005', 'NYOMÓCSŐ - 3 MÉTER/SZÁL D 032', 3570, -1, 'Nyomócső - D32 Kiváló minőségű, ragasztható, könnyű PVC-U nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok: - Átmérője: 32 mm - Hosszúsága: 3 méter PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, 73),
+('080106', 'NYOMÓCSŐ - 3 MÉTER/SZÁL D 040', 3570, -1, 'Nyomócső - D40 Kiváló minőségű, ragasztható, könnyű PVC-U nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok: - Átmérője: 40 mm - Hosszúsága: 3 méter PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, 64),
 ('080107', 'NYOMÓCSŐ - 3 MÉTER/SZÁL D 050', 5040, -1, 'Nyomócső - D50 Kiváló minőségű, ragasztható, könnyű PVC-U nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok: - Átmérője: 50 mm - Hosszúsága: 3 méter PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, 81),
 ('080108', 'NYOMÓCSŐ D 063', 7700, -1, 'Nyomócső - D63 Kiváló minőségű, ragasztható, könnyű PVC-U nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok: - Átmérője: 63 mm - Hosszúsága: 5 méter PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, 11),
 ('080109', 'NYOMÓCSŐ D 075', 6290, -1, 'Nyomócső - D75 Kiváló minőségű, ragasztható, könnyű PVC-U nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok: - Átmérője: 75 mm - Hosszúsága: 5 méter PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, 11),
-('080110', 'NYOMÓCSŐ D 090', 5459, 4799, 'Nyomócső - D90 Kiváló minőségű, ragasztható, könnyű PVC-U nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok: - Átmérője: 90 mm - Hosszúsága: 5 méter PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, 15),
+('080110', 'NYOMÓCSŐ D 090', 5459, 4799, 'Nyomócső - D90 Kiváló minőségű, ragasztható, könnyű PVC-U nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok: - Átmérője: 90 mm - Hosszúsága: 5 méter PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, -2),
 ('080111', 'NYOMÓCSŐ D 110', 5865, -1, 'Nyomócső - D110 Kiváló minőségű, ragasztható, könnyű PVC-U nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok: - Átmérője: 110 mm - Hosszúsága: 5 méter PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, 99),
 ('080112', 'NYOMÓCSŐ D 125', 7790, -1, 'Nyomócső - D125 Kiváló minőségű, ragasztható, könnyű PVC nyomócső. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. Műszaki adatok - Átmérője: 125 mm - Hosszúsága: 5 méter A PVC kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', NULL, 1, 7),
 ('082003', 'GOLYÓSCSAP BB D 020', 3800, -1, 'Golyóscsap Kiváló minőségű PVC-U golyóscsap. Hosszú élettartam, kiemelkedő korrózióállóság és kopásállóság jellemzi. Felhasználhatósága egyszerű, összeszerelése praktikus és gyors. A golyóscsap működése egyszerű: egy gömb alakú elemet tartalmaz, amelynek van egy átjárója. A gömb forgatásával a szelep nyitva vagy zárva tartható, így szabályozva a folyadékáramlást. Ez a típusú szelep gyors és hatékony módja annak, hogy megnyissa vagy elzárja a folyadékáramlást, és pontos szabályozást tesz lehetővé. PVC-U A PVC-U kiváló vegyszerállóságának, a mérsékelt hőállóságának, a széles átmérő tartománynak és a gazdag idom kínálatnak köszönhetően technológiai (savas vagy lúgos közegek) és vízgépészeti (uszoda technika) csőhálózatok kedvelt megoldása.', 12, 2, 60),
@@ -387,7 +371,6 @@ INSERT INTO `termekek` (`cikkszam`, `nev`, `egysegar`, `akcios_ar`, `leiras`, `g
 -- Tábla szerkezet ehhez a táblához `tetelek`
 --
 
-DROP TABLE IF EXISTS `tetelek`;
 CREATE TABLE IF NOT EXISTS `tetelek` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `megrendeles_id` int(11) NOT NULL,
@@ -416,14 +399,6 @@ ALTER TABLE `felhasznalok`
 ALTER TABLE `kosar`
   ADD CONSTRAINT `kosar_ibfk_1` FOREIGN KEY (`felhasznalo_id`) REFERENCES `felhasznalok` (`email`) ON DELETE CASCADE,
   ADD CONSTRAINT `kosar_ibfk_2` FOREIGN KEY (`termek_id`) REFERENCES `termekek` (`cikkszam`) ON DELETE CASCADE;
-
---
--- Megkötések a táblához `megrendeles`
---
-ALTER TABLE `megrendeles`
-  ADD CONSTRAINT `megrendeles_ibfk_1` FOREIGN KEY (`felhasznalo_id`) REFERENCES `felhasznalok` (`email`),
-  ADD CONSTRAINT `megrendeles_ibfk_2` FOREIGN KEY (`szamlazasi_cim_id`) REFERENCES `szamlazasi_cim` (`id`),
-  ADD CONSTRAINT `megrendeles_ibfk_3` FOREIGN KEY (`szallitasi_cim_id`) REFERENCES `szallitasi_cim` (`id`);
 
 --
 -- Megkötések a táblához `termekek`

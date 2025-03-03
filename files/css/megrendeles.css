@@ -86,6 +86,16 @@ a:hover {
     color: #1e2530;
 }
 
+#order-errors {
+    margin-bottom: 15px;
+}
+
+.alert {
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
 @media (max-width: 768px) {
     .list-group-item {
         flex-direction: column;
