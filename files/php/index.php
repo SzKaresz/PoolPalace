@@ -17,6 +17,7 @@
 </head>
 
 <body>
+    <?php include './navbar.php'; ?>
     <div class="container">
         <div class="video-container">
             <video autoplay loop muted>
@@ -133,7 +134,6 @@
 
     </div>
 
-    <?php include './navbar.php'; ?>
     <?php include './back-to-top.php'; ?>
     <?php include "./footer.php"; ?>
 
