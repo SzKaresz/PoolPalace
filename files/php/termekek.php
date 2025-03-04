@@ -19,6 +19,7 @@ ob_start();
 </head>
 
 <body>
+    <?php include './navbar.php'; ?>
     <div id="kontener" class="container-fluid">
         <div id="termekek-container">
             <!-- Szűrőpanel -->
@@ -95,7 +96,6 @@ ob_start();
         </div>
     </div>
 
-    <?php include './navbar.php'; ?>
     <?php include './back-to-top.php'; ?>
     <?php include './footer.php'; ?>
     <?php
