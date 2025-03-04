@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Már 03. 23:15
+-- Létrehozás ideje: 2025. Már 04. 09:15
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -183,7 +183,6 @@ INSERT INTO `log` (`id`, `datum`, `tabla_nev`, `tabla_id`) VALUES
 
 CREATE TABLE IF NOT EXISTS `megrendeles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `felhasznalo_id` varchar(254) DEFAULT NULL,
   `email` varchar(254) NOT NULL,
   `nev` varchar(255) NOT NULL,
   `telefonszam` varchar(15) NOT NULL,
@@ -192,8 +191,7 @@ CREATE TABLE IF NOT EXISTS `megrendeles` (
   `iranyitoszam` varchar(10) NOT NULL,
   `telepules` varchar(255) NOT NULL,
   `utca_hazszam` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `felhasznalo_id` (`felhasznalo_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 -- --------------------------------------------------------

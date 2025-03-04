@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const guestModal = new bootstrap.Modal(document.getElementById("guestModal"));
     const saveAccountBtn = document.getElementById("save-account-btn");
     const modalPassword = document.getElementById("modal-password");
+    const passwordAlert = document.getElementById("password-alert");
 
     const isGuest = JSON.parse(document.getElementById("is-guest-data").textContent);
 
@@ -12,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     placeOrderBtn.addEventListener("click", function () {
         const fields = ["name", "email", "phone", "postal_code", "city", "address"];
         let errorMessages = [];
+        let firstError = "";
 
         orderData = {
             action: 'placeOrder',
@@ -19,36 +21,59 @@ document.addEventListener("DOMContentLoaded", function () {
             cart_items: JSON.parse(document.getElementById("cart-items-data").textContent),
         };
 
+        let allEmpty = true;
+
         fields.forEach(field => {
             let inputElement = document.getElementById(field);
             let value = inputElement.value.trim();
 
             if (!value) {
-                errorMessages.push(inputElement.labels[0].textContent + " megadása kötelező!");
+                if (!firstError) {
+                    firstError = inputElement.labels[0].textContent + " megadása kötelező!";
+                }
             } else {
+                allEmpty = false;
                 orderData[field] = value;
             }
         });
 
-        if (errorMessages.length > 0) {
-            showErrorMessages(errorMessages);
+        if (allEmpty) {
+            showErrorMessages(["Minden mező kitöltése kötelező!"]);
+            return;
+        }
+
+        if (firstError) {
+            showErrorMessages([firstError]);
             return;
         }
 
         if (isGuest) {
-            // Vendég esetén kérdezzük meg, hogy akar-e regisztrálni
             guestModal.show();
         } else {
-            // Bejelentkezett felhasználónál azonnal küldjük a rendelést
             sendOrder(orderData);
         }
     });
 
     // Ha "Igen"-t választ, akkor regisztráljuk is
     saveAccountBtn.addEventListener("click", function () {
+        let password = modalPassword.value.trim();
+
+        if (password === '') {
+            passwordAlert.innerHTML = `<div class="alert alert-danger">A regisztrációhoz jelszót kell megadni!</div>`;
+            return;
+        }
+
+        // Ha van jelszó, akkor továbbítjuk az adatokat
         orderData.register = true;
-        orderData.password = modalPassword.value.trim();
+        orderData.password = password;
+
+        // Figyelmeztetés eltüntetése, ha korábban megjelent
+        passwordAlert.innerHTML = '';
+
+        // Modal elrejtése
         guestModal.hide();
+
+        // Rendelés elküldése
         sendOrder(orderData);
     });
 

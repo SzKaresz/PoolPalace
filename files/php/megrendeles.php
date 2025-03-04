@@ -50,6 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $szallitasi_cim_id = $stmt->insert_id;
 
             // Felhasználó mentése a két cím kapcsolásával
+            if (empty($data['password'])) {
+                echo json_encode(["success" => false, "error" => "Hiba: A regisztrációhoz jelszót kell megadni!"]);
+                exit;
+            }
             $password_hash = password_hash($data['password'], PASSWORD_DEFAULT);
             $stmt = $db->prepare("INSERT INTO felhasznalok (email, nev, telefonszam, jelszo, szamlazasi_cim_id, szallitasi_cim_id) 
                                   VALUES (?, ?, ?, ?, ?, ?)");
@@ -84,9 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Megrendelés mentése
-        $stmt = $db->prepare("INSERT INTO megrendeles (felhasznalo_id, nev, email, telefonszam, iranyitoszam, telepules, utca_hazszam, osszeg) 
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssssd", $felhasznalo_email, $data['name'], $data['email'], $data['phone'], $data['postal_code'], $data['city'], $data['address'], $data['total']);
+        $stmt = $db->prepare("INSERT INTO megrendeles (nev, email, telefonszam, iranyitoszam, telepules, utca_hazszam, osszeg) 
+                              VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssd", $data['name'], $felhasznalo_email, $data['phone'], $data['postal_code'], $data['city'], $data['address'], $data['total']);
 
         if (!$stmt->execute()) {
             echo json_encode(["success" => false, "error" => "Hiba történt a megrendelés mentése során"]);
@@ -301,6 +305,7 @@ foreach ($cart_items as $item) {
                 </div>
                 <div class="modal-body">
                     <p>Szeretné elmenteni adatait a későbbi vásárlásokhoz?</p>
+                    <div id="password-alert"></div>
                     <input type="password" class="form-control" id="modal-password" placeholder="Jelszó (opcionális)">
                 </div>
                 <div class="modal-footer">
@@ -330,7 +335,7 @@ foreach ($cart_items as $item) {
                     <p><strong>Rendelés azonosítója: <span id="order-id"></span></strong></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="window.location.href='kosar.php'">Ok</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="window.location.href='termekek.php'">Ok</button>
                 </div>
             </div>
         </div>

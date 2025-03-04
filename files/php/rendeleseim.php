@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_email'])) {
 $user_email = $_SESSION['user_email'];
 
 // Rendelések lekérése
-$stmt = $db->prepare("SELECT id, datum, osszeg FROM megrendeles WHERE felhasznalo_id = ? ORDER BY datum DESC");
+$stmt = $db->prepare("SELECT id, datum, osszeg FROM megrendeles WHERE email = ? ORDER BY datum DESC");
 $stmt->bind_param("s", $user_email);
 $stmt->execute();
 $result = $stmt->get_result();
