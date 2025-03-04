@@ -14,7 +14,7 @@ if (isset($_SESSION['user_email'])) {
     $query->bind_param("s", $user_email);
     $query->execute();
     $result = $query->get_result()->fetch_assoc();
-    
+
     $termekekSzama = $result['osszes_darab'] ?? 0;
 } else {
     if (isset($_SESSION['kosar'])) {
@@ -67,9 +67,20 @@ if (isset($_SESSION['user_email'])) {
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                         <li><a class="dropdown-item" href="./adataim.php">Adataim</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li><a class="dropdown-item" href="./rendeleseim.php">Rendeléseim</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <?php if (isset($_SESSION['user_nev']) && $_SESSION['user_nev'] === 'Admin'): ?>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="./admin.php">Admin felület</a></li>
+                        <?php endif; ?>
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li>
                             <form method="POST" class="dropdown-item p-0 m-0">
                                 <button type="submit" name="logout" class="btn btn-link text-decoration-none text-dark">Kijelentkezés</button>
