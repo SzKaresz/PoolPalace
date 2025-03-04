@@ -18,15 +18,6 @@
 
 <body>
     <div class="container">
-        <div class="row">
-            <div class="col">
-                <?php
-                include './navbar.php';
-                include './session.php';
-                ?>
-            </div>
-        </div>
-
         <div class="video-container">
             <video autoplay loop muted>
                 <source src="../img/medencevideo.mp4" type="video/mp4">
@@ -142,6 +133,7 @@
 
     </div>
 
+    <?php include './navbar.php'; ?>
     <?php include './back-to-top.php'; ?>
     <?php include "./footer.php"; ?>
 
