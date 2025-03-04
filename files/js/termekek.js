@@ -3,41 +3,32 @@ let kartyak = document.getElementById("kartyak");
 
 // Gomb a szűrőpanel ki-be csúsztatásához
 const toggleButton = document.getElementById("szures-button");
-const filterPanel = document.getElementById("szuro-container");
+const filterPanel = document.getElementById("filter_div");
 const cardContainer = document.getElementById("kartyak-container");
 const szuroContainer = document.getElementById("szuro-container");
 const szuresButton = document.getElementById("szures-button");
 
-document.addEventListener("DOMContentLoaded", function () {
-    const szuroButton = document.getElementById("szures-button");
-    const szuroContainer = document.getElementById("szuro-container");
-    const kartyakContainer = document.getElementById("kartyak-container");
+toggleButton.addEventListener("click", function () {
+    // Ha el van rejtve, akkor megjelenítjük
+    if (filterPanel.classList.contains("hidden")) {
+        szuroContainer.classList.remove("hidden");
+        cardContainer.classList.remove("expanded");
+        szuresButton.textContent = "Szűrők elrejtése";
 
-    let szuroLathato = !(window.innerWidth <= 1200);
+        setTimeout(function () {
+            filterPanel.classList.remove("hidden"); // Elrejtés eltávolítása
+        }, 150);
+    } else {
+        // Ha látszik, akkor elrejtjük
+        filterPanel.classList.add("hidden");
+        szuresButton.textContent = "Szűrők megjelenítése";
 
-    // Nyitás/zárás kezelése
-    szuroButton.addEventListener("click", function () {
-        if (szuroLathato) {
+        // Késleltetett eltűntetés
+        setTimeout(function () {
             szuroContainer.classList.add("hidden");
-            szuroContainer.classList.remove("show");
-            kartyakContainer.classList.add("expanded");
-            szuroButton.innerText = "Szűrők megjelenítése";
-        } else {
-            szuroContainer.classList.add("show");
-            szuroContainer.classList.remove("hidden");
-            kartyakContainer.classList.remove("expanded");
-
-            // 🔹 Frissítjük a magasságot, hogy ne ugorjon meg
-            setTimeout(() => {
-                szuroContainer.style.height = "calc(100vh - 80px)";
-                szuroContainer.style.maxHeight = "calc(100vh - 80px)";
-                szuroContainer.style.overflowY = "auto";
-            }, 350);
-
-            szuroButton.innerText = "Szűrők elrejtése";
-        }
-        szuroLathato = !szuroLathato;
-    });
+            cardContainer.classList.add("expanded"); // Kártyák szélességének növelése, amikor a szűrő eltűnt
+        }, 500); // 1000ms késleltetés (1 másodperc), hogy az animáció lefusson
+    }
 });
 
 document.getElementById('clear-filters').addEventListener('click', function () {
@@ -58,21 +49,6 @@ document.getElementById('clear-filters').addEventListener('click', function () {
     document.getElementById('toSlider').style.background = 'rgb(37, 218, 165)';
 });
 
-function frissitSzuroMagassag() {
-    const szuroContainer = document.getElementById("szuro-container");
-    szuroContainer.style.height = "calc(100vh - 80px)"; // Biztosítja, hogy mindig megfelelő legyen a méret
-    szuroContainer.style.overflowY = "auto"; // Görgethető legyen, ha szükséges
-}
-
-// Automatikusan meghatározza a megjelenítendő elemek számát a képernyőméret szerint
-function getMaxVisibleElements() {
-    const screenHeight = window.innerHeight;
-    if (screenHeight > 1200) return 10; // Nagy képernyő
-    if (screenHeight > 1000) return 9;
-    if (screenHeight > 800) return 4; // Közepes képernyő
-    return 8; // Kis képernyő
-}
-
 // Kategóriák feltöltése
 async function kategoriafeltolt() {
     try {
@@ -82,8 +58,13 @@ async function kategoriafeltolt() {
         let valasz = await eredmeny.json();
         let div = document.getElementById('kategoriak');
 
-        div.innerHTML = "<h6>Kategóriák</h6>";
-        const maxVisible = getMaxVisibleElements();
+        // Elmentjük az aktuálisan bejelölt checkboxokat
+        let kivalasztottak = new Set();
+        document.querySelectorAll('input[name="kategoriak"]:checked').forEach(checkbox => {
+            kivalasztottak.add(checkbox.value);
+        });
+        div.innerHTML = "<h6>Kategóriák</h6>"; // Ezt meghagyjuk, hogy a fejléceket beállítsuk.
+        const maxVisible = 4;
 
         function hozzaadKategoria(adat) {
             let checkbox = document.createElement("input");
@@ -92,21 +73,28 @@ async function kategoriafeltolt() {
             checkbox.value = adat.kategoria_nev;
             checkbox.style.marginRight = "10px";
 
-            let label = document.createElement('label');
-            let kategoriaNev = adat.kategoria_nev.length > 22 ? adat.kategoria_nev.slice(0, 22) + '...' : adat.kategoria_nev;
-            label.innerHTML = kategoriaNev;
+            // Ha korábban be volt jelölve, újra bejelöljük
+            if (kivalasztottak.has(adat.kategoria_nev)) {
+                checkbox.checked = true;
+            }
 
             div.appendChild(checkbox);
+
+            let label = document.createElement('label');
+            let kategoriaNev = adat.kategoria_nev.length > 22 ? adat.kategoria_nev.slice(0, 22) + '...' : adat.kategoria_nev;
+            label.innerHTML = `${kategoriaNev} (${adat.darabszam})`;
             div.appendChild(label);
             div.appendChild(document.createElement('br'));
         }
 
+        // Első 4 kategória megjelenítése
         valasz.slice(0, maxVisible).forEach(hozzaadKategoria);
 
         if (valasz.length > maxVisible) {
             let tovabbi = document.createElement('a');
             tovabbi.innerHTML = `További ${valasz.length - maxVisible} megjelenítése`;
             tovabbi.href = "#";
+            tovabbi.style.color = "blue";
             tovabbi.classList.add('tovabbi-gomb');
 
             tovabbi.addEventListener("click", (e) => {
@@ -125,9 +113,6 @@ async function kategoriafeltolt() {
                 });
 
                 div.appendChild(bezaras);
-
-                // **🔹 Frissítjük a szűrőpanel magasságát**
-                frissitSzuroMagassag();
             });
 
             div.appendChild(tovabbi);
@@ -185,15 +170,9 @@ function Szures() {
 
     // Szűrési logika
     for (const adat of valasz) {
-        // Szóközök eltávolítása és számokká alakítás
-        const egysegar = parseFloat(adat.egysegar.replace(/\s/g, '')); 
-        const akcios_ar = parseFloat(adat.akcios_ar.replace(/\s/g, ''));
-
-        // Ha van érvényes akciós ár, és az kisebb az egységárnál, akkor az alapján szűrünk
-        const hasznaltAr = (akcios_ar > -1 && akcios_ar < egysegar) ? akcios_ar : egysegar;
-
         // Ár szűrés
-        const arMegfelelo = toprice >= hasznaltAr && fromprice <= hasznaltAr;
+        const egysegar = parseFloat(adat.egysegar.replace(/\s/g, '')); // Szóközök eltávolítása
+        const arMegfelelo = toprice >= egysegar && fromprice <= egysegar;
 
         // Kategóriák és gyártók szűrés logikája
         const kategoriaMegfelelo = kivalasztottKategoriak.length === 0 || kivalasztottKategoriak.includes(adat.kategoria_nev);
@@ -227,82 +206,32 @@ function rendezes(sortType) {
     const kartyakContainer = document.getElementById('kartyak');
     const kartyak = Array.from(kartyakContainer.children);
 
-    // A magyar ABC helyes sorrendje
-    const magyarABC = [
-        "a", "á", "b", "c", "cs", "d", "dz", "dzs", "e", "é", "f", "g", "gy", "h",
-        "i", "í", "j", "k", "l", "m", "n", "ny", "o", "ó", "ö", "ő", "p", "q", "r",
-        "s", "sz", "t", "ty", "u", "ú", "ü", "ű", "v", "w", "x", "y", "z", "zs"
-    ];
-
-    function compareHungarian(a, b) {
-        a = a.toLowerCase();
-        b = b.toLowerCase();
-
-        let minLength = Math.min(a.length, b.length);
-        let i = 0;
-
-        while (i < minLength) {
-            let charA = a[i];
-            let charB = b[i];
-
-            // Ha a karakterek megegyeznek, akkor folytatjuk a következő betűvel
-            if (charA === charB) {
-                i++;
-                continue;
-            }
-
-            // Megnézzük az aktuális karakterek ABC szerinti pozícióját
-            let indexA = magyarABC.indexOf(charA);
-            let indexB = magyarABC.indexOf(charB);
-
-            // Ha az egyik karakter nincs az ABC-ben (pl. szám vagy speciális karakter), akkor hagyjuk az alap JavaScript összehasonlítást
-            if (indexA === -1 || indexB === -1) {
-                return charA.localeCompare(charB, "hu", { sensitivity: "base" });
-            }
-
-            // A betűsorrend alapján visszaadjuk a különbséget
-            return indexA - indexB;
-        }
-
-        // Ha az első karakterek megegyeznek, a rövidebb szó előrébb kerül
-        return a.length - b.length;
-    }
-
     kartyak.sort((a, b) => {
         const adatA = {
-            nev: a.querySelector('h5') ? a.querySelector('h5').innerText.trim().toLowerCase() : '',
-            akciosAr: a.querySelector('.discounted-price') ? parseInt(a.querySelector('.discounted-price').innerText.replace(/[^0-9]/g, ''), 10) : null,
-            eredetiAr: a.querySelector('h6') ? parseInt(a.querySelector('h6').innerText.replace(/[^0-9]/g, ''), 10) : 0
+            nev: a.querySelector('h5').innerText,
+            ar: parseInt(a.querySelector('h6').innerText.replace(/[^0-9]/g, ''), 10) || 0,
         };
-
         const adatB = {
-            nev: b.querySelector('h5') ? b.querySelector('h5').innerText.trim().toLowerCase() : '',
-            akciosAr: b.querySelector('.discounted-price') ? parseInt(b.querySelector('.discounted-price').innerText.replace(/[^0-9]/g, ''), 10) : null,
-            eredetiAr: b.querySelector('h6') ? parseInt(b.querySelector('h6').innerText.replace(/[^0-9]/g, ''), 10) : 0
+            nev: b.querySelector('h5').innerText,
+            ar: parseInt(b.querySelector('h6').innerText.replace(/[^0-9]/g, ''), 10) || 0,
         };
-
-        const arA = adatA.akciosAr !== null ? adatA.akciosAr : adatA.eredetiAr;
-        const arB = adatB.akciosAr !== null ? adatB.akciosAr : adatB.eredetiAr;
 
         if (sortType === 'ar-csokkeno') {
-            return arB - arA;
+            return adatB.ar - adatA.ar;
         } else if (sortType === 'ar-novekvo') {
-            return arA - arB;
+            return adatA.ar - adatB.ar;
         } else if (sortType === 'nev-az') {
-            return compareHungarian(adatA.nev, adatB.nev);
+            return adatA.nev.localeCompare(adatB.nev);
         } else if (sortType === 'nev-za') {
-            return compareHungarian(adatB.nev, adatA.nev);
+            return adatB.nev.localeCompare(adatA.nev);
         }
         return 0;
     });
 
-    // DOM újrarenderelése optimalizált módon
-    const fragment = document.createDocumentFragment();
-    kartyak.forEach(kartya => fragment.appendChild(kartya));
-    kartyakContainer.innerHTML = ''; 
-    kartyakContainer.appendChild(fragment);
+    kartyakContainer.innerHTML = '';
+    kartyak.forEach(kartya => kartyakContainer.appendChild(kartya));
 
-    frissitTalalatokSzama(kartyak.length);
+    frissitTalalatokSzama(kartyak.length); // Találatok számának frissítése
 }
 
 function frissitTalalatokSzama(darab) {
@@ -339,7 +268,7 @@ async function gyartoFeltolt() {
 
         // Töröljük a div tartalmát, de a kiválasztott értékeket megőrizzük
         div.innerHTML = "<h6>Gyártók</h6>";
-        const maxVisible = getMaxVisibleElements();
+        const maxVisible = 4;
 
         function hozzaadGyarto(adat) {
             let checkbox = document.createElement("input");
@@ -353,22 +282,22 @@ async function gyartoFeltolt() {
                 checkbox.checked = true;
             }
 
+            div.appendChild(checkbox);
+
             let label = document.createElement('label');
             label.innerHTML = adat.gyarto_nev;
-
-            div.appendChild(checkbox);
             div.appendChild(label);
             div.appendChild(document.createElement('br'));
         }
 
-        // Az első 8 gyártó megjelenítése
+        // Első 4 gyártó megjelenítése
         valasz.slice(0, maxVisible).forEach(hozzaadGyarto);
 
         if (valasz.length > maxVisible) {
             let tovabbi = document.createElement('a');
             tovabbi.innerHTML = `További ${valasz.length - maxVisible} megjelenítése`;
             tovabbi.href = "#";
-            tovabbi.classList.add('tovabbi-gomb');
+            tovabbi.style.color = "blue";
 
             tovabbi.addEventListener("click", (e) => {
                 e.preventDefault();
@@ -386,9 +315,6 @@ async function gyartoFeltolt() {
                 });
 
                 div.appendChild(bezaras);
-
-                // **🔹 Frissítjük a szűrőpanel magasságát**
-                frissitSzuroMagassag();
             });
 
             div.appendChild(tovabbi);
@@ -480,6 +406,9 @@ document.querySelectorAll(".btn-success").forEach(button => {
 function feltolesKartyakkal(adatok) {
     kartyak.innerHTML = "";
     for (const adat of adatok) {
+        let col = document.createElement("div");
+        col.classList.add("col-12", "col-sm-6", "col-md-4", "col-lg-3");
+
         let card = document.createElement("div");
         card.classList.add("card");
         card.style.cursor = "pointer"; // Mutató kurzor hozzáadása, hogy kattinthatónak tűnjön
@@ -511,9 +440,9 @@ function feltolesKartyakkal(adatok) {
 
         let akcios_ar = parseFloat(adat.akcios_ar.replace(/\s/g, ''));
         let egysegar = parseFloat(adat.egysegar.replace(/\s/g, ''));
-        if (akcios_ar > -1 && akcios_ar < egysegar) {
-            cardTitle2.innerHTML = `<span class="original-price">${adat.egysegar} Ft</span> 
-                             <span class="discounted-price">${adat.akcios_ar} Ft</span>`;
+        if (akcios_ar > 0 && akcios_ar < egysegar) {
+            cardTitle2.innerHTML = `<span style="text-decoration: line-through; color: red;">${adat.egysegar} Ft</span> 
+                             <span style="color: #22ff26; font-weight: bold;">${adat.akcios_ar} Ft</span>`;
             card_header.innerHTML += `<div class="badge">Akció!</div>`;
         } else {
             cardTitle2.innerHTML = `${adat.egysegar} Ft`;
@@ -558,8 +487,9 @@ function feltolesKartyakkal(adatok) {
         cardBody.appendChild(buttonContainer);
 
         card.appendChild(cardBody);
+        col.appendChild(card);
 
-        kartyak.appendChild(card);
+        kartyak.appendChild(col);
     }
 
     frissitTalalatokSzama(adatok.length);
@@ -569,8 +499,26 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+async function keresettLeker() {
+    try {
+        let keresett= document.getElementById("keresoMezo").value
+        if(keresett==""){
+            return
+        }
+        let eredmeny = await fetch(`../php/kereses_adatok.php?keres=${keresett}`);
+        if (eredmeny.ok) {
+            let valasz = await eredmeny.json();
+            feltolesKartyakkal(valasz);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
 window.addEventListener("DOMContentLoaded", adatbazisbolLekeres);
 window.addEventListener("load", szuresKuldes);
 window.addEventListener('load', kategoriafeltolt);
 window.addEventListener('load', gyartoFeltolt);
 document.getElementById("szures_button").addEventListener('click', Szures);
+document.getElementById("keresesGomb").addEventListener("click", keresettLeker)

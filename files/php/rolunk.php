@@ -77,7 +77,7 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                         <span class="input-group-text">
                             <img src="../img/felhasznalo.png" alt="Név">
                         </span>
-                        <input type="text" class="form-control" name="nev" id="nev" placeholder="Név *">
+                        <input type="text" class="form-control mezo" name="nev" id="nev" placeholder="Név *">
                         <span class="error"></span>
                     </div>
                 </div>
@@ -86,7 +86,7 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                         <span class="input-group-text">
                             <img src="../img/email.png" alt="E-mail cím">
                         </span>
-                        <input type="email" class="form-control" name="email" id="email" placeholder="E-mail cím *">
+                        <input type="email" class="form-control mezo" name="email" id="email" placeholder="E-mail cím *">
                         <span class="error"></span>
                     </div>
                 </div>
@@ -95,7 +95,7 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                         <span class="input-group-text">
                             <img src="../img/email_targy.png" alt="E-mail tárgya">
                         </span>
-                        <input type="text" class="form-control" name="email_targya" placeholder="E-mail tárgya">
+                        <input type="text" class="form-control mezo" name="email_targya" placeholder="E-mail tárgya">
                     </div>
                 </div>
                 <div class="mb-3">
@@ -103,7 +103,7 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                         <span class="input-group-text">
                             <img src="../img/email_szoveg.png" alt="E-mail szövege">
                         </span>
-                        <textarea class="form-control" name="email_szovege" placeholder="E-mail szövege" rows="5"></textarea>
+                        <textarea class="form-control mezo" name="email_szovege" placeholder="E-mail szövege" rows="5"></textarea>
                     </div>
                 </div>
                 <div class="form-check d-flex align-items-center justify-content-center">
