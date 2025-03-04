@@ -398,21 +398,83 @@ async function gyartoFeltolt() {
     }
 }
 
-function kosarbaTesz(termekId) {
+function kosarbaTesz(termekId, event) {
+    if (!event) {
+        console.error("Nincs eseményobjektum!");
+        return;
+    }
+
     fetch("../php/kosarMuvelet.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "add", termek_id: termekId, mennyiseg: 1 })
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // 🔵 Kosár számláló frissítése a válaszból
-                document.getElementById("cart-count").textContent = data.uj_mennyiseg;
-            }
-        })
-        .catch(error => console.error("Hiba:", error));
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById("cart-count").textContent = data.uj_mennyiseg;
+            
+            // 🔹 Az animációhoz továbbadjuk az eseményt
+            animateToCart(event);
+        }
+    })
+    .catch(error => console.error("Hiba:", error));
 }
+
+function animateToCart(event) {
+    if (!event || !event.target) {
+        console.error("Nincs érvényes event objektum!");
+        return;
+    }
+
+    const cartIcon = document.querySelector(".cart-icon img"); // Kosár ikon kiválasztása
+    if (!cartIcon) return;
+
+    const productCard = event.target.closest(".card"); // Teljes kártya
+    const productImage = productCard.querySelector("img"); // Termék képe
+    if (!productImage) return;
+
+    // Új animációs elem létrehozása
+    const img = document.createElement("img");
+    img.src = productImage.src;
+    img.classList.add("floating-image");
+    document.body.appendChild(img);
+ 
+    // Kiindulási pozíció (termékkép)
+    const productRect = productImage.getBoundingClientRect();
+    img.style.position = "fixed";
+    img.style.left = `${productRect.left}px`;
+    img.style.top = `${productRect.top}px`;
+    img.style.width = `${productRect.width}px`;
+    img.style.height = `${productRect.height}px`;
+
+    // Célpozíció (kosár ikon)
+    const cartRect = cartIcon.getBoundingClientRect();
+    const cartX = cartRect.left + cartRect.width / 2 - productRect.width / 2;
+    const cartY = cartRect.top + cartRect.height / 2 - productRect.height / 2;
+
+    // Animáció indítása
+    img.animate([
+        { transform: "scale(1) translate(0, 0)", opacity: 1 },
+        { transform: `scale(0.5) translate(${cartX - productRect.left}px, ${cartY - productRect.top}px)`, opacity: 0.7 },
+        { transform: `scale(0.2) translate(${cartX - productRect.left}px, ${cartY - productRect.top}px)`, opacity: 0 }
+    ], {
+        duration: 700,
+        easing: "ease-in-out",
+        fill: "forwards"
+    });
+
+    // Kép eltávolítása az animáció végén
+    setTimeout(() => img.remove(), 700);
+}
+
+// Kosár gombokhoz események hozzáadása
+document.querySelectorAll(".btn-success").forEach(button => {
+    button.addEventListener("click", function(event) {
+        event.stopPropagation();
+        kosarbaTesz(this.getAttribute("data-id"), event);
+    });
+});
 
 // Kártyák feltöltése
 function feltolesKartyakkal(adatok) {
@@ -483,8 +545,8 @@ function feltolesKartyakkal(adatok) {
         // Kattintási esemény a kosárhoz adáshoz
         cartButton.onclick = function (event) {
             event.stopPropagation();
-            kosarbaTesz(adat.cikkszam);
-        };
+            kosarbaTesz(adat.cikkszam, event); // 🔹 Esemény továbbadása
+        };               
 
         let buttonContainer = document.createElement("div");
         buttonContainer.classList.add("d-flex", "justify-content-between", "mt-auto", "w-100");
