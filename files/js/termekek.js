@@ -3,29 +3,29 @@ let kartyak = document.getElementById("kartyak");
 
 // Gomb a szűrőpanel ki-be csúsztatásához
 const toggleButton = document.getElementById("szures-button");
-const filterPanel = document.getElementById("filter_div");
+// const filterPanel = document.getElementById("filter_div");
 const cardContainer = document.getElementById("kartyak-container");
 const szuroContainer = document.getElementById("szuro-container");
 const szuresButton = document.getElementById("szures-button");
 
 toggleButton.addEventListener("click", function () {
     // Ha el van rejtve, akkor megjelenítjük
-    if (filterPanel.classList.contains("hidden")) {
-        szuroContainer.classList.remove("hidden");
+    if (szuroContainer.classList.contains("hidden")) {
+        // szuroContainer.classList.remove("hidden");
         cardContainer.classList.remove("expanded");
         szuresButton.textContent = "Szűrők elrejtése";
 
         setTimeout(function () {
-            filterPanel.classList.remove("hidden"); // Elrejtés eltávolítása
+            szuroContainer.classList.remove("hidden"); // Elrejtés eltávolítása
         }, 150);
     } else {
         // Ha látszik, akkor elrejtjük
-        filterPanel.classList.add("hidden");
+        szuroContainer.classList.add("hidden");
         szuresButton.textContent = "Szűrők megjelenítése";
 
         // Késleltetett eltűntetés
         setTimeout(function () {
-            szuroContainer.classList.add("hidden");
+            // szuroContainer.classList.add("hidden");
             cardContainer.classList.add("expanded"); // Kártyák szélességének növelése, amikor a szűrő eltűnt
         }, 500); // 1000ms késleltetés (1 másodperc), hogy az animáció lefusson
     }

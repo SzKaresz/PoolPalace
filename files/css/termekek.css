@@ -482,6 +482,10 @@ a:hover {
     transition: background-color 0.3s;
 }
 
+.dropdown-products li {
+    padding: 10px;
+}
+
 .dropdown-menu li:hover {
     background-color: #f0f0f0;
 }

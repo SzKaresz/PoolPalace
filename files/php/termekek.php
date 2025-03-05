@@ -81,7 +81,7 @@ ob_start();
                             <button id="dropdown-button" class="btn btn-secondary dropdown-toggle" type="button" aria-expanded="false" onclick="toggleDropdown()">
                                 Rendezés
                             </button>
-                            <ul id="dropdown-options" class="dropdown-menu">
+                            <ul id="dropdown-options" class="dropdown-menu dropdown-products">
                                 <li data-sort="ar-novekvo">Ár növekvő</li>
                                 <li data-sort="ar-csokkeno">Ár csökkenő</li>
                                 <li data-sort="nev-az">Név A-Z</li>
