@@ -68,4 +68,32 @@ function elfelejtettEmail($email, $nev){
     }
 }
 
+function visszaIgazolo($email){
+   
+    try {
+    $mail = new PHPMailer(true);
+    $mail->isSMTP();
+    $mail->Host = 'smtp.gmail.com';
+    $mail->SMTPAuth = true;
+    $mail->Username = 'info.poolpalace@gmail.com';
+    $mail->Password = $_ENV['SMTP_PASSWORD'];  // Kérlek cseréld le a valós jelszóra
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+    $mail->Port = 465;
+
+    $mail->setFrom('info.poolpalace@gmail.com', 'PoolPalace');
+    $mail->addAddress($email);  // Címzett email
+
+    $mail->isHTML(true);
+    $mail->CharSet = 'UTF-8';
+    $mail->Subject = 'Visszaigazoló email';
+    $mail->Body    = "tezst";
+
+    $mail->send();
+    echo 'Email sikeresen elküldve!';
+} catch (Exception $e) {
+    echo "Az email nem került elküldésre. Hiba: {$mail->ErrorInfo}";
+}
+
+}
+
 ?>
