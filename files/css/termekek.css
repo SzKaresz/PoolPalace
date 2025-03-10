@@ -178,6 +178,7 @@ body {
     background-color: #fff;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -571,21 +572,32 @@ a:hover {
 
     #szuro-container {
         position: relative;
-        width: 100%;
-        max-width: 100%;
-        height: auto;
         top: 0;
         left: 0;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        right: 0;
+        width: 100%;
+        height: 100vh; /* A teljes képernyő magasságát lefedi */
+        max-height: 100vh;
+        padding: 15px;
+        z-index: 1050;
         transform: translateY(-100%);
         opacity: 0;
-        display: none;
+        pointer-events: none;
+        overflow: hidden; /* Kikapcsolja a görgetést */
+        transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
     }
 
     #szuro-container.show {
-        opacity: 1;
         transform: translateY(0);
-        display: block;
+        opacity: 1;
+        pointer-events: all;
+        overflow-y: visible; /* Engedélyezi a tartalom teljes megjelenítését */
+    }
+
+    /* Ha nagyon sok elem van, és mégis kellene görgetés */
+    #szuro-container.show .szuroContent {
+        max-height: 90vh; /* Csak akkor görgethető, ha TÉNYLEG szükséges */
+        overflow-y: auto;
     }
 
     /* Kis képernyőn alapból el van rejtve */
@@ -595,8 +607,18 @@ a:hover {
     }
 
     #kartyak-container {
+        display: flex;
+        justify-content: center; /* Középre igazítja a kártyákat vízszintesen */
+        align-items: center;
         width: 100%;
-        margin-left: 0;
+        margin: 0 auto;
+    }
+
+    #kartyak {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+        justify-content: center; /* Középre igazítja a rácsot */
+        gap: 12px;
     }
 
     .row {
@@ -619,12 +641,6 @@ a:hover {
         margin-top: 0; /* Ne legyen extra távolság felül */
         align-self: center; /* Balra igazítás */
         margin-top: 10px;
-    }
-
-    #kartyak {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Mobilon is középre igazítva */
-        justify-content: center; /* Kártyák mindig középre */
-        gap: 8px; /* Szűkebb távolság kis kijelzőkön */
     }
 }
 

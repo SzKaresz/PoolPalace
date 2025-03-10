@@ -50,11 +50,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 }, 20);
             }
             
-            // Frissítjük a magasságot, hogy ne ugorjon meg a tartalom
+            // 🔹 **Kis képernyőn az egész szűrőpanel jelenjen meg teljes méretben**
             setTimeout(() => {
-                szuroContainer.style.height = "calc(100vh - 80px)";
-                szuroContainer.style.maxHeight = "calc(100vh - 80px)";
-                szuroContainer.style.overflowY = "auto";
+                if (!isLargeScreen) {
+                    szuroContainer.style.height = "100vh"; // Teljes képernyő magasság
+                    szuroContainer.style.maxHeight = "100vh"; // Ne lehessen túlcsúszni
+                    szuroContainer.style.overflowY = "hidden"; // Ne görgessen
+                } else {
+                    // Nagy képernyőn marad az eredeti működés
+                    szuroContainer.style.height = "calc(100vh - 80px)";
+                    szuroContainer.style.maxHeight = "calc(100vh - 80px)";
+                    szuroContainer.style.overflowY = "auto";
+                }
             }, 350);
             
             szuroButton.innerText = "Szűrők elrejtése";
