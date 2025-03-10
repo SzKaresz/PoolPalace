@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Már 04. 09:15
+-- Létrehozás ideje: 2025. Már 10. 22:17
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -188,9 +188,13 @@ CREATE TABLE IF NOT EXISTS `megrendeles` (
   `telefonszam` varchar(15) NOT NULL,
   `datum` datetime NOT NULL DEFAULT current_timestamp(),
   `osszeg` double NOT NULL,
-  `iranyitoszam` varchar(10) NOT NULL,
-  `telepules` varchar(255) NOT NULL,
-  `utca_hazszam` varchar(255) NOT NULL,
+  `szallit_irsz` varchar(10) NOT NULL,
+  `szallit_telep` varchar(255) NOT NULL,
+  `szallit_cim` varchar(255) NOT NULL,
+  `szamlaz_irsz` varchar(10) NOT NULL,
+  `szamlaz_telep` varchar(255) NOT NULL,
+  `szamlaz_cim` varchar(255) NOT NULL,
+  `statusz` enum('Feldolgozás alatt','Fizetésre vár','Fizetve','Szállítás alatt','Teljesítve','Törölve') NOT NULL DEFAULT 'Feldolgozás alatt',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 

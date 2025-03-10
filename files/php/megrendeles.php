@@ -4,152 +4,30 @@ include 'db.php';
 
 ob_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents("php://input"), true);
-
-    if (
-        empty($data['name']) || empty($data['email']) || empty($data['phone']) ||
-        empty($data['postal_code']) || empty($data['city']) || empty($data['address'])
-    ) {
-        echo json_encode(["success" => false, "error" => "Hiba: Minden mező kitöltése kötelező!"]);
-        exit;
-    }
-
-    if ($data['action'] === 'placeOrder') {
-        $is_guest = !isset($_SESSION['user_email']);
-        $felhasznalo_email = $is_guest ? null : $_SESSION['user_email'];
-
-        if ($is_guest && !empty($data['email'])) {
-            $felhasznalo_email = $data['email'];
-        }
-
-        $register = isset($data['register']) && $data['register'] === true;
-        $szamlazasi_cim_id = null;
-        $szallitasi_cim_id = null;
-
-        // Ha vendég és regisztrálni akar, akkor mentjük a címeket és a felhasználót
-        if ($is_guest && $register) {
-            // Számlázási cím mentése
-            $stmt = $db->prepare("INSERT INTO szamlazasi_cim (iranyitoszam, telepules, utca_hazszam) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $data['postal_code'], $data['city'], $data['address']);
-
-            if (!$stmt->execute()) {
-                echo json_encode(["success" => false, "error" => "Hiba történt a számlázási cím mentése során"]);
-                exit;
-            }
-            $szamlazasi_cim_id = $stmt->insert_id;
-
-            // Szállítási cím mentése
-            $stmt = $db->prepare("INSERT INTO szallitasi_cim (iranyitoszam, telepules, utca_hazszam) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $data['postal_code'], $data['city'], $data['address']);
-
-            if (!$stmt->execute()) {
-                echo json_encode(["success" => false, "error" => "Hiba történt a szállítási cím mentése során"]);
-                exit;
-            }
-            $szallitasi_cim_id = $stmt->insert_id;
-
-            // Felhasználó mentése a két cím kapcsolásával
-            if (empty($data['password'])) {
-                echo json_encode(["success" => false, "error" => "Hiba: A regisztrációhoz jelszót kell megadni!"]);
-                exit;
-            }
-            $password_hash = password_hash($data['password'], PASSWORD_DEFAULT);
-            $stmt = $db->prepare("INSERT INTO felhasznalok (email, nev, telefonszam, jelszo, szamlazasi_cim_id, szallitasi_cim_id) 
-                                  VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssii", $data['email'], $data['name'], $data['phone'], $password_hash, $szamlazasi_cim_id, $szallitasi_cim_id);
-
-            if (!$stmt->execute()) {
-                echo json_encode(["success" => false, "error" => "Hiba történt a regisztráció során"]);
-                exit;
-            }
-        }
-
-        // Ha be van jelentkezve, lekérdezzük az adatait az adatbázisból
-        if (!$is_guest) {
-            $stmt = $db->prepare("SELECT f.nev, f.telefonszam, sz.iranyitoszam, sz.telepules, sz.utca_hazszam
-                                  FROM felhasznalok f
-                                  LEFT JOIN szallitasi_cim sz ON f.szallitasi_cim_id = sz.id
-                                  WHERE f.email = ?");
-            $stmt->bind_param("s", $felhasznalo_email);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            if ($result->num_rows > 0) {
-                $row = $result->fetch_assoc();
-
-                // Ha az input mezők üresek, az adatbázisból pótoljuk
-                $data['name'] = $data['name'] ?: $row['nev'];
-                $data['phone'] = $data['phone'] ?: $row['telefonszam'];
-                $data['postal_code'] = $data['postal_code'] ?: $row['iranyitoszam'];
-                $data['city'] = $data['city'] ?: $row['telepules'];
-                $data['address'] = $data['address'] ?: $row['utca_hazszam'];
-            }
-        }
-
-        // Megrendelés mentése
-        $stmt = $db->prepare("INSERT INTO megrendeles (nev, email, telefonszam, iranyitoszam, telepules, utca_hazszam, osszeg) 
-                              VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssssd", $data['name'], $felhasznalo_email, $data['phone'], $data['postal_code'], $data['city'], $data['address'], $data['total']);
-
-        if (!$stmt->execute()) {
-            echo json_encode(["success" => false, "error" => "Hiba történt a megrendelés mentése során"]);
-            exit;
-        }
-
-        $megrendeles_id = $stmt->insert_id;
-
-        // Rendelési tételek mentése
-        foreach ($data['cart_items'] as $item) {
-            $stmt = $db->prepare("INSERT INTO tetelek (megrendeles_id, termek_id, darabszam, egysegar) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("isid", $megrendeles_id, $item['cikkszam'], $item['darabszam'], $item['egysegar']);
-            if (!$stmt->execute()) {
-                echo json_encode(["success" => false, "error" => "Hiba történt a rendelés tételeinek mentése során"]);
-                exit;
-            }
-
-            // Készlet frissítése
-            $stmt = $db->prepare("UPDATE termekek SET darabszam = darabszam - ? WHERE cikkszam = ?");
-            $stmt->bind_param("is", $item['darabszam'], $item['cikkszam']);
-            if (!$stmt->execute()) {
-                echo json_encode(["success" => false, "error" => "Hiba történt a készlet frissítése során"]);
-                exit;
-            }
-        }
-
-        // **Kosár ürítése rendelés után**
-        if (!$is_guest) {
-            // Bejelentkezett felhasználónál az adatbázisból töröljük a kosarat
-            $stmt = $db->prepare("DELETE FROM kosar WHERE felhasznalo_id = ?");
-            $stmt->bind_param("s", $felhasznalo_email);
-            $stmt->execute();
-        } else {
-            // Vendég felhasználónál a session-ből töröljük a kosarat
-            unset($_SESSION['kosar']);
-        }
-
-        echo json_encode(["success" => true, "order_id" => $megrendeles_id]);
-        
-        include 'email_kuldes.php';
-        kuldRendelesVisszaigazolas($felhasznalo_email, $data['name'], $megrendeles_id, $data['cart_items'], $data['total']);
-        exit;
-    }
-}
-
-// Existing code for displaying the order form
-
 $is_guest = !isset($_SESSION['user_email']);
 $user_email = $is_guest ? '' : $_SESSION['user_email'];
 
+$user_data = [];
+
 if (!$is_guest) {
-    // Fetch user details
-    $stmt = $db->prepare("SELECT * FROM felhasznalok WHERE email = ?");
+    $stmt = $db->prepare("SELECT f.nev, f.email, f.telefonszam, 
+                                 sz.iranyitoszam AS szallitasi_iranyitoszam, 
+                                 sz.telepules AS szallitasi_telepules, 
+                                 sz.utca_hazszam AS szallitasi_utca_hazszam,
+                                 szaml.iranyitoszam AS szamlazasi_iranyitoszam, 
+                                 szaml.telepules AS szamlazasi_telepules, 
+                                 szaml.utca_hazszam AS szamlazasi_utca_hazszam
+                          FROM felhasznalok f
+                          LEFT JOIN szallitasi_cim sz ON f.szallitasi_cim_id = sz.id
+                          LEFT JOIN szamlazasi_cim szaml ON f.szamlazasi_cim_id = szaml.id
+                          WHERE f.email = ?");
     $stmt->bind_param("s", $user_email);
     $stmt->execute();
-    $user = $stmt->get_result()->fetch_assoc();
+    $result = $stmt->get_result();
+    $user_data = $result->fetch_assoc();
 }
 
-// Fetch cart items
+// Kosár inicializálása
 $cart_items = [];
 $total = 0;
 
@@ -193,6 +71,121 @@ foreach ($cart_items as $item) {
     $price = (isset($item['akcios_ar']) && $item['akcios_ar'] !== null && $item['akcios_ar'] > -1) ? $item['akcios_ar'] : $item['egysegar'];
     $total += $item['darabszam'] * $price;
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if (
+        empty($data['name']) || empty($data['email']) || empty($data['phone']) ||
+        empty($data['shipping_postal_code']) || empty($data['shipping_city']) || empty($data['shipping_address']) ||
+        empty($data['billing_postal_code']) || empty($data['billing_city']) || empty($data['billing_address'])
+    ) {
+        echo json_encode(["success" => false, "error" => "Hiba: Minden mező kitöltése kötelező!"]);
+        exit;
+    }
+
+    $felhasznalo_email = $is_guest ? null : $_SESSION['user_email'];
+    if ($is_guest && !empty($data['email'])) {
+        $felhasznalo_email = $data['email'];
+    }
+
+    $register = isset($data['register']) && $data['register'] === true;
+
+    if ($is_guest && $register) {
+        if (empty($data['password'])) {
+            echo json_encode(["success" => false, "error" => "Hiba: A regisztrációhoz jelszót kell megadni!"]);
+            exit;
+        }
+
+        // Ellenőrizzük, hogy az e-mail már létezik-e
+        $stmt = $db->prepare("SELECT email FROM felhasznalok WHERE email = ?");
+        $stmt->bind_param("s", $data['email']);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            echo json_encode(["success" => false, "error_field" => "email", "error" => "Ez az e-mail cím már regisztrálva van!"]);
+            exit;
+        }
+
+        // Jelszó hashelése
+        $password_hash = password_hash($data['password'], PASSWORD_DEFAULT);
+
+        // Szállítási cím mentése
+        $stmt = $db->prepare("INSERT INTO szallitasi_cim (iranyitoszam, telepules, utca_hazszam) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $data['shipping_postal_code'], $data['shipping_city'], $data['shipping_address']);
+        if (!$stmt->execute()) {
+            echo json_encode(["success" => false, "error" => "Hiba történt a szállítási cím mentése során."]);
+            exit;
+        }
+        $szallitasi_cim_id = $stmt->insert_id;
+
+        // Számlázási cím mentése
+        $stmt = $db->prepare("INSERT INTO szamlazasi_cim (iranyitoszam, telepules, utca_hazszam) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $data['billing_postal_code'], $data['billing_city'], $data['billing_address']);
+        if (!$stmt->execute()) {
+            echo json_encode(["success" => false, "error" => "Hiba történt a számlázási cím mentése során."]);
+            exit;
+        }
+        $szamlazasi_cim_id = $stmt->insert_id;
+
+        // Felhasználó beszúrása
+        $stmt = $db->prepare("INSERT INTO felhasznalok (email, nev, telefonszam, jelszo, szallitasi_cim_id, szamlazasi_cim_id) 
+                              VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssii", $data['email'], $data['name'], $data['phone'], $password_hash, $szallitasi_cim_id, $szamlazasi_cim_id);
+
+        if (!$stmt->execute()) {
+            echo json_encode(["success" => false, "error" => "Hiba történt a felhasználó mentése során: " . $stmt->error]);
+            exit;
+        }
+    }
+
+    // Rendelés mentése (számlázási címmel együtt!)
+    $stmt = $db->prepare("INSERT INTO megrendeles (
+        email, nev, telefonszam, osszeg, 
+        szallit_irsz, szallit_telep, szallit_cim, 
+        szamlaz_irsz, szamlaz_telep, szamlaz_cim, statusz
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Feldolgozás alatt')");
+
+    $stmt->bind_param(
+        "sssdssssss",
+        $data['email'],
+        $data['name'],
+        $data['phone'],
+        $data['total'],
+        $data['shipping_postal_code'],
+        $data['shipping_city'],
+        $data['shipping_address'],
+        $data['billing_postal_code'],
+        $data['billing_city'],
+        $data['billing_address']
+    );
+    $stmt->execute();
+    $megrendeles_id = $stmt->insert_id;
+
+    foreach ($data['cart_items'] as $item) {
+        $stmt = $db->prepare("INSERT INTO tetelek (megrendeles_id, termek_id, darabszam, egysegar) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("isid", $megrendeles_id, $item['cikkszam'], $item['darabszam'], $item['egysegar']);
+        $stmt->execute();
+    }
+
+    if (!$is_guest) {
+        $stmt = $db->prepare("DELETE FROM kosar WHERE felhasznalo_id = ?");
+        $stmt->bind_param("s", $felhasznalo_email);
+        $stmt->execute();
+    } else {
+        unset($_SESSION['kosar']);
+    }
+
+    echo json_encode(["success" => true, "order_id" => $megrendeles_id]);
+
+    // include 'email_kuldes.php';
+    // kuldRendelesVisszaigazolas($felhasznalo_email, $data['name'], $megrendeles_id, $data['cart_items'], $data['total']);
+
+    exit;
+}
+
+ob_end_flush();
 ?>
 
 <!DOCTYPE html>
@@ -208,12 +201,15 @@ foreach ($cart_items as $item) {
 </head>
 
 <body>
-    <div class="container py-5">
-        <h2 class="mb-4 text-center">Megrendelés</h2>
+    <?php if (!$is_guest): ?>
+        <div id="user-data" style="display: none;"><?= htmlspecialchars(json_encode($user_data)) ?></div>
+    <?php endif; ?>
 
-        <div class="card p-4 shadow-sm">
-            <h4 class="mb-3">Kosár tartalma</h4>
-            <ul class="list-group mb-3" id="cart-items">
+    <div id="megrendeles-container">
+        <!-- Bal oldal: Kosár tartalma -->
+        <div id="kosar-container">
+            <h2>Kosár tartalma</h2>
+            <ul class="list-group" id="cart-items">
                 <?php foreach ($cart_items as $item): ?>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
@@ -242,53 +238,92 @@ foreach ($cart_items as $item) {
             <h4 class="text-end">Összesen: <span id="total-price"><?= number_format($total, 0, ',', ' ') ?></span> Ft</h4>
         </div>
 
-        <div class="card p-4 mt-4 shadow-sm">
-            <div id="order-errors"></div>
-            <h4 class="mb-3">Számlázási és szállítási adatok</h4>
+        <!-- Jobb oldal: Megrendelési űrlap -->
+        <div id="megrendeles-form-container">
+            <h2>Megrendelés adatai</h2>
             <form id="order-form">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="name" class="form-label">Név</label>
-                        <input type="text" class="form-control" id="name"
-                            value="<?= htmlspecialchars($user['nev'] ?? '') ?>"
-                            data-value="<?= htmlspecialchars($user['nev'] ?? '') ?>">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email"
-                            value="<?= htmlspecialchars($user['email'] ?? '') ?>"
-                            data-value="<?= htmlspecialchars($user['email'] ?? '') ?>">
+                <div class="mb-3">
+                    <label for="name">Név</label>
+                    <input type="text" class="form-control" id="name" name="name" value="<?= htmlspecialchars($user_data['nev'] ?? '') ?>">
+                </div>
+                <div class="mb-3">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($user_data['email'] ?? '') ?>" <?= $is_guest ? '' : 'readonly' ?>>
+                </div>
+                <div class="mb-3">
+                    <label for="phone">Telefonszám</label>
+                    <input type="text" class="form-control" id="phone" name="phone" value="<?= htmlspecialchars($user_data['telefonszam'] ?? '') ?>">
+                </div>
+
+                <!-- Accordion Szállítási cím -->
+                <div class="accordion mb-3" id="shippingAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#shippingCollapse">
+                                Szállítási cím
+                            </button>
+                        </h2>
+                        <div id="shippingCollapse" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <label for="shipping-postal_code">Irányítószám</label>
+                                <input type="text" class="form-control mb-2" id="shipping-postal_code" name="shipping-postal_code"
+                                    value="<?= htmlspecialchars($user_data['szallitasi_iranyitoszam'] ?? '') ?>">
+
+                                <label for="shipping-city">Település</label>
+                                <input type="text" class="form-control mb-2" id="shipping-city" name="shipping-city"
+                                    value="<?= htmlspecialchars($user_data['szallitasi_telepules'] ?? '') ?>">
+
+                                <label for="shipping-address">Utca, házszám</label>
+                                <input type="text" class="form-control" id="shipping-address" name="shipping-address"
+                                    value="<?= htmlspecialchars($user_data['szallitasi_utca_hazszam'] ?? '') ?>">
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="phone" class="form-label">Telefonszám</label>
-                        <input type="text" class="form-control" id="phone"
-                            value="<?= htmlspecialchars($user['telefonszam'] ?? '') ?>"
-                            data-value="<?= htmlspecialchars($user['telefonszam'] ?? '') ?>">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="postal_code" class="form-label">Irányítószám</label>
-                        <input type="text" class="form-control" id="postal_code"
-                            value="<?= htmlspecialchars($user['iranyitoszam'] ?? '') ?>"
-                            data-value="<?= htmlspecialchars($user['iranyitoszam'] ?? '') ?>">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="city" class="form-label">Település</label>
-                        <input type="text" class="form-control" id="city"
-                            value="<?= htmlspecialchars($user['telepules'] ?? '') ?>"
-                            data-value="<?= htmlspecialchars($user['telepules'] ?? '') ?>">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="address" class="form-label">Utca, házszám</label>
-                        <input type="text" class="form-control" id="address"
-                            value="<?= htmlspecialchars($user['utca_hazszam'] ?? '') ?>"
-                            data-value="<?= htmlspecialchars($user['utca_hazszam'] ?? '') ?>">
+
+                <!-- Accordion Számlázási cím -->
+                <div class="accordion" id="billingAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#billingCollapse">
+                                Számlázási cím
+                            </button>
+                        </h2>
+                        <div id="billingCollapse" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <label for="billing-postal_code">Irányítószám</label>
+                                <input type="text" class="form-control mb-2" id="billing-postal_code" name="billing-postal_code"
+                                    value="<?= htmlspecialchars($user_data['szamlazasi_iranyitoszam'] ?? '') ?>">
+
+                                <label for="billing-city">Település</label>
+                                <input type="text" class="form-control mb-2" id="billing-city" name="billing-city"
+                                    value="<?= htmlspecialchars($user_data['szamlazasi_telepules'] ?? '') ?>">
+
+                                <label for="billing-address">Utca, házszám</label>
+                                <input type="text" class="form-control" id="billing-address" name="billing-address"
+                                    value="<?= htmlspecialchars($user_data['szamlazasi_utca_hazszam'] ?? '') ?>">
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary w-100" id="place-order-btn">Megrendelés leadása</button>
+
+                <div class="mb-3 mt-3">
+                    <label for="payment-method" class="form-label">Fizetési mód</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="payment-method" id="payment-card" value="card" checked>
+                        <label class="form-check-label" for="payment-card">Bankkártyás fizetés</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="payment-method" id="payment-cash" value="cash">
+                        <label class="form-check-label" for="payment-cash">Utánvét (készpénz)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="payment-method" id="payment-transfer" value="transfer">
+                        <label class="form-check-label" for="payment-transfer">Banki átutalás</label>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary w-100 mt-3" id="place-order-btn">Megrendelés leadása</button>
             </form>
         </div>
     </div>
@@ -308,8 +343,17 @@ foreach ($cart_items as $item) {
                 </div>
                 <div class="modal-body">
                     <p>Szeretné elmenteni adatait a későbbi vásárlásokhoz?</p>
+                    <!-- Alert container inside modal for password errors -->
                     <div id="password-alert"></div>
-                    <input type="password" class="form-control" id="modal-password" placeholder="Jelszó (opcionális)">
+                    <!-- Two password fields added -->
+                    <div class="mb-2">
+                        <label for="modal-password">Jelszó</label>
+                        <input type="password" class="form-control" id="modal-password" placeholder="Jelszó">
+                    </div>
+                    <div class="mb-2">
+                        <label for="modal-password-confirm">Jelszó újra</label>
+                        <input type="password" class="form-control" id="modal-password-confirm" placeholder="Jelszó újra">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nem</button>
