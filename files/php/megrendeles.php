@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Rendelési tételek mentése
         foreach ($data['cart_items'] as $item) {
             $stmt = $db->prepare("INSERT INTO tetelek (megrendeles_id, termek_id, darabszam, egysegar) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("isid", $megrendeles_id, $item['cikkszam'], $item['darabszam'], $item['ar']);
+            $stmt->bind_param("isid", $megrendeles_id, $item['cikkszam'], $item['darabszam'], $item['egysegar']);
             if (!$stmt->execute()) {
                 echo json_encode(["success" => false, "error" => "Hiba történt a rendelés tételeinek mentése során"]);
                 exit;
@@ -129,6 +129,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         echo json_encode(["success" => true, "order_id" => $megrendeles_id]);
+        
+        include 'email_kuldes.php';
+        kuldRendelesVisszaigazolas($felhasznalo_email, $data['name'], $megrendeles_id, $data['cart_items'], $data['total']);
         exit;
     }
 }
