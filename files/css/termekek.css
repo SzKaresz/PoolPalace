@@ -46,6 +46,8 @@ body {
     transition: all 0.5s ease-in-out;
 }
 
+/* Alapértelmezett szűrő (nagy képernyő) */
+/* Marad a már meglévő állapot, pl.: */
 #szuro-container {
     display: flex;
     flex-direction: column;
@@ -81,6 +83,49 @@ body {
 
 #szuro-container.expanded {
     min-height: auto; /* A panel magasságát az új tartalomhoz igazítja */
+}
+
+/* Kis képernyőre vonatkozó beállítások */
+@media (max-width: 1200px) {
+    /* Szűrőpanel: alapból csukva, majd animáltan jelenik meg fentről */
+    #szuro-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-width: none;
+        /* A teljes magasságot biztosítja, amennyiben tartalom van */
+        height: auto;
+        max-height: 90vh; /* Kicsit marad hely a felső sávnak vagy más tartalomnak */
+        padding: 15px;
+        z-index: 1050;
+        transform: translateY(-100%);
+        opacity: 0;
+        pointer-events: none;
+        overflow-y: hidden;
+        transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    }
+    /* Nyitásnál fentről lefelé csúszik be */
+    #szuro-container.show {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+    }
+    /* Bezárásnál viszont felfelé csúszik ki */
+    #szuro-container.hidden {
+        transform: translateY(-100%);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* A termékek konténerében a kártyák középre igazítása */
+    #kartyak-container {
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 15px;
+        box-sizing: border-box;
+    }
 }
 
 /* Ha a szűrő látható, a kártyák figyelembe veszik a szélességét */

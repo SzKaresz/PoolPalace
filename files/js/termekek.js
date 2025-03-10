@@ -13,31 +13,79 @@ document.addEventListener("DOMContentLoaded", function () {
     const szuroContainer = document.getElementById("szuro-container");
     const kartyakContainer = document.getElementById("kartyak-container");
 
-    let szuroLathato = !(window.innerWidth <= 1200);
+    let isLargeScreen = window.innerWidth > 1200;
+    
+    // Kis képernyőn alapból elrejtjük a szűrőpanelt és a megfelelő gombfeliratot állítjuk be
+    if (!isLargeScreen) {
+        szuroContainer.style.display = "none";
+        szuroContainer.classList.add("hidden");
+        szuroButton.innerText = "Szűrők megjelenítése";
+    }
+    
+    let szuroLathato = isLargeScreen;
 
-    // Nyitás/zárás kezelése
     szuroButton.addEventListener("click", function () {
         if (szuroLathato) {
-            szuroContainer.classList.add("hidden");
-            szuroContainer.classList.remove("show");
-            kartyakContainer.classList.add("expanded");
+            if (isLargeScreen) {
+                szuroContainer.classList.add("hidden");
+                szuroContainer.classList.remove("show");
+                kartyakContainer.classList.add("expanded");
+            } else {
+                szuroContainer.classList.remove("show");
+                setTimeout(() => {
+                    szuroContainer.style.display = "none";
+                }, 500);
+            }
             szuroButton.innerText = "Szűrők megjelenítése";
         } else {
-            szuroContainer.classList.add("show");
-            szuroContainer.classList.remove("hidden");
-            kartyakContainer.classList.remove("expanded");
-
-            // 🔹 Frissítjük a magasságot, hogy ne ugorjon meg
+            if (isLargeScreen) {
+                szuroContainer.classList.add("show");
+                szuroContainer.classList.remove("hidden");
+                kartyakContainer.classList.remove("expanded");
+            } else {
+                szuroContainer.style.display = "block";
+                setTimeout(() => {
+                    szuroContainer.classList.add("show");
+                    szuroContainer.classList.remove("hidden");
+                }, 20);
+            }
+            
+            // Frissítjük a magasságot, hogy ne ugorjon meg a tartalom
             setTimeout(() => {
                 szuroContainer.style.height = "calc(100vh - 80px)";
                 szuroContainer.style.maxHeight = "calc(100vh - 80px)";
                 szuroContainer.style.overflowY = "auto";
             }, 350);
-
+            
             szuroButton.innerText = "Szűrők elrejtése";
         }
         szuroLathato = !szuroLathato;
     });
+
+    window.addEventListener("resize", function () {
+        isLargeScreen = window.innerWidth > 1200;
+        if (!isLargeScreen) {
+            szuroContainer.classList.remove("show");
+            szuroContainer.classList.add("hidden");
+            szuroContainer.style.display = "none";
+            szuroLathato = false;
+            szuroButton.innerText = "Szűrők megjelenítése";
+        } else {
+            szuroContainer.style.display = "block";
+            szuroContainer.classList.remove("hidden");
+            szuroContainer.classList.add("show");
+            kartyakContainer.classList.remove("expanded");
+            szuroLathato = true;
+            szuroButton.innerText = "Szűrők elrejtése";
+        }
+    });
+
+    // Navbar mindig legyen a szűrő felett
+    const navbar = document.querySelector(".navbar");
+    if (navbar) {
+        navbar.style.zIndex = "1050"; // Magasabb z-index, mint a szűrőé
+    }
+    szuroContainer.style.zIndex = "1000";
 });
 
 document.getElementById('clear-filters').addEventListener('click', function () {
