@@ -86,11 +86,26 @@ function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
         $mail->CharSet = 'UTF-8';
         $mail->Subject = 'Megrendelés visszaigazolás - #' . $orderId;
 
-        $emailBody = "<h1>Kedves $name,</h1>";
-        $emailBody .= "<p>Köszönjük a rendelését! A rendelési azonosítója: <strong>#$orderId</strong>.</p>";
-        $emailBody .= "<h2>Rendelés részletei:</h2>";
-        $emailBody .= "<table border='1' cellspacing='0' cellpadding='5'>";
-        $emailBody .= "<tr><th>Termék</th><th>Darabszám</th><th>Egységár</th><th>Összeg</th></tr>";
+        $emailBody = "<html><head><style>
+            body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+            .container { background: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin: auto; }
+            .header { background: #293144; color: #ffffff; text-align: center; padding: 15px; border-radius: 10px 10px 0 0; font-size: 20px; }
+            .order-details { background: #f9f9f9; padding: 15px; border-radius: 5px; }
+            .footer { text-align: center; padding: 15px; font-size: 12px; color: #666; }
+            .button { display: inline-block; padding: 10px 20px; background: #293144; color: #ffffff; text-decoration: none; border-radius: 5px; margin-top: 15px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            table, th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+            th { background: #293144; color: white; }
+        </style></head><body>
+        <div class='container'>
+            <div class='header'>Megrendelés visszaigazolása</div>
+            <div class='content'>
+                <p>Kedves <strong>$name</strong>,</p>
+                <p>Köszönjük a rendelését! A rendelési azonosítója: <strong>#$orderId</strong>.</p>
+                <div class='order-details'>
+                    <h3>Rendelés részletei</h3>
+                    <table>
+                        <tr><th>Termék</th><th>Darabszám</th><th>Egységár</th><th>Összeg</th></tr>";
 
         foreach ($cartItems as $item) {
             $itemTotal = $item['darabszam'] * $item['egysegar'];
@@ -102,10 +117,18 @@ function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
             </tr>";
         }
 
-        $emailBody .= "</table>";
-        $emailBody .= "<p><strong>Végösszeg: " . number_format($total, 0, ',', ' ') . " Ft</strong></p>";
-        $emailBody .= "<p>Hamarosan feldolgozzuk a rendelését és értesítjük a további lépésekről.</p>";
-        $emailBody .= "<br><p>Üdvözlettel, PoolPalace csapata</p>";
+        $emailBody .= "</table>
+                    <p><strong>Végösszeg: " . number_format($total, 0, ',', ' ') . " Ft</strong></p>
+                </div>
+                <p>Hamarosan feldolgozzuk a rendelését és értesítjük a további lépésekről.</p>
+                <br>
+                <p>Üdvözlettel, <br><strong>PoolPalace csapata</strong></p>
+            </div>
+            <div class='footer'>
+                <p>&copy; " . date('Y') . " PoolPalace | <a href='localhost/PoolPalace/files/php'>Weboldalunk</a></p>
+            </div>
+        </div>
+        </body></html>";
 
         $mail->Body = $emailBody;
         $mail->send();

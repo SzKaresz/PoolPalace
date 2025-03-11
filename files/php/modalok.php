@@ -87,7 +87,7 @@
                         <li><strong>Adatkezelő neve:</strong> PoolPalace Kft.</li>
                         <li><strong>Székhely:</strong> 8200 Veszprém, Medence utca 1.</li>
                         <li><strong>Adószám:</strong> 12345678-2-19</li>
-                        <li><strong>Elérhetőség:</strong> <a href="mailto:info@poolpalace.hu" target="_blank">info@poolpalace.hu</a> +36 20 123 4567 </li>
+                        <li><strong>Elérhetőség:</strong> <a href="mailto:info.poolpalace@gmail.com" target="_blank">info.poolpalace@gmail.com</a> +36 20 123 4567 </li>
                     </ul>
 
                     <h2>2. Kezelt adatok köre</h2>
@@ -272,7 +272,7 @@
                             <li>Adatok törlését, helyesbítését vagy korlátozását kérni.</li>
                             <li>Kifogást emelni célzott hirdetések ellen.</li>
                         </ul>
-                        <p>E jogok gyakorlására kérjük, lépjen kapcsolatba velünk az alábbi e-mail címen: <a href="mailto:info@poolpalace.hu">info@poolpalace.hu</a>.</p>
+                        <p>E jogok gyakorlására kérjük, lépjen kapcsolatba velünk az alábbi e-mail címen: <a href="mailto:info.poolpalace@gmail.com">info.poolpalace@gmail.com</a>.</p>
                     </section>
 
                     <section>
@@ -308,7 +308,7 @@
                     <p> Örömmel állunk rendelkezésére bármilyen kérdés, észrevétel vagy javaslat esetén! Az alábbi elérhetőségeken keresztül léphet kapcsolatba velünk: </p>
 
                     <p><b>Elérhetőségeink:</b><br>
-                    <b>E-mail:</b> <a href="mailto:info@poolpalace.hu" target="_blank">info@poolpalace.hu</a> <br>
+                    <b>E-mail:</b> <a href="mailto:info.poolpalace@gmail.com" target="_blank">info.poolpalace@gmail.com</a> <br>
                     <b>Telefon:</b> +36 20 123 4567 <br>
                     <b>Ügyfélszolgálati idő:</b> Hétfőtől péntekig, 9:00–17:00</p>
                     <p><b>Postai címünk:</b><br>
