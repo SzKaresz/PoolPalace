@@ -24,6 +24,12 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="./admin_felvitel.php" id="add-product-link">Felvitel</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./felhasznalo_kezeles.php" id="user-link">Felhasználók</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./megrendeles_kezeles.php" id="order-link">Megrendelések</a>
+                    </li>
                 </ul>
             </div>
         </div>
