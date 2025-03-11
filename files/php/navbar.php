@@ -92,7 +92,7 @@ if (isset($_SESSION['user_email'])) {
                     </ul>
                 </div>
             <?php else: ?>
-                <a href="./bejelentkezes.php" class="login-icon ms-2">
+                <a href="./bejelentkezes.php" class="login-icon">
                     <img src="../img/login.png" alt="Bejelentkezés" />
                 </a>
             <?php endif; ?>
