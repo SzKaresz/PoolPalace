@@ -88,11 +88,23 @@
         padding: 10px;
         z-index: 999;
     }
-    
-    /* Added: Hamburger menünek magasabb z-index, hogy a lenyitott navigáció a keresőmező felett legyen */
+
     .collapse.navbar-collapse {
-        z-index: 1000;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: #293144;
+        transition: height 0.3s ease-in-out, opacity 0.2s ease-in-out;
+        height: 0;
+        opacity: 0;
+        overflow: hidden;
+        z-index: 999;
     }
+
+    .collapse.navbar-collapse.show {
+        opacity: 1;
+    }    
 }
 
 /* Desktop mód: kereső űrlap látszik inline */

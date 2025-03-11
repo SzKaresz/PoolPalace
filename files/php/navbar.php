@@ -29,7 +29,7 @@ if (isset($_SESSION['user_email'])) {
         </a>
 
         <!-- Hamburger gomb kis képernyőn -->
-        <button class="navbar-toggler d-xl-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        <button class="navbar-toggler d-xl-none" type="button"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -111,8 +111,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
 ?>
 
 <script>
-function toggleSearch() {
-    const searchForm = document.getElementById('searchForm');
-    searchForm.classList.toggle('active');
-}
+    document.addEventListener("DOMContentLoaded", function() {
+        const toggleButton = document.querySelector(".navbar-toggler");
+        const navbarMenu = document.querySelector("#navbarNav");
+
+        toggleButton.addEventListener("click", function() {
+            if (navbarMenu.classList.contains("show")) {
+                navbarMenu.style.height = "0px"; // Összecsukás
+                setTimeout(() => {
+                    navbarMenu.classList.remove("show");
+                    navbarMenu.style.opacity = "0";
+                }, 300); // Várunk az animáció végéig
+            } else {
+                navbarMenu.classList.add("show");
+                navbarMenu.style.height = navbarMenu.scrollHeight + "px"; // Dinamikus nyitás
+                navbarMenu.style.opacity = "1";
+            }
+        });
+    });
+
+    function toggleSearch() {
+        const searchForm = document.getElementById('searchForm');
+        searchForm.classList.toggle('active');
+    }
 </script>
