@@ -58,7 +58,7 @@ function elfelejtettEmail($email, $nev){
         $mail->CharSet = 'UTF-8';
         $mail->Subject = "Elfelejtett jelszó";
         
-        $mail->Body = "Tisztelt " . htmlspecialchars($nev) . "!<br><br> Jelszó visszaállításához kattintson az alábbi linkre:<br><br> <a href='http://localhost/13c-szautner/projekt/php/ujJelszo.php?email=" . urlencode($email) . "'>Jelszó visszaállítása</a>";
+        $mail->Body = "Tisztelt " . htmlspecialchars($nev) . "!<br><br> Jelszó visszaállításához kattintson az alábbi linkre:<br><br> <a href='http://localhost/PoolPalace/files/php/ujJelszo.php?email=" . urlencode($email) . "'>Jelszó visszaállítása</a>";
 
         $mail->send();
         return true;

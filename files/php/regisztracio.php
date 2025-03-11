@@ -35,7 +35,7 @@
             <?php endif; ?>
             <?php if (!empty($uzenet)): ?>
                 <div id="visszaSzamlalo" class="alert alert-success text-center mt-2">
-                    Sikeres regisztráció! Átirányítás <span id="visszaSzamlalo-szam">5</span> másodperc múlva...
+                    Sikeres regisztráció! Átirányítás <span id="visszaSzamlalo-szam">3</span> másodperc múlva...
                 </div>
             <?php endif; ?>
         </div>

@@ -2,7 +2,7 @@ function szamlaloAtiranyitas() {
     let visszaSzamlaloElem = document.getElementById('visszaSzamlalo-szam');
 
     if (visszaSzamlaloElem) {
-        let visszaSzamlalo = 5;
+        let visszaSzamlalo = 3;
         const szam = setInterval(() => {
             visszaSzamlalo--;
             visszaSzamlaloElem.textContent = visszaSzamlalo;
