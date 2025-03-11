@@ -58,7 +58,7 @@ if (isset($_SESSION['user_email'])) {
             <div class="d-flex d-xl-none search-icon" onclick="toggleSearch()">
                 <img src="../img/search.png" alt="Keresés">
             </div>
-            <a href="kosar.php" class="cart-icon position-relative me-2">
+            <a href="kosar.php" class="cart-icon position-relative">
                 <img src="../img/cart.png" alt="Kosár" width="30" />
                 <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                     <?= $termekekSzama ?>

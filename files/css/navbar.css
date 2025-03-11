@@ -12,6 +12,10 @@
     align-items: center;
 }
 
+.cart-icon {
+    margin-right: 10px;
+}
+
 .nav-icons {
     display: flex;
     align-items: center;
@@ -31,7 +35,6 @@
     display: flex;
     align-items: center;
     width: 100%;
-    max-width: 500px;
     margin: auto;
 }
 
@@ -107,16 +110,6 @@
     }    
 }
 
-/* Desktop mód: kereső űrlap látszik inline */
-@media (min-width: 1200px) {
-    #searchForm {
-        display: flex !important;
-        position: static;
-        background: none;
-        padding: 0;
-    }
-}
-
 @media (min-width: 1500px) {
     body {
         padding-top: 80px;
@@ -128,6 +121,12 @@
 
     .search-form-mobil {
         display: none;
+    }
+
+    .search-container {
+        max-width: 500px;
+        padding-left: 10px;
+        padding-right: 10px;
     }
 
     .search-form {
@@ -189,6 +188,12 @@
 
     .search-form-mobil {
         display: none;
+    }
+
+    .search-container {
+        max-width: 500px;
+        padding-left: 10px;
+        padding-right: 10px;
     }
 
     .search-form {
@@ -301,6 +306,7 @@
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
+        margin: 0 auto;
     }
 
     .navbar-brand img {
