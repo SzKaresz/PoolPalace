@@ -22,44 +22,48 @@ if (isset($_SESSION['user_email'])) {
     }
 }
 ?>
-
 <nav class="navbar navbar-dark navbar-expand-xl w-100 fixed-top">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-        <button class="navbar-toggler ms-2 d-xl-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="./index.php">
+            <img src="../img/logo.png" alt="PoolPalace">
+        </a>
+
+        <!-- Hamburger gomb kis képernyőn -->
+        <button class="navbar-toggler d-xl-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <a class="navbar-brand" href="./index.php">
-            <img src="../img/logo.png" alt="PoolPalace" />
-        </a>
-
+        <!-- Navigáció: Bootstrap collapse, automatikusan nyitva desktopon -->
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="./index.php">Kezdőlap</a></li>
                 <li class="nav-item"><a class="nav-link" href="./akcios.php">Akciós</a></li>
                 <li class="nav-item"><a class="nav-link" href="./termekek.php">Termékek</a></li>
                 <li class="nav-item"><a class="nav-link" href="./rolunk.php">Rólunk</a></li>
             </ul>
-
-            <form class="search-form-mobil d-xl-none mt-3">
-                <input class="form-control me-2" type="search" placeholder="Keresés..." aria-label="Search" />
-                <button class="btn btn-outline-primary w-100 mt-2" type="submit">Keresés</button>
-            </form>
         </div>
 
-        <form class="search-form ms-auto me-auto d-none d-xl-flex">
-            <input class="form-control me-2" type="search" placeholder="Keresés..." aria-label="Search" />
-            <button class="btn btn-outline-primary" type="submit">Keresés</button>
+        <!-- Egyetlen kereső űrlap: mindenhol jelen van, de a CSS vezérli a láthatóságát -->
+        <form id="searchForm" action="search.php" method="GET" class="search-container">
+            <input type="text" name="query" placeholder="Keresés..." class="form-control" />
+            <button type="submit" class="btn search-btn">
+                <img src="../img/search.png" alt="Keresés">
+            </button>
         </form>
 
-        <div class="nav-icons ms-auto d-flex align-items-center">
+        <!-- Jobb oldali ikonok -->
+        <div class="ms-auto d-flex align-items-center">
+            <!-- Mobil kereső ikon: most itt, kosár előtt -->
+            <div class="d-flex d-xl-none search-icon" onclick="toggleSearch()">
+                <img src="../img/search.png" alt="Keresés">
+            </div>
             <a href="kosar.php" class="cart-icon position-relative me-2">
                 <img src="../img/cart.png" alt="Kosár" width="30" />
                 <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                     <?= $termekekSzama ?>
                 </span>
             </a>
-
             <?php if (isset($_SESSION['user_email'])): ?>
                 <div class="dropdown">
                     <a href="#" class="logged-icon btn dropdown-toggle text-light" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -77,7 +81,6 @@ if (isset($_SESSION['user_email'])) {
                             </li>
                             <li><a class="dropdown-item" href="./admin.php">Admin felület</a></li>
                         <?php endif; ?>
-
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -106,3 +109,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     exit;
 }
 ?>
+
+<script>
+function toggleSearch() {
+    const searchForm = document.getElementById('searchForm');
+    searchForm.classList.toggle('active');
+}
+</script>
