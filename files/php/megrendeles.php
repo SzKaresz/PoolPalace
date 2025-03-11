@@ -179,8 +179,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     echo json_encode(["success" => true, "order_id" => $megrendeles_id]);
 
-    // include 'email_kuldes.php';
-    // kuldRendelesVisszaigazolas($felhasznalo_email, $data['name'], $megrendeles_id, $data['cart_items'], $data['total']);
+    include 'email_kuldes.php';
+    kuldRendelesVisszaigazolas($felhasznalo_email, $data['name'], $megrendeles_id, $data['cart_items'], $data['total']);
 
     exit;
 }
