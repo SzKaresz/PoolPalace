@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_email'])) {
 $user_email = $_SESSION['user_email'];
 
 // Rendelések lekérése
-$stmt = $db->prepare("SELECT id, datum, osszeg FROM megrendeles WHERE email = ? ORDER BY datum DESC");
+$stmt = $db->prepare("SELECT id, datum, osszeg, szallit_irsz, szallit_telep, szallit_cim, statusz FROM megrendeles WHERE email = ? ORDER BY datum DESC");
 $stmt->bind_param("s", $user_email);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -45,11 +45,11 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
                         </h2>
                         <div id="collapse<?= $order['id'] ?>" class="accordion-collapse collapse" data-bs-parent="#orderAccordion">
                             <div class="accordion-body">
+                                <p><strong>Státusz:</strong> <?= htmlspecialchars($order['statusz']) ?></p> 
+                                <p><strong>Szállítási cím:</strong> <?= htmlspecialchars($order['szallit_irsz']." ".$order['szallit_telep'].", ".$order["szallit_cim"]) ?></p>
+                                
                                 <?php
-                                $stmt_items = $db->prepare("SELECT t.termek_id, t.darabszam, t.egysegar, termekek.nev
-                                                            FROM tetelek t
-                                                            JOIN termekek ON t.termek_id = termekek.cikkszam
-                                                            WHERE t.megrendeles_id = ?");
+                                $stmt_items = $db->prepare("SELECT t.termek_id, t.darabszam, t.egysegar, termekek.nev FROM tetelek t JOIN termekek ON t.termek_id = termekek.cikkszam WHERE t.megrendeles_id = ?");
                                 $stmt_items->bind_param("i", $order['id']);
                                 $stmt_items->execute();
                                 $items = $stmt_items->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -57,7 +57,9 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
                                 <ul class="list-group">
                                     <?php foreach ($items as $item): ?>
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <?= htmlspecialchars($item['nev']) ?> (<?= htmlspecialchars($item['termek_id']) ?>)
+                                            <a href="termekOldal.php?cikkszam=<?= urlencode($item['termek_id']) ?>" class="text-decoration-none"> 
+                                                <?= htmlspecialchars($item['nev']) ?> (<?= htmlspecialchars($item['termek_id']) ?>)
+                                            </a>
                                             <span><?= $item['darabszam'] ?> x <?= number_format($item['egysegar'], 0, ',', ' ') ?> Ft</span>
                                         </li>
                                     <?php endforeach; ?>
