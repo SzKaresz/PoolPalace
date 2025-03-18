@@ -16,7 +16,7 @@ $kepek = [];
 
 if (!empty($_FILES['productImages']['name'][0])) {
     foreach ($_FILES['productImages']['tmp_name'] as $key => $tmpName) {
-        $fileName = time() . '_' . basename($_FILES['productImages']['name'][$key]); // Egyedi fájlnév
+        $fileName =basename($_FILES['productImages']['name'][$key]); // Egyedi fájlnév
         $targetFilePath = $uploadDir . $fileName;
 
         if (move_uploaded_file($tmpName, $targetFilePath)) {

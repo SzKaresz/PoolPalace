@@ -28,6 +28,9 @@ document.getElementById("felvitel_button").addEventListener("click", async funct
         
         if (result.success) {
             showToast("Sikeres termék felvitel!", "success");
+            setTimeout(() => {
+                location.reload();
+            }, 2500);
         } else {
             showToast("Sikertelen termék felvitel!", "danger");
         }
