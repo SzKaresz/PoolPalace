@@ -107,7 +107,7 @@ async function felhasznaloLeker() {
                         mentesGomb.classList.add("d-none");
                         visszaGomb.classList.add("d-none");
                     } else {
-                        showToast("Hiba történt a módosítás során!", "danger");
+                        showToast("Nem történt módosítás!", "danger");
                     }
 
                 });

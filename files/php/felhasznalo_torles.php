@@ -16,7 +16,7 @@ $muvelet = "DELETE FROM `felhasznalok` WHERE email='$email'";
 $eredmeny = adatokValtoztatasa($muvelet);
 
 if ($eredmeny === "Sikeres művelet!") {
-    echo json_encode(["status" => "success", "message" => "A törlés sikeres!"]);
+    echo json_encode(["success" => true, "message" => "A törlés sikeres!"]);
 } else {
     echo json_encode(["status" => "error", "message" => "A törlés sikertelen!"]);
 }

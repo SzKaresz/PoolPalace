@@ -7,6 +7,7 @@
     <title>Admin - Termékfelvitel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/admin.css">
+    <script defer src="../js/felvitel.js"></script>
 </head>
 
 <body class="min-vh-100 d-flex flex-column">
@@ -35,34 +36,27 @@
         </div>
     </nav>
     <div class="d-flex">
-        <div class="container  mt-5">
+        <div class="container  my-2">
             <h2 class="mb-4">Termékek felvitele</h2>
-
-            <?php if (isset($uzenet)) : ?>
-                <div class="alert <?php echo $alertTipus; ?>" role="alert">
-                    <?php echo $uzenet; ?>
-                </div>
-            <?php endif; ?>
-
             <form method="post" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="productName" class="form-label">Termék neve</label>
-                    <input type="text" class="form-control" name="productName" required>
+                    <input type="text" id="nev" class="form-control" name="productName" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="productCode" class="form-label">Cikkszám</label>
-                    <input type="text" class="form-control" name="productCode" required>
+                    <input type="text" id="cikkszam" class="form-control" name="productCode" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="productDescription" class="form-label">Leírás</label>
-                    <textarea class="form-control" name="productDescription" rows="3" required></textarea>
+                    <textarea class="form-control" id="leiras" name="productDescription" rows="3" required></textarea>
                 </div>
 
                 <div class="mb-3">
                     <label for="productType" class="form-label">Gyártó</label>
-                    <select class="form-select" name="productType">
+                    <select class="form-select" id="gyarto_id" name="productType">
                         <option value="">Válassz gyártót...</option>
                         <?php
                         include './sql_fuggvenyek.php';
@@ -81,7 +75,7 @@
 
                 <div class="mb-3">
                     <label for="productCategory" class="form-label">Kategória</label>
-                    <select class="form-select" name="productCategory" required>
+                    <select class="form-select" id="kategoria_id" name="productCategory" required>
                         <option value="">Válassz kategóriát...</option>
                         <?php
                         $leker = "SELECT nev, id FROM `kategoria` WHERE 1";
@@ -99,47 +93,23 @@
 
                 <div class="mb-3">
                     <label for="productPrice" class="form-label">Ár (Ft)</label>
-                    <input type="number" class="form-control" name="productPrice" required>
+                    <input type="number" id="egysegar" class="form-control" name="productPrice" required>
                 </div>
 
-                <!-- <div class="mb-3">
-                    <label for="productImages" class="form-label">Képfeltöltés</label>
-                    <input type="file" class="form-control" name="productImages[]" accept="image/*" multiple>
-                </div> -->
+                <div class="mb-3">
+                    <label for="productImages" class="form-label">Termék képek</label>
+                    <input type="file" class="form-control" name="productImages[]" id="productImages" multiple accept="image/*">
+                </div>
 
-                <button type="submit" class="btn btn-primary" name="felvitel">Felvitel</button>
+                <button type="submit" id="felvitel_button" class="btn btn-primary" name="felvitel">Felvitel</button>
             </form>
 
         </div>
+        <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;"></div>
+
     </div>
-    <?php
-    if (isset($_POST['felvitel'])) {
-        $nev = $_POST["productName"];
-        $cikkszam = $_POST["productCode"];
-        $leiras = $_POST["productDescription"];
-        $ar = $_POST["productPrice"];
-        $gyarto = $_POST["productType"];
-        $kategoria = $_POST["productCategory"];
-
-        if (!empty($nev) && !empty($cikkszam) && !empty($leiras) && !empty($ar) && !empty($gyarto) && !empty($kategoria)) {
-            $lekeres = "INSERT INTO `termekek` (`cikkszam`, `nev`, `egysegar`, `akcios_ar`,`leiras`, `gyarto_id`, `kategoria_id`) 
-                        VALUES ('$cikkszam', '$nev', '$ar', 0,'$leiras', '$gyarto', '$kategoria')";
-
-            $ered = adatokValtoztatasa($lekeres);
-            if ($ered === "Sikeres művelet!") {
-                $uzenet = "A termék sikeresen hozzáadva!";
-                $alertTipus = "alert-success";
-            } else {
-                $uzenet = "Hiba történt: " . $ered;
-                $alertTipus = "alert-danger";
-            }
-        } else {
-            $uzenet = "Minden mezőt ki kell tölteni!";
-            $alertTipus = "alert-warning";
-        }
-    }
-    ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>
