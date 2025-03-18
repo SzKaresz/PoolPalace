@@ -105,11 +105,12 @@ function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
                 <div class='order-details'>
                     <h3>Rendelés részletei</h3>
                     <table>
-                        <tr><th>Termék</th><th>Darabszám</th><th>Egységár</th><th>Összeg</th></tr>";
+                        <tr><th>Terméknév</th><th>Termék cikkszám</th><th>Darabszám</th><th>Egységár</th><th>Összeg</th></tr>";
 
         foreach ($cartItems as $item) {
             $itemTotal = $item['darabszam'] * $item['egysegar'];
             $emailBody .= "<tr>
+                <td>{$item['nev']}</td>
                 <td>{$item['cikkszam']}</td>
                 <td>{$item['darabszam']}</td>
                 <td>" . number_format($item['egysegar'], 0, ',', ' ') . " Ft</td>
