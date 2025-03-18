@@ -1,4 +1,5 @@
 document.getElementById("felvitel_button").addEventListener("click", async function () {
+    event.preventDefault();
     const fileInput = document.getElementById("productImages");
     const files = fileInput.files; // Több fájlt is tartalmazhat
     
