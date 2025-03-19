@@ -1,8 +1,5 @@
 <?php
 require '../vendor/autoload.php';
-require '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
-require '../vendor/phpmailer/phpmailer/src/SMTP.php';
-require '../vendor/phpmailer/phpmailer/src/Exception.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
