@@ -22,8 +22,8 @@
 
 #cart-count {
     position: absolute !important;
-    top: -6px !important;  /* 🔹 Normál képernyőkön megfelelő pozíció */
-    right: -9px !important;  /* 🔹 Oldalirányú finomhangolás */
+    top: -6px !important;
+    right: -9px !important;
     transform: none !important;
     font-size: 12px;
     min-width: 20px;
@@ -48,6 +48,9 @@
 .search-btn img {
     width: 30px;
     height: 30px;
+}
+
+.search-icon img {
     margin-right: 30px;
 }
 
@@ -77,6 +80,9 @@
     padding: 10px;
     border: none;
     padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .search-container .form-control {
@@ -96,23 +102,56 @@
 
 @media (max-width: 1199px) {
     #searchForm {
-        display: none;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        background-color: #293144;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        border: none;
+        border-bottom: none;
+        height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        display: flex;
+        align-items: center;
     }
 
     #searchForm.active {
-        display: flex;
-        position: fixed;
-        top: 60px;
-        left: 0;
-        width: 100vw;
-        margin: 0;
-        background-color: #293144;
-        padding: 10px;
-        z-index: 999;
+        height: 50px;
+        opacity: 1;
     }
 
+    #searchForm input {
+        flex-grow: 1;
+        height: 100%;
+        border-radius: 0;
+        border: 1px solid #ccc;
+        padding: 10px;
+        font-size: 16px;
+        width: calc(100% - 50px);
+    }
+
+    #searchForm .search-btn {
+        height: 40px;
+        width: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        cursor: pointer;
+        margin-left: 0;
+    }
+
+    #searchForm .search-btn img {
+        width: 24px;
+        height: 24px;
+    }            
+
     #cart-count {
-        top: -4px !important; /* 🔹 Kisebb képernyőkhöz finomítás */
+        top: -4px !important;
         right: -10px !important;
         font-size: 10px;
         min-width: 16px;
@@ -210,8 +249,8 @@
     }
 
     #cart-count {
-        top: -7px !important;  /* 🔹 Enyhén lejjebb mozgatva */
-        right: -12px !important;  /* 🔹 Középső kijelzőkhöz igazítás */
+        top: -7px !important;
+        right: -12px !important;
         font-size: 11px;
         min-width: 18px;
         min-height: 18px;
@@ -450,9 +489,9 @@
     }
 }
 
-@media (max-width: 459px) { /* 459px alatt */
+@media (max-width: 459px) {
     #cart-count {
-        top: -6px !important; /* 🔹 A legkisebb kijelzőkhöz igazítás */
+        top: -6px !important;
         right: -16px !important;
         font-size: 9px;
         min-width: 12px;

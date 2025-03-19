@@ -135,6 +135,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
 
     function toggleSearch() {
         const searchForm = document.getElementById('searchForm');
-        searchForm.classList.toggle('active');
+
+        if (searchForm.classList.contains('active')) {
+            searchForm.style.height = "0px";  // Összecsukás animálva
+            searchForm.style.opacity = "0";
+            setTimeout(() => searchForm.classList.remove('active'), 300); // 300ms után eltávolítjuk az active osztályt
+        } else {
+            searchForm.classList.add('active');
+            searchForm.style.height = "50px";  // Lenyitás animálva
+            searchForm.style.opacity = "1";
+        }
     }
 </script>
