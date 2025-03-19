@@ -60,10 +60,13 @@ if (isset($_SESSION['user_email'])) {
             </div>
             <a href="kosar.php" class="cart-icon position-relative">
                 <img src="../img/cart.png" alt="Kosár" width="30" />
-                <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    <?= $termekekSzama ?>
-                </span>
+                <?php if ($termekekSzama > 0): ?>
+                    <span id="cart-count" class="badge rounded-pill bg-danger">
+                        <?= $termekekSzama ?>
+                    </span>
+                <?php endif; ?>
             </a>
+
             <?php if (isset($_SESSION['user_email'])): ?>
                 <div class="dropdown">
                     <a href="#" class="logged-icon btn dropdown-toggle text-light" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">

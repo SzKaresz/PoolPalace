@@ -20,13 +20,30 @@
     margin-right: 15px;
 }
 
+#cart-count {
+    position: absolute !important;
+    top: -6px !important;  /* 🔹 Normál képernyőkön megfelelő pozíció */
+    right: -9px !important;  /* 🔹 Oldalirányú finomhangolás */
+    transform: none !important;
+    font-size: 12px;
+    min-width: 20px;
+    min-height: 20px;
+    padding: 4px 6px;
+    line-height: 1;
+    border-radius: 50%;
+    background-color: red;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .nav-icons {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-/* Kereső ikon mérete */
 .search-icon img,
 .search-btn img {
     width: 30px;
@@ -34,7 +51,6 @@
     margin-right: 30px;
 }
 
-/* Keresőmező alapstílusa */
 .search-container {
     display: flex;
     align-items: center;
@@ -60,10 +76,9 @@
     cursor: pointer;
     padding: 10px;
     border: none;
-    padding: 0; /* Eltávolítjuk a felesleges paddingot */
+    padding: 0;
 }
 
-/* Kereső form gomb és input finomhangolása */
 .search-container .form-control {
     padding: 10px;
     font-size: 16px;
@@ -78,22 +93,30 @@
     margin-left: 10px;
 }
 
-/* Mobil mód: kereső űrlap alapból elrejtve, de ha .active akkor fixed, teljes szélességű */
+
 @media (max-width: 1199px) {
     #searchForm {
         display: none;
     }
-    /* Modified: Teljes szélességű mobil kereső */
+
     #searchForm.active {
         display: flex;
         position: fixed;
-        top: 60px; /* mobil navbar magassága */
+        top: 60px;
         left: 0;
-        width: 100vw; /* kiterjed a teljes nézet szélességére */
-        margin: 0;    /* margin eltávolítása */
+        width: 100vw;
+        margin: 0;
         background-color: #293144;
         padding: 10px;
         z-index: 999;
+    }
+
+    #cart-count {
+        top: -4px !important; /* 🔹 Kisebb képernyőkhöz finomítás */
+        right: -10px !important;
+        font-size: 10px;
+        min-width: 16px;
+        min-height: 16px;
     }
 
     .collapse.navbar-collapse {
@@ -184,6 +207,14 @@
 @media (min-width: 1200px) and (max-width: 1499px) {
     body {
         padding-top: 70px;
+    }
+
+    #cart-count {
+        top: -7px !important;  /* 🔹 Enyhén lejjebb mozgatva */
+        right: -12px !important;  /* 🔹 Középső kijelzőkhöz igazítás */
+        font-size: 11px;
+        min-width: 18px;
+        min-height: 18px;
     }
     
     .navbar {
@@ -292,6 +323,14 @@
     .cart-icon img {
         width: 40px;
         height: 40px;
+    }
+
+    #cart-count {
+        top: -6px !important;
+        right: -20px !important;
+        font-size: 10px;
+        min-width: 16px;
+        min-height: 16px;
     }
 
     .logged-icon img {
@@ -408,5 +447,15 @@
     #profileDropdown::after {
         font-size: 1rem;
         vertical-align: middle;
+    }
+}
+
+@media (max-width: 459px) { /* 459px alatt */
+    #cart-count {
+        top: -6px !important; /* 🔹 A legkisebb kijelzőkhöz igazítás */
+        right: -16px !important;
+        font-size: 9px;
+        min-width: 12px;
+        min-height: 12px;
     }
 }

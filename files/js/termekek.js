@@ -14,14 +14,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const kartyakContainer = document.getElementById("kartyak-container");
 
     let isLargeScreen = window.innerWidth > 1200;
-    
+
     // Kis képernyőn alapból elrejtjük a szűrőpanelt és a megfelelő gombfeliratot állítjuk be
     if (!isLargeScreen) {
         szuroContainer.style.display = "none";
         szuroContainer.classList.add("hidden");
         szuroButton.innerText = "Szűrők megjelenítése";
     }
-    
+
     let szuroLathato = isLargeScreen;
 
     szuroButton.addEventListener("click", function () {
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     szuroContainer.classList.remove("hidden");
                 }, 20);
             }
-            
+
             // 🔹 **Kis képernyőn az egész szűrőpanel jelenjen meg teljes méretben**
             setTimeout(() => {
                 if (!isLargeScreen) {
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     szuroContainer.style.overflowY = "auto";
                 }
             }, 350);
-            
+
             szuroButton.innerText = "Szűrők elrejtése";
         }
         szuroLathato = !szuroLathato;
@@ -241,7 +241,7 @@ function Szures() {
     // Szűrési logika
     for (const adat of valasz) {
         // Szóközök eltávolítása és számokká alakítás
-        const egysegar = parseFloat(adat.egysegar.replace(/\s/g, '')); 
+        const egysegar = parseFloat(adat.egysegar.replace(/\s/g, ''));
         const akcios_ar = parseFloat(adat.akcios_ar.replace(/\s/g, ''));
 
         // Ha van érvényes akciós ár, és az kisebb az egységárnál, akkor az alapján szűrünk
@@ -354,7 +354,7 @@ function rendezes(sortType) {
     // DOM újrarenderelése optimalizált módon
     const fragment = document.createDocumentFragment();
     kartyak.forEach(kartya => fragment.appendChild(kartya));
-    kartyakContainer.innerHTML = ''; 
+    kartyakContainer.innerHTML = '';
     kartyakContainer.appendChild(fragment);
 
     frissitTalalatokSzama(kartyak.length);
@@ -467,9 +467,21 @@ function kosarbaTesz(termekId, event) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            document.getElementById("cart-count").textContent = data.uj_mennyiseg;
-            
-            // 🔹 Az animációhoz továbbadjuk az eseményt
+            let cartCountElement = document.getElementById("cart-count");
+
+            if (cartCountElement) {
+                cartCountElement.textContent = data.uj_mennyiseg;
+            } else {
+                // Ha először adunk hozzá terméket, létrehozzuk a számlálót
+                const cartIcon = document.querySelector(".cart-icon");
+                const badge = document.createElement("span");
+                badge.id = "cart-count";
+                badge.className = "position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger";
+                badge.textContent = data.uj_mennyiseg;
+                cartIcon.appendChild(badge);
+            }
+
+            // 🔹 Indítjuk az animációt, de a számlálót csak az animáció végén frissítjük
             animateToCart(event);
         }
     })
@@ -482,20 +494,18 @@ function animateToCart(event) {
         return;
     }
 
-    const cartIcon = document.querySelector(".cart-icon img"); // Kosár ikon kiválasztása
+    const cartIcon = document.querySelector(".cart-icon img");
     if (!cartIcon) return;
 
-    const productCard = event.target.closest(".card"); // Teljes kártya
-    const productImage = productCard.querySelector("img"); // Termék képe
+    const productCard = event.target.closest(".card");
+    const productImage = productCard.querySelector("img");
     if (!productImage) return;
 
-    // Új animációs elem létrehozása
     const img = document.createElement("img");
     img.src = productImage.src;
     img.classList.add("floating-image");
     document.body.appendChild(img);
 
-    // Kiindulási pozíció (termékkép)
     const productRect = productImage.getBoundingClientRect();
     img.style.position = "fixed";
     img.style.left = `${productRect.left}px`;
@@ -503,12 +513,10 @@ function animateToCart(event) {
     img.style.width = `${productRect.width}px`;
     img.style.height = `${productRect.height}px`;
 
-    // Számoljuk ki a delta értékeket a kosár pozíciójához képest
     const cartRect = cartIcon.getBoundingClientRect();
     const deltaX = (cartRect.left + cartRect.width / 2) - (productRect.left + productRect.width / 2);
     const deltaY = (cartRect.top + cartRect.height / 2) - (productRect.top + productRect.height / 2);
 
-    // Animáció indítása két kulcsképkockával
     img.animate([
         { transform: "translate(0, 0) scale(1)", opacity: 1 },
         { transform: `translate(${deltaX}px, ${deltaY}px) scale(0.2)`, opacity: 0 }
@@ -518,8 +526,15 @@ function animateToCart(event) {
         fill: "forwards"
     });
 
-    // Töröljük az elemet az animáció vége után
-    setTimeout(() => img.remove(), 800);
+    setTimeout(() => {
+        img.remove();
+        
+        // **Ne növeljük a számlálót kézzel, hanem kérjünk frissítést a szerverről!**
+        if (typeof updateCartCount === "function") {
+            updateCartCount(); // **A kosar.js frissíti a valódi értéket**
+        }
+
+    }, 800);
 }
 
 // Kártyák feltöltése

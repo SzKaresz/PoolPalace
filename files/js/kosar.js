@@ -77,7 +77,7 @@ function removeItem(termekId) {
                 rowElement.remove();
             }
             updateCartTotal();
-            updateCartCount();
+            updateCartCount(); // 🔹 Automatikus frissítés törlés után
         } else {
             console.error("Hiba történt a törlésnél: " + data.error);
         }
@@ -98,16 +98,14 @@ function removeAllItems() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Modal bezárása
             let clearCartModal = bootstrap.Modal.getInstance(document.getElementById("clearCartModal"));
             clearCartModal.hide();
 
-            // Kosár tartalom törlése a felületen
             const allRows = document.querySelectorAll(".cart-table tbody tr");
             allRows.forEach(row => row.remove());
 
             updateCartTotal();
-            updateCartCount();
+            updateCartCount(); // 🔹 Automatikus frissítés teljes törlés után
         } else {
             console.error("Hiba történt az összes elem törlésénél: " + data.error);
         }
@@ -176,8 +174,22 @@ function updateCartCount() {
     .then(data => {
         if (data.success) {
             const cartCountElement = document.getElementById("cart-count");
+
             if (cartCountElement) {
-                cartCountElement.textContent = data.uj_mennyiseg;
+                if (data.uj_mennyiseg > 0) {
+                    cartCountElement.textContent = data.uj_mennyiseg;
+                    cartCountElement.style.display = "inline-block"; // Megjelenítés, ha van termék
+                } else {
+                    cartCountElement.style.display = "none"; // 🔹 Ha üres, elrejtjük
+                }
+            } else if (data.uj_mennyiseg > 0) {
+                // Ha nincs számláló, de a kosárban van termék, létrehozzuk
+                const cartIcon = document.querySelector(".cart-icon");
+                const badge = document.createElement("span");
+                badge.id = "cart-count";
+                badge.className = "position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger";
+                badge.textContent = data.uj_mennyiseg;
+                cartIcon.appendChild(badge);
             }
         }
     })
