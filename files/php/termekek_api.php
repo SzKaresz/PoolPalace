@@ -4,6 +4,10 @@ include './db.php';
 // JSON válasz beállítása
 header('Content-Type: application/json');
 
+function formatPrice($price) {
+    return number_format($price, 0, ',', ' ') . ' Ft';
+}
+
 // Aktuális oldal és limit
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $items_per_page = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
@@ -54,7 +58,6 @@ $total_result = $total_query->get_result();
 $total_items = $total_result->fetch_assoc()['total'] ?? 0;
 
 // **Termékek lekérdezése lapozással**
-// **Termékek lekérdezése lapozással**
 $sql = "SELECT 
     t.cikkszam, t.nev, t.egysegar, t.akcios_ar, t.leiras, 
     k.nev AS kategoria_nev, g.nev AS gyarto_nev, t.darabszam
@@ -63,6 +66,7 @@ LEFT JOIN kategoria k ON t.kategoria_id = k.id
 LEFT JOIN gyarto g ON t.gyarto_id = g.id
 $whereSQL 
 LIMIT ? OFFSET ?";
+
 $query = $db->prepare($sql);
 
 if (!empty($params)) {
@@ -77,6 +81,10 @@ $result = $query->get_result();
 
 $termekek = [];
 while ($row = $result->fetch_assoc()) {
+    // **🔹 Itt formázzuk az árakat a helyes megjelenítéshez**
+    $row['egysegar'] = formatPrice($row['egysegar']);
+    $row['akcios_ar'] = $row['akcios_ar'] !== null ? formatPrice($row['akcios_ar']) : null;
+
     $termekek[] = $row;
 }
 
@@ -86,7 +94,7 @@ $total_pages = ceil($total_items / $items_per_page);
 // **JSON válasz küldése**
 echo json_encode([
     "termekek" => $termekek,
-    "total_items" => $total_items,  // 🔹 **Hiányzott, most visszaküldi**
+    "total_items" => $total_items,
     "total_pages" => $total_pages
 ]);
 

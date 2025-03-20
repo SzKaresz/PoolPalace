@@ -646,11 +646,11 @@ function displayProducts(products, totalItems) {
         let egysegar = parseFloat(String(adat.egysegar).replace(/\s/g, ''));
 
         if (akcios_ar > -1 && akcios_ar < egysegar) {
-            cardPrice.innerHTML = `<span class="original-price">${adat.egysegar} Ft</span> 
-                             <span class="discounted-price">${adat.akcios_ar} Ft</span>`;
+            cardPrice.innerHTML = `<span class="original-price">${adat.egysegar}</span> 
+                             <span class="discounted-price">${adat.akcios_ar}</span>`;
             card_header.innerHTML += `<div class="badge">Akció!</div>`;
         } else {
-            cardPrice.innerHTML = `${adat.egysegar} Ft`;
+            cardPrice.innerHTML = `${adat.egysegar}`;
         }
 
         let cartButton = document.createElement("button");
