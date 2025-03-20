@@ -4,7 +4,8 @@ include './db.php';
 // JSON válasz beállítása
 header('Content-Type: application/json');
 
-function formatPrice($price) {
+function formatPrice($price)
+{
     return number_format($price, 0, ',', ' ') . ' Ft';
 }
 
@@ -57,14 +58,49 @@ $total_query->execute();
 $total_result = $total_query->get_result();
 $total_items = $total_result->fetch_assoc()['total'] ?? 0;
 
-// **Termékek lekérdezése lapozással**
+// **Új szűrési opció: "kiemelt"**
+$sort = isset($_GET['sort']) ? $_GET['sort'] : '';
+
+$orderSQL = ""; // Alapértelmezett rendezés
+
+if ($sort === "kiemelt") {
+    $orderSQL = "ORDER BY 
+    (SELECT COALESCE(SUM(tt.darabszam), 0) 
+     FROM tetelek tt 
+     WHERE tt.termek_id = t.cikkszam) DESC, 
+    CAST(t.cikkszam AS UNSIGNED) ASC, 
+        CASE 
+            WHEN t.akcios_ar > -1 THEN t.akcios_ar 
+            ELSE t.egysegar 
+        END ASC";
+} elseif ($sort === "ar-novekvo") {
+    $orderSQL = "ORDER BY 
+        CASE 
+            WHEN t.akcios_ar > -1 THEN t.akcios_ar 
+            ELSE t.egysegar 
+        END ASC";
+} elseif ($sort === "ar-csokkeno") {
+    $orderSQL = "ORDER BY 
+        CASE 
+            WHEN t.akcios_ar > -1 THEN t.akcios_ar 
+            ELSE t.egysegar 
+        END DESC";
+} elseif ($sort === "nev-az") {
+    $orderSQL = "ORDER BY CONVERT(t.nev USING utf8mb4) COLLATE utf8mb4_hungarian_ci ASC";
+} elseif ($sort === "nev-za") {
+    $orderSQL = "ORDER BY CONVERT(t.nev USING utf8mb4) COLLATE utf8mb4_hungarian_ci DESC";
+}
+
+// **Frissített SQL lekérdezés**
 $sql = "SELECT 
     t.cikkszam, t.nev, t.egysegar, t.akcios_ar, t.leiras, 
-    k.nev AS kategoria_nev, g.nev AS gyarto_nev, t.darabszam
+    k.nev AS kategoria_nev, g.nev AS gyarto_nev, t.darabszam,
+    (SELECT COALESCE(SUM(tt.darabszam), 0) FROM tetelek tt WHERE tt.termek_id = t.cikkszam) AS rendelt_db
 FROM termekek t
 LEFT JOIN kategoria k ON t.kategoria_id = k.id
 LEFT JOIN gyarto g ON t.gyarto_id = g.id
 $whereSQL 
+$orderSQL 
 LIMIT ? OFFSET ?";
 
 $query = $db->prepare($sql);
@@ -99,4 +135,3 @@ echo json_encode([
 ]);
 
 exit();
-?>

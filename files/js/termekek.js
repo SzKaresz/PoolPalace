@@ -154,26 +154,41 @@ function setupPagination(totalPages, currentPage = 1) {
 }               
 
 // Fő függvények
-function loadProducts(page = 1) {
+function loadProducts(page = 1, sortType = '') {
     const limitPerPage = getItemsPerPage();
     let queryParams = new URLSearchParams();
 
-    let kategoriak = Array.from(document.querySelectorAll('input[name="kategoriak"]:checked')).map(cb => cb.value);
-    let gyartok = Array.from(document.querySelectorAll('input[name="gyartok"]:checked')).map(cb => cb.value);
-    let fromprice = document.getElementById('fromSlider').value;
-    let toprice = document.getElementById('toSlider').value;
+    if (sortType) {
+        queryParams.set("sort", sortType);
+        localStorage.setItem("currentSort", sortType);
+    } else {
+        sortType = localStorage.getItem("currentSort") || '';
+        if (sortType) queryParams.set("sort", sortType);
+    }
 
-    if (kategoriak.length > 0) queryParams.append("kategoriak", kategoriak.join(","));
-    if (gyartok.length > 0) queryParams.append("gyartok", gyartok.join(","));
-    queryParams.append("fromprice", fromprice);
-    queryParams.append("toprice", toprice);
-    queryParams.append("page", page);
-    queryParams.append("limit", limitPerPage);
+    queryParams.set("page", page);
+    queryParams.set("limit", limitPerPage);
+
+    // **🔹 SZŰRÉSI PARAMÉTEREK HOZZÁADÁSA**
+    let kategoriak = Array.from(kivalasztottSzurok.kategoriak);
+    let gyartok = Array.from(kivalasztottSzurok.gyartok);
+
+    if (kategoriak.length > 0) {
+        queryParams.set("kategoriak", kategoriak.join(","));
+    }
+    if (gyartok.length > 0) {
+        queryParams.set("gyartok", gyartok.join(","));
+    }
+
+    let fromPrice = document.getElementById('fromSlider').value;
+    let toPrice = document.getElementById('toSlider').value;
+    queryParams.set("fromprice", fromPrice);
+    queryParams.set("toprice", toPrice);
 
     fetch(`./termekek_api.php?${queryParams.toString()}`)
         .then(response => response.json())
         .then(data => {
-            displayProducts(data.termekek, data.total_items); // 🚀 **Az új verziót használjuk**
+            displayProducts(data.termekek, data.total_items);
             setupPagination(data.total_pages, page);
         })
         .catch(error => console.error("Hiba a termékek betöltésekor:", error));
@@ -339,61 +354,54 @@ function Szures() {
     displayProducts(szurtKartyak, szurtKartyak.length);
 }
 
-// Rendezési funkciók
-document.querySelectorAll('#dropdown-options li').forEach(option => {
-    option.addEventListener('click', function () {
-        const sortType = this.dataset.sort;
-        const selectedOptionText = this.textContent;
-        document.getElementById('dropdown-button').textContent = selectedOptionText;
-        rendezes(sortType);
-        toggleDropdown();
-    });
-});
+// A magyar ABC helyes sorrendje
+const magyarABC = [
+    "a", "á", "b", "c", "cs", "d", "dz", "dzs", "e", "é", "f", "g", "gy", "h",
+    "i", "í", "j", "k", "l", "m", "n", "ny", "o", "ó", "ö", "ő", "p", "q", "r",
+    "s", "sz", "t", "ty", "u", "ú", "ü", "ű", "v", "w", "x", "y", "z", "zs"
+];
 
-function rendezes(sortType) {
-    const kartyakContainer = document.getElementById('kartyak');
-    const kartyak = Array.from(kartyakContainer.children);
+// Magyar ABC szerinti összehasonlítás
+function compareHungarian(a, b) {
+    a = a.toLowerCase();
+    b = b.toLowerCase();
 
-    // A magyar ABC helyes sorrendje
-    const magyarABC = [
-        "a", "á", "b", "c", "cs", "d", "dz", "dzs", "e", "é", "f", "g", "gy", "h",
-        "i", "í", "j", "k", "l", "m", "n", "ny", "o", "ó", "ö", "ő", "p", "q", "r",
-        "s", "sz", "t", "ty", "u", "ú", "ü", "ű", "v", "w", "x", "y", "z", "zs"
-    ];
+    let minLength = Math.min(a.length, b.length);
+    let i = 0;
 
-    function compareHungarian(a, b) {
-        a = a.toLowerCase();
-        b = b.toLowerCase();
+    while (i < minLength) {
+        let charA = a[i];
+        let charB = b[i];
 
-        let minLength = Math.min(a.length, b.length);
-        let i = 0;
-
-        while (i < minLength) {
-            let charA = a[i];
-            let charB = b[i];
-
-            // Ha a karakterek megegyeznek, akkor folytatjuk a következő betűvel
-            if (charA === charB) {
-                i++;
-                continue;
-            }
-
-            // Megnézzük az aktuális karakterek ABC szerinti pozícióját
-            let indexA = magyarABC.indexOf(charA);
-            let indexB = magyarABC.indexOf(charB);
-
-            // Ha az egyik karakter nincs az ABC-ben (pl. szám vagy speciális karakter), akkor hagyjuk az alap JavaScript összehasonlítást
-            if (indexA === -1 || indexB === -1) {
-                return charA.localeCompare(charB, "hu", { sensitivity: "base" });
-            }
-
-            // A betűsorrend alapján visszaadjuk a különbséget
-            return indexA - indexB;
+        if (charA === charB) {
+            i++;
+            continue;
         }
 
-        // Ha az első karakterek megegyeznek, a rövidebb szó előrébb kerül
-        return a.length - b.length;
+        let indexA = magyarABC.indexOf(charA);
+        let indexB = magyarABC.indexOf(charB);
+
+        if (indexA === -1 || indexB === -1) {
+            return charA.localeCompare(charB, "hu", { sensitivity: "base" });
+        }
+
+        return indexA - indexB;
     }
+
+    return a.length - b.length;
+}
+
+// Rendezés frissítése
+function rendezes(sortType) {
+    localStorage.setItem("currentSort", sortType);
+
+    if (sortType === 'kiemelt') {
+        loadProducts(1, 'kiemelt');
+        return;
+    }
+
+    const kartyakContainer = document.getElementById('kartyak');
+    const kartyak = Array.from(kartyakContainer.children);
 
     kartyak.sort((a, b) => {
         const adatA = {
@@ -423,7 +431,6 @@ function rendezes(sortType) {
         return 0;
     });
 
-    // DOM újrarenderelése optimalizált módon
     const fragment = document.createDocumentFragment();
     kartyak.forEach(kartya => fragment.appendChild(kartya));
     kartyakContainer.innerHTML = '';
@@ -431,6 +438,16 @@ function rendezes(sortType) {
 
     frissitTalalatokSzama(kartyak.length);
 }
+
+// Dropdown események a rendezéshez
+document.querySelectorAll('#dropdown-options li').forEach(option => {
+    option.addEventListener('click', function () {
+        const sortType = this.dataset.sort;
+        document.getElementById('dropdown-button').textContent = this.textContent;
+        rendezes(sortType);
+        toggleDropdown();
+    });
+});
 
 function frissitTalalatokSzama(osszDarab) {
     document.getElementById('talalatok-szam').textContent = `${osszDarab}`;
@@ -709,17 +726,29 @@ function initEventListeners() {
     });
 
     document.getElementById('clear-filters').addEventListener('click', function () {
-        document.querySelectorAll('#kategoriak input[type="checkbox"], #gyartok input[type="checkbox"]').forEach(item => {
-            item.checked = false;
+        // Az összes checkboxot kikapcsoljuk
+        document.querySelectorAll('input[name="kategoriak"], input[name="gyartok"]').forEach(checkbox => {
+            checkbox.checked = false;
         });
 
+        // Kiürítjük a tárolt szűrési beállításokat
+        kivalasztottSzurok.kategoriak.clear();
+        kivalasztottSzurok.gyartok.clear();
+
+        // Alapértelmezett árértékek visszaállítása
         document.getElementById('fromSlider').value = 0;
         document.getElementById('toSlider').value = 5000000;
         document.getElementById('fromInput').value = 0;
         document.getElementById('toInput').value = 5000000;
+        document.getElementById('toSlider').style.background = 'rgb(37, 218, 165)';
 
+        // Visszatöltjük a kategóriákat és a gyártókat, hogy a becsukott részek is frissüljenek
+        kategoriaFeltolt();
+        gyartoFeltolt();
+
+        // Frissítjük a terméklistát
         loadProducts(1);
-    });
+    });    
 
     window.addEventListener("resize", () => {
         itemsPerPage = getItemsPerPage();
@@ -728,7 +757,8 @@ function initEventListeners() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    loadProducts(1);
+    const storedSort = localStorage.getItem("currentSort") || '';
+    loadProducts(1, storedSort);
     kategoriaFeltolt();
     gyartoFeltolt();
     initEventListeners();
