@@ -671,7 +671,7 @@ function displayProducts(products, totalItems) {
         }
 
         let cartButton = document.createElement("button");
-        cartButton.classList.add("btn", "btn-success");
+        cartButton.classList.add("btn");
         cartButton.innerHTML = `Kosárba`;
         cartButton.setAttribute("data-id", adat.cikkszam);
         cartButton.onclick = function (event) {

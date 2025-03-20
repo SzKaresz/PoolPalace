@@ -18,18 +18,23 @@ $mennyiseg = !empty($data['mennyiseg']) ? intval($data['mennyiseg']) : 1;
 // Kosár mennyiség lekérdezése
 function getUserCartCount($db, $user_email)
 {
-    $stmt = $db->prepare("SELECT SUM(darabszam) AS total FROM kosar WHERE felhasznalo_id = ?");
+    $stmt = $db->prepare("SELECT COALESCE(SUM(darabszam), 0) AS total FROM kosar WHERE felhasznalo_id = ?");
     $stmt->bind_param("s", $user_email);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
-    return $row['total'] ?? 0;
+    return intval($row['total'] ?? 0);
 }
 
 if (isset($_SESSION['user_email'])) {
     $user_email = $_SESSION['user_email'];
 
     switch ($action) {
+        case 'getCount':
+            $uj_mennyiseg = getUserCartCount($db, $user_email);
+            echo json_encode(["success" => true, "uj_mennyiseg" => $uj_mennyiseg]);
+            exit;
+
         case 'add':
             $stmt = $db->prepare("SELECT darabszam FROM kosar WHERE termek_id = ? AND felhasznalo_id = ?");
             $stmt->bind_param("ss", $termek_id, $user_email);
@@ -55,7 +60,7 @@ if (isset($_SESSION['user_email'])) {
             $stmt->bind_param("ss", $termek_id, $user_email);
             break;
 
-        case 'removeAll': // **Kosár teljes kiürítése bejelentkezett felhasználónál**
+        case 'removeAll':
             $stmt = $db->prepare("DELETE FROM kosar WHERE felhasznalo_id = ?");
             $stmt->bind_param("s", $user_email);
             break;

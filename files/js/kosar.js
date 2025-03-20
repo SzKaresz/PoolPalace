@@ -172,24 +172,25 @@ function updateCartCount() {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
-            const cartCountElement = document.getElementById("cart-count");
+        const cartCountElement = document.getElementById("cart-count");
 
-            if (cartCountElement) {
-                if (data.uj_mennyiseg > 0) {
-                    cartCountElement.textContent = data.uj_mennyiseg;
-                    cartCountElement.style.display = "inline-block"; // Megjelenítés, ha van termék
-                } else {
+        if (data.success) {
+            if (data.uj_mennyiseg > 0) {
+                if (!cartCountElement) {
+                    // Ha nincs számláló, létrehozzuk
+                    const cartIcon = document.querySelector(".cart-icon");
+                    const badge = document.createElement("span");
+                    badge.id = "cart-count";
+                    badge.className = "position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger";
+                    cartIcon.appendChild(badge);
+                }
+                cartCountElement.textContent = data.uj_mennyiseg;
+                cartCountElement.style.display = "inline-block"; // Megjelenítés
+            } else {
+                if (cartCountElement) {
+                    cartCountElement.textContent = "0"; // Biztosan frissítse az értéket
                     cartCountElement.style.display = "none"; // 🔹 Ha üres, elrejtjük
                 }
-            } else if (data.uj_mennyiseg > 0) {
-                // Ha nincs számláló, de a kosárban van termék, létrehozzuk
-                const cartIcon = document.querySelector(".cart-icon");
-                const badge = document.createElement("span");
-                badge.id = "cart-count";
-                badge.className = "position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger";
-                badge.textContent = data.uj_mennyiseg;
-                cartIcon.appendChild(badge);
             }
         }
     })
