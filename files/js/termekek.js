@@ -1,5 +1,27 @@
 let valasz;
 let kartyak = document.getElementById("kartyak");
+let kivalasztottSzurok = {
+    kategoriak: new Set(),
+    gyartok: new Set()
+};
+
+document.addEventListener("change", function (event) {
+    if (event.target.name === "kategoriak") {
+        if (event.target.checked) {
+            kivalasztottSzurok.kategoriak.add(event.target.value);
+        } else {
+            kivalasztottSzurok.kategoriak.delete(event.target.value);
+        }
+    }
+
+    if (event.target.name === "gyartok") {
+        if (event.target.checked) {
+            kivalasztottSzurok.gyartok.add(event.target.value);
+        } else {
+            kivalasztottSzurok.gyartok.delete(event.target.value);
+        }
+    }
+});
 
 // Gomb a szűrőpanel ki-be csúsztatásához
 const toggleButton = document.getElementById("szures-button");
@@ -105,6 +127,10 @@ function getItemsPerPage() {
 let currentPage = 1;
 let itemsPerPage = getItemsPerPage();          
 
+function tetejere(){
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function setupPagination(totalPages, currentPage = 1) {
     const paginationContainer = document.getElementById("pagination");
     paginationContainer.innerHTML = "";
@@ -112,6 +138,7 @@ function setupPagination(totalPages, currentPage = 1) {
     for (let i = 1; i <= totalPages; i++) {
         const button = document.createElement("button");
         button.textContent = i;
+        button.setAttribute("onclick", "tetejere()");
         button.classList.add("pagination-btn");
 
         if (i === currentPage) {
@@ -168,13 +195,18 @@ function getMaxVisibleElements() {
 }
 
 // Kategóriák feltöltése
-async function kategoriafeltolt() {
+async function kategoriaFeltolt() {
     try {
         let eredmeny = await fetch("../php/kategoriaLeker.php");
         if (!eredmeny.ok) throw new Error("Hiba a szerver válaszában!");
 
         let valasz = await eredmeny.json();
         let div = document.getElementById('kategoriak');
+
+        // **🔹 Megőrizzük a bejelölt elemeket**
+        document.querySelectorAll('input[name="kategoriak"]:checked').forEach(checkbox => {
+            kivalasztottSzurok.kategoriak.add(checkbox.value);
+        });
 
         div.innerHTML = "<h6>Kategóriák</h6>";
         const maxVisible = getMaxVisibleElements();
@@ -186,9 +218,12 @@ async function kategoriafeltolt() {
             checkbox.value = adat.kategoria_nev;
             checkbox.style.marginRight = "10px";
 
+            if (kivalasztottSzurok.kategoriak.has(adat.kategoria_nev)) {
+                checkbox.checked = true;
+            }
+
             let label = document.createElement('label');
-            let kategoriaNev = adat.kategoria_nev.length > 22 ? adat.kategoria_nev.slice(0, 22) + '...' : adat.kategoria_nev;
-            label.innerHTML = kategoriaNev;
+            label.innerHTML = adat.kategoria_nev;
 
             div.appendChild(checkbox);
             div.appendChild(label);
@@ -215,17 +250,22 @@ async function kategoriafeltolt() {
 
                 bezaras.addEventListener("click", (e) => {
                     e.preventDefault();
-                    kategoriafeltolt();
+                    kategoriaFeltolt();
                 });
 
                 div.appendChild(bezaras);
-
-                // **🔹 Frissítjük a szűrőpanel magasságát**
-                frissitSzuroMagassag();
             });
 
             div.appendChild(tovabbi);
         }
+
+        // **🔹 Az eltárolt bejelölések DOM-ba állítása**
+        document.querySelectorAll('input[name="kategoriak"]').forEach(checkbox => {
+            if (kivalasztottSzurok.kategoriak.has(checkbox.value)) {
+                checkbox.checked = true;
+            }
+        });
+
     } catch (error) {
         console.log(error);
     }
@@ -268,11 +308,21 @@ async function adatbazisbolLekeres() {
 
 function Szures() {
     kartyak.innerHTML = "";  
+
     let fromprice = document.getElementById('fromSlider').value;
     let toprice = document.getElementById('toSlider').value;
 
-    let kivalasztottKategoriak = Array.from(document.querySelectorAll('input[name="kategoriak"]:checked')).map(cb => cb.value);
-    let kivalasztottGyartok = Array.from(document.querySelectorAll('input[name="gyartok"]:checked')).map(cb => cb.value);
+    // 🔹 Beállítjuk a rejtett checkboxok értékeit is
+    document.querySelectorAll('input[name="kategoriak"]:checked').forEach(checkbox => {
+        kivalasztottSzurok.kategoriak.add(checkbox.value);
+    });
+
+    document.querySelectorAll('input[name="gyartok"]:checked').forEach(checkbox => {
+        kivalasztottSzurok.gyartok.add(checkbox.value);
+    });
+
+    let kivalasztottKategoriak = Array.from(kivalasztottSzurok.kategoriak);
+    let kivalasztottGyartok = Array.from(kivalasztottSzurok.gyartok);
 
     let szurtKartyak = valasz.filter(adat => {
         const egysegar = parseFloat(adat.egysegar.replace(/\s/g, ''));
@@ -286,7 +336,7 @@ function Szures() {
         );
     });
 
-    displayProducts(szurtKartyak, szurtKartyak.length); // 🚀 **Az új verziót használjuk**
+    displayProducts(szurtKartyak, szurtKartyak.length);
 }
 
 // Rendezési funkciók
@@ -408,13 +458,11 @@ async function gyartoFeltolt() {
         let valasz = await eredmeny.json();
         let div = document.getElementById('gyartok');
 
-        // Elmentjük az aktuálisan bejelölt checkboxokat
-        let kivalasztottak = new Set();
+        // **🔹 Megőrizzük a bejelölt elemeket**
         document.querySelectorAll('input[name="gyartok"]:checked').forEach(checkbox => {
-            kivalasztottak.add(checkbox.value);
+            kivalasztottSzurok.gyartok.add(checkbox.value);
         });
 
-        // Töröljük a div tartalmát, de a kiválasztott értékeket megőrizzük
         div.innerHTML = "<h6>Gyártók</h6>";
         const maxVisible = getMaxVisibleElements();
 
@@ -425,8 +473,7 @@ async function gyartoFeltolt() {
             checkbox.value = adat.gyarto_nev;
             checkbox.style.marginRight = "10px";
 
-            // Ha korábban be volt jelölve, újra bejelöljük
-            if (kivalasztottak.has(adat.gyarto_nev)) {
+            if (kivalasztottSzurok.gyartok.has(adat.gyarto_nev)) {
                 checkbox.checked = true;
             }
 
@@ -438,7 +485,6 @@ async function gyartoFeltolt() {
             div.appendChild(document.createElement('br'));
         }
 
-        // Az első 8 gyártó megjelenítése
         valasz.slice(0, maxVisible).forEach(hozzaadGyarto);
 
         if (valasz.length > maxVisible) {
@@ -463,13 +509,18 @@ async function gyartoFeltolt() {
                 });
 
                 div.appendChild(bezaras);
-
-                // **🔹 Frissítjük a szűrőpanel magasságát**
-                frissitSzuroMagassag();
             });
 
             div.appendChild(tovabbi);
         }
+
+        // **🔹 Az eltárolt bejelölések DOM-ba állítása**
+        document.querySelectorAll('input[name="gyartok"]').forEach(checkbox => {
+            if (kivalasztottSzurok.gyartok.has(checkbox.value)) {
+                checkbox.checked = true;
+            }
+        });
+
     } catch (error) {
         console.log(error);
     }
@@ -626,6 +677,31 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function adjustSzuroHeight() {
+    let szuroContainer = document.getElementById("szuro-container");
+    let footer = document.querySelector("footer");
+
+    if (!szuroContainer || !footer) return;
+
+    let windowHeight = window.innerHeight;
+    let footerTop = footer.getBoundingClientRect().top;
+    let navbarHeight = 80; // Navbar fix magassága
+
+    if (footerTop > windowHeight) {
+        szuroContainer.style.height = `calc(100vh - ${navbarHeight}px)`;
+    } else {
+        let availableHeight = footerTop - navbarHeight;
+        szuroContainer.style.height = `${availableHeight}px`;
+    }
+}
+
+// Frissítés görgetéskor és átméretezéskor
+window.addEventListener("scroll", adjustSzuroHeight);
+window.addEventListener("resize", adjustSzuroHeight);
+document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(adjustSzuroHeight, 50); // Kis késleltetés a teljes betöltésig
+});
+window.addEventListener("load", adjustSzuroHeight); // Végső biztosítás a teljes betöltés után
 
 function initEventListeners() {
     document.getElementById("szures_button").addEventListener("click", function () {
@@ -653,7 +729,7 @@ function initEventListeners() {
 
 document.addEventListener("DOMContentLoaded", function () {
     loadProducts(1);
-    kategoriafeltolt();
+    kategoriaFeltolt();
     gyartoFeltolt();
     initEventListeners();
 });
