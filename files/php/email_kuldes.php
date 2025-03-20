@@ -7,7 +7,8 @@ $dotenv->load();
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-function rolunkEmail($nev, $email, $email_targya, $email_szovege, &$hiba) {
+function rolunkEmail($nev, $email, $email_targya, $email_szovege, &$hiba)
+{
     try {
         $mail = new PHPMailer(true);
 
@@ -36,7 +37,8 @@ function rolunkEmail($nev, $email, $email_targya, $email_szovege, &$hiba) {
     }
 }
 
-function elfelejtettEmail($email, $nev){
+function elfelejtettEmail($email, $nev)
+{
     try {
         $mail = new PHPMailer(true);
 
@@ -54,7 +56,7 @@ function elfelejtettEmail($email, $nev){
         $mail->isHTML(true);
         $mail->CharSet = 'UTF-8';
         $mail->Subject = "Elfelejtett jelszó";
-        
+
         $mail->Body = "Tisztelt " . htmlspecialchars($nev) . "!<br><br> Jelszó visszaállításához kattintson az alábbi linkre:<br><br> <a href='http://localhost/PoolPalace/files/php/ujJelszo.php?email=" . urlencode($email) . "'>Jelszó visszaállítása</a>";
 
         $mail->send();
@@ -65,11 +67,12 @@ function elfelejtettEmail($email, $nev){
     }
 }
 
-function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total) {
+function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
+{
     try {
         $mail = new PHPMailer(true);
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com'; 
+        $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
         $mail->Username = 'info.poolpalace@gmail.com';
         $mail->Password = $_ENV['SMTP_PASSWORD'];
@@ -83,16 +86,34 @@ function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
         $mail->CharSet = 'UTF-8';
         $mail->Subject = 'Megrendelés visszaigazolás - #' . $orderId;
 
-        $emailBody = "<html><head><style>
-            body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
-            .container { background: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin: auto; }
-            .header { background: #293144; color: #ffffff; text-align: center; padding: 15px; border-radius: 10px 10px 0 0; font-size: 20px; }
-            .order-details { background: #f9f9f9; padding: 15px; border-radius: 5px; }
-            .footer { text-align: center; padding: 15px; font-size: 12px; color: #666; }
+        $emailBody = "<html><head>
+        <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+        <style>
+            body { font-family: Arial, sans-serif; background-color: #f4f4f4; font-size: 16px; }
+            .container { background: #ffffff; margin: auto; width: 100%; max-width: 100%; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+            .header { background: #293144; color: #ffffff; text-align: center; padding: 20px; font-size: 24px; border-radius: 5px 5px 0 0; }
+            .footer { text-align: center; padding: 15px; font-size: 14px; color: #666; margin-top: 20px; }
             .button { display: inline-block; padding: 10px 20px; background: #293144; color: #ffffff; text-decoration: none; border-radius: 5px; margin-top: 15px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            table, th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-            th { background: #293144; color: white; }
+            table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+            th, td { padding: 15px; border: 1px solid #ddd; text-align: left; }
+            th { background-color: #293144; color: white; font-size: 16px; }
+            tr:nth-child(even) { background-color: #f2f2f2; }
+            tr:hover { background-color: #e9ecef; }
+            .order-summary { margin-top: 20px; font-size: 18px; font-weight: bold; }
+            @media (max-width: 768px) {
+                body { font-size: 14px; }
+                th, td { padding: 8px; font-size: 13px; }
+                .header { font-size: 20px; padding: 15px; }
+                .footer { font-size: 12px; }
+                .order-summary { font-size: 16px; }
+            }
+            @media (max-width: 480px) {
+                body { font-size: 12px; }
+                th, td { padding: 6px; font-size: 12px; }
+                .header { font-size: 18px; padding: 10px; }
+                .footer { font-size: 10px; }
+                .order-summary { font-size: 14px; }
+            }
         </style></head><body>
         <div class='container'>
             <div class='header'>Megrendelés visszaigazolása</div>
@@ -101,8 +122,17 @@ function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
                 <p>Köszönjük a rendelését! A rendelési azonosítója: <strong>#$orderId</strong>.</p>
                 <div class='order-details'>
                     <h3>Rendelés részletei</h3>
-                    <table>
-                        <tr><th>Terméknév</th><th>Termék cikkszám</th><th>Darabszám</th><th>Egységár</th><th>Összeg</th></tr>";
+                    <table class='table'>
+                        <thead>
+                            <tr>
+                                <th>Terméknév</th>
+                                <th>Cikkszám</th>
+                                <th>Darabszám</th>
+                                <th>Egységár</th>
+                                <th>Összeg</th>
+                            </tr>
+                        </thead>
+                        <tbody>";
 
         foreach ($cartItems as $item) {
             $itemTotal = $item['darabszam'] * $item['egysegar'];
@@ -115,8 +145,11 @@ function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
             </tr>";
         }
 
-        $emailBody .= "</table>
-                    <p><strong>Végösszeg: " . number_format($total, 0, ',', ' ') . " Ft</strong></p>
+        $emailBody .= "</tbody>
+                    </table>
+                    <div class='order-summary'>
+                        Végösszeg: " . number_format($total, 0, ',', ' ') . " Ft
+                    </div>
                 </div>
                 <p>Hamarosan feldolgozzuk a rendelését és értesítjük a további lépésekről.</p>
                 <br>
@@ -136,5 +169,3 @@ function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
         return false;
     }
 }
-
-?>
