@@ -749,3 +749,30 @@ a:hover {
     color: #22ff26;
     font-weight: bold;
 }
+
+#pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 8px;
+}
+
+.page-btn {
+    border: none;
+    padding: 10px 15px;
+    background-color: #293144;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+    transition: background 0.3s ease-in-out;
+}
+
+.page-btn:hover {
+    background-color: #37d2a5;
+}
+
+.page-btn.active {
+    background-color: #22ff26;
+    font-weight: bold;
+}

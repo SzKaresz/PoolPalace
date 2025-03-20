@@ -95,23 +95,62 @@ document.addEventListener("DOMContentLoaded", function () {
     szuroContainer.style.zIndex = "1000";
 });
 
-document.getElementById('clear-filters').addEventListener('click', function () {
-    // Kategóriák és gyártók resetelése (checkboxok)
-    document.querySelectorAll('#kategoriak input[type="checkbox"], #gyartok input[type="checkbox"]').forEach(function (item) {
-        item.checked = false;  // Checkbox visszaállítása
-    });
+function getItemsPerPage() {
+    if (window.innerWidth > 1500) return 20;
+    if (window.innerWidth > 1200) return 16;
+    if (window.innerWidth > 768) return 12;
+    return 8;
+}
 
-    // Árkategóriák visszaállítása (range és input típusú)
-    document.getElementById('fromSlider').value = 0;
-    document.getElementById('toSlider').value = 5000000;
-    document.getElementById('fromInput').value = 0;
-    document.getElementById('toInput').value = 5000000;
+let currentPage = 1;
+let itemsPerPage = getItemsPerPage();          
 
-    // Az összes kártya újratöltése a szűrők törlésével
-    feltolesKartyakkal(valasz); // Az összes adatot újra betölti
-    frissitTalalatokSzama(valasz.length); // Frissíti a találatok számát
-    document.getElementById('toSlider').style.background = 'rgb(37, 218, 165)';
-});
+function setupPagination(totalPages, currentPage = 1) {
+    const paginationContainer = document.getElementById("pagination");
+    paginationContainer.innerHTML = "";
+
+    for (let i = 1; i <= totalPages; i++) {
+        const button = document.createElement("button");
+        button.textContent = i;
+        button.classList.add("pagination-btn");
+
+        if (i === currentPage) {
+            button.classList.add("active");
+        }
+
+        button.addEventListener("click", function () {
+            loadProducts(i);
+        });
+
+        paginationContainer.appendChild(button);
+    }
+}               
+
+// Fő függvények
+function loadProducts(page = 1) {
+    const limitPerPage = getItemsPerPage();
+    let queryParams = new URLSearchParams();
+
+    let kategoriak = Array.from(document.querySelectorAll('input[name="kategoriak"]:checked')).map(cb => cb.value);
+    let gyartok = Array.from(document.querySelectorAll('input[name="gyartok"]:checked')).map(cb => cb.value);
+    let fromprice = document.getElementById('fromSlider').value;
+    let toprice = document.getElementById('toSlider').value;
+
+    if (kategoriak.length > 0) queryParams.append("kategoriak", kategoriak.join(","));
+    if (gyartok.length > 0) queryParams.append("gyartok", gyartok.join(","));
+    queryParams.append("fromprice", fromprice);
+    queryParams.append("toprice", toprice);
+    queryParams.append("page", page);
+    queryParams.append("limit", limitPerPage);
+
+    fetch(`./termekek_api.php?${queryParams.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+            displayProducts(data.termekek, data.total_items); // 🚀 **Az új verziót használjuk**
+            setupPagination(data.total_pages, page);
+        })
+        .catch(error => console.error("Hiba a termékek betöltésekor:", error));
+}
 
 function frissitSzuroMagassag() {
     const szuroContainer = document.getElementById("szuro-container");
@@ -210,7 +249,7 @@ async function szuresKuldes() {
         data: data,
         success: function (response) {
             valasz = JSON.parse(response);
-            feltolesKartyakkal(valasz);
+            displayProducts(valasz);
         }
     });
 }
@@ -220,7 +259,7 @@ async function adatbazisbolLekeres() {
         let eredmeny = await fetch("../php/adatokLekerese.php");
         if (eredmeny.ok) {
             let valasz = await eredmeny.json();
-            feltolesKartyakkal(valasz);
+            displayProducts(valasz, valasz.length); // 🚀 **Az új verziót használjuk**
         }
     } catch (error) {
         console.log(error);
@@ -228,43 +267,26 @@ async function adatbazisbolLekeres() {
 }
 
 function Szures() {
-    kartyak.innerHTML = "";  // Töröljük a meglévő kártyákat
+    kartyak.innerHTML = "";  
     let fromprice = document.getElementById('fromSlider').value;
     let toprice = document.getElementById('toSlider').value;
 
-    // Kiválasztott kategóriák és gyártók lekérése
     let kivalasztottKategoriak = Array.from(document.querySelectorAll('input[name="kategoriak"]:checked')).map(cb => cb.value);
     let kivalasztottGyartok = Array.from(document.querySelectorAll('input[name="gyartok"]:checked')).map(cb => cb.value);
 
-    let szurtKartyak = [];
-
-    // Szűrési logika
-    for (const adat of valasz) {
-        // Szóközök eltávolítása és számokká alakítás
+    let szurtKartyak = valasz.filter(adat => {
         const egysegar = parseFloat(adat.egysegar.replace(/\s/g, ''));
         const akcios_ar = parseFloat(adat.akcios_ar.replace(/\s/g, ''));
-
-        // Ha van érvényes akciós ár, és az kisebb az egységárnál, akkor az alapján szűrünk
         const hasznaltAr = (akcios_ar > -1 && akcios_ar < egysegar) ? akcios_ar : egysegar;
 
-        // Ár szűrés
-        const arMegfelelo = toprice >= hasznaltAr && fromprice <= hasznaltAr;
+        return (
+            toprice >= hasznaltAr && fromprice <= hasznaltAr &&
+            (kivalasztottKategoriak.length === 0 || kivalasztottKategoriak.includes(adat.kategoria_nev)) &&
+            (kivalasztottGyartok.length === 0 || kivalasztottGyartok.includes(adat.gyarto_nev))
+        );
+    });
 
-        // Kategóriák és gyártók szűrés logikája
-        const kategoriaMegfelelo = kivalasztottKategoriak.length === 0 || kivalasztottKategoriak.includes(adat.kategoria_nev);
-        const gyartoMegfelelo = kivalasztottGyartok.length === 0 || kivalasztottGyartok.includes(adat.gyarto_nev);
-
-        // Ha minden szűrési feltétel teljesül, hozzáadjuk a kártyát a szűrt listához
-        if (arMegfelelo && kategoriaMegfelelo && gyartoMegfelelo) {
-            szurtKartyak.push(adat);
-        }
-    }
-
-    // Kártyák feltöltése a szűrt eredményekkel
-    feltolesKartyakkal(szurtKartyak);
-
-    // Frissítjük a találatok számát
-    frissitTalalatokSzama(szurtKartyak.length);
+    displayProducts(szurtKartyak, szurtKartyak.length); // 🚀 **Az új verziót használjuk**
 }
 
 // Rendezési funkciók
@@ -360,8 +382,8 @@ function rendezes(sortType) {
     frissitTalalatokSzama(kartyak.length);
 }
 
-function frissitTalalatokSzama(darab) {
-    document.getElementById('talalatok').textContent = `Találatok: ${darab} termék`;
+function frissitTalalatokSzama(osszDarab) {
+    document.getElementById('talalatok-szam').textContent = `${osszDarab}`;
 }
 
 function toggleDropdown() {
@@ -464,28 +486,28 @@ function kosarbaTesz(termekId, event) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "add", termek_id: termekId, mennyiseg: 1 })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            let cartCountElement = document.getElementById("cart-count");
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                let cartCountElement = document.getElementById("cart-count");
 
-            if (cartCountElement) {
-                cartCountElement.textContent = data.uj_mennyiseg;
-            } else {
-                // Ha először adunk hozzá terméket, létrehozzuk a számlálót
-                const cartIcon = document.querySelector(".cart-icon");
-                const badge = document.createElement("span");
-                badge.id = "cart-count";
-                badge.className = "position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger";
-                badge.textContent = data.uj_mennyiseg;
-                cartIcon.appendChild(badge);
+                if (cartCountElement) {
+                    cartCountElement.textContent = data.uj_mennyiseg;
+                } else {
+                    // Ha először adunk hozzá terméket, létrehozzuk a számlálót
+                    const cartIcon = document.querySelector(".cart-icon");
+                    const badge = document.createElement("span");
+                    badge.id = "cart-count";
+                    badge.className = "position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger";
+                    badge.textContent = data.uj_mennyiseg;
+                    cartIcon.appendChild(badge);
+                }
+
+                // 🔹 Indítjuk az animációt, de a számlálót csak az animáció végén frissítjük
+                animateToCart(event);
             }
-
-            // 🔹 Indítjuk az animációt, de a számlálót csak az animáció végén frissítjük
-            animateToCart(event);
-        }
-    })
-    .catch(error => console.error("Hiba:", error));
+        })
+        .catch(error => console.error("Hiba:", error));
 }
 
 function animateToCart(event) {
@@ -528,7 +550,7 @@ function animateToCart(event) {
 
     setTimeout(() => {
         img.remove();
-        
+
         // **Ne növeljük a számlálót kézzel, hanem kérjünk frissítést a szerverről!**
         if (typeof updateCartCount === "function") {
             updateCartCount(); // **A kosar.js frissíti a valódi értéket**
@@ -538,14 +560,15 @@ function animateToCart(event) {
 }
 
 // Kártyák feltöltése
-function feltolesKartyakkal(adatok) {
-    kartyak.innerHTML = "";
-    for (const adat of adatok) {
+function displayProducts(products, totalItems) {
+    let container = document.getElementById("kartyak");
+    container.innerHTML = "";
+
+    products.forEach(adat => {
         let card = document.createElement("div");
         card.classList.add("card");
-        card.style.cursor = "pointer"; // Mutató kurzor hozzáadása, hogy kattinthatónak tűnjön
+        card.style.cursor = "pointer";
 
-        // Kattintási esemény a teljes kártyára
         card.addEventListener("click", function () {
             window.location.href = `../php/termekOldal.php?cikkszam=${adat.cikkszam}`;
         });
@@ -556,7 +579,7 @@ function feltolesKartyakkal(adatok) {
 
         let img = document.createElement("img");
         img.src = `../img/termekek/${adat.cikkszam}.webp`;
-        img.alt = adat.termek_nev;
+        img.alt = adat.nev;
         img.classList.add("card-img-top");
         card_header.appendChild(img);
 
@@ -565,73 +588,72 @@ function feltolesKartyakkal(adatok) {
 
         let cardTitle = document.createElement("h5");
         cardTitle.classList.add("card-title");
-        cardTitle.innerHTML = adat.termek_nev;
+        cardTitle.innerHTML = adat.nev;
 
-        let cardTitle2 = document.createElement("h6");
-        cardTitle2.classList.add("card-subtitle", "mb-2", "text-muted");
+        let cardPrice = document.createElement("h6");
+        let akcios_ar = parseFloat(String(adat.akcios_ar).replace(/\s/g, ''));
+        let egysegar = parseFloat(String(adat.egysegar).replace(/\s/g, ''));
 
-        let akcios_ar = parseFloat(adat.akcios_ar.replace(/\s/g, ''));
-        let egysegar = parseFloat(adat.egysegar.replace(/\s/g, ''));
         if (akcios_ar > -1 && akcios_ar < egysegar) {
-            cardTitle2.innerHTML = `<span class="original-price">${adat.egysegar} Ft</span> 
+            cardPrice.innerHTML = `<span class="original-price">${adat.egysegar} Ft</span> 
                              <span class="discounted-price">${adat.akcios_ar} Ft</span>`;
             card_header.innerHTML += `<div class="badge">Akció!</div>`;
         } else {
-            cardTitle2.innerHTML = `${adat.egysegar} Ft`;
+            cardPrice.innerHTML = `${adat.egysegar} Ft`;
         }
 
-        let cardText = document.createElement("p");
-        cardText.classList.add("card-text");
-        cardText.innerHTML = adat.cikkszam;
-
         let cartButton = document.createElement("button");
-        cartButton.classList.add("btn", "btn-success", "d-flex", "align-items-center", "gap-2");
-        cartButton.innerHTML = `
-                                    <span>
-                                        <img src="../img/cart.png" alt="Kosár ikon" width="25" height="25">
-                                    </span> Kosárba
-                                `;
+        cartButton.classList.add("btn", "btn-success");
+        cartButton.innerHTML = `Kosárba`;
         cartButton.setAttribute("data-id", adat.cikkszam);
-        cartButton.style.border = 0;
-        cartButton.style.transition = "box-shadow 0.3s ease-in-out";
-
-        // Hover effekt az árnyékhoz
-        cartButton.onmouseover = function () {
-            cartButton.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.8)";
-        };
-        cartButton.onmouseout = function () {
-            cartButton.style.boxShadow = "none";
-        };
-
-        // Kattintási esemény a kosárhoz adáshoz
         cartButton.onclick = function (event) {
             event.stopPropagation();
             kosarbaTesz(adat.cikkszam, event);
         };
 
-        let buttonContainer = document.createElement("div");
-        buttonContainer.classList.add("d-flex", "justify-content-between", "mt-auto", "w-100");
-        buttonContainer.appendChild(cartButton);
-
         cardBody.appendChild(cardTitle);
-        cardBody.appendChild(cardText);
-        cardBody.appendChild(cardTitle2);
-        cardBody.appendChild(buttonContainer);
-
+        cardBody.appendChild(cardPrice);
+        cardBody.appendChild(cartButton);
         card.appendChild(cardBody);
+        container.appendChild(card);
+    });
 
-        kartyak.appendChild(card);
-    }
-
-    frissitTalalatokSzama(adatok.length);
+    // 🔹 **Frissítsük a teljes találatok számát**
+    document.getElementById("talalatok-szam").textContent = totalItems;
 }
 
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-window.addEventListener("DOMContentLoaded", adatbazisbolLekeres);
-window.addEventListener("load", szuresKuldes);
-window.addEventListener('load', kategoriafeltolt);
-window.addEventListener('load', gyartoFeltolt);
-document.getElementById("szures_button").addEventListener('click', Szures);
+
+function initEventListeners() {
+    document.getElementById("szures_button").addEventListener("click", function () {
+        loadProducts(1);
+    });
+
+    document.getElementById('clear-filters').addEventListener('click', function () {
+        document.querySelectorAll('#kategoriak input[type="checkbox"], #gyartok input[type="checkbox"]').forEach(item => {
+            item.checked = false;
+        });
+
+        document.getElementById('fromSlider').value = 0;
+        document.getElementById('toSlider').value = 5000000;
+        document.getElementById('fromInput').value = 0;
+        document.getElementById('toInput').value = 5000000;
+
+        loadProducts(1);
+    });
+
+    window.addEventListener("resize", () => {
+        itemsPerPage = getItemsPerPage();
+        loadProducts(currentPage);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    loadProducts(1);
+    kategoriafeltolt();
+    gyartoFeltolt();
+    initEventListeners();
+});

@@ -92,6 +92,7 @@ ob_start();
                 </div>
 
                 <div id="kartyak"></div>
+                <div id="pagination"></div>
             </div>
         </div>
     </div>
