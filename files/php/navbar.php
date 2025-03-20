@@ -88,9 +88,10 @@ if (isset($_SESSION['user_email'])) {
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <form method="POST" class="dropdown-item p-0 m-0">
-                                <button type="submit" name="logout" class="btn btn-link text-decoration-none text-dark">Kijelentkezés</button>
+                            <form id="logout-form" action="./index.php" method="post" style="display: none;">
+                                <input type="hidden" name="logout" value="true">
                             </form>
+                            <button id="logout-button" class="btn btn-link text-decoration-none text-dark">Kijelentkezés</button>
                         </li>
                     </ul>
                 </div>
@@ -137,13 +138,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
         const searchForm = document.getElementById('searchForm');
 
         if (searchForm.classList.contains('active')) {
-            searchForm.style.height = "0px";  // Összecsukás animálva
+            searchForm.style.height = "0px"; // Összecsukás animálva
             searchForm.style.opacity = "0";
             setTimeout(() => searchForm.classList.remove('active'), 300); // 300ms után eltávolítjuk az active osztályt
         } else {
             searchForm.classList.add('active');
-            searchForm.style.height = "50px";  // Lenyitás animálva
+            searchForm.style.height = "50px"; // Lenyitás animálva
             searchForm.style.opacity = "1";
         }
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        let logoutButton = document.getElementById("logout-button");
+        if (logoutButton) {
+            logoutButton.addEventListener("click", function() {
+                document.getElementById("logout-form").submit();
+            });
+        }
+    });
 </script>

@@ -16,6 +16,10 @@
     margin-left: 15px;
 }
 
+.logged-icon {
+    border: none !important;
+}
+
 .cart-icon {
     margin-right: 15px;
 }
