@@ -135,14 +135,28 @@ function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
                         <tbody>";
 
         foreach ($cartItems as $item) {
-            $itemTotal = $item['darabszam'] * $item['egysegar'];
-            $emailBody .= "<tr>
-                <td>{$item['nev']}</td>
-                <td>{$item['cikkszam']}</td>
-                <td>{$item['darabszam']}</td>
-                <td>" . number_format($item['egysegar'], 0, ',', ' ') . " Ft</td>
-                <td>" . number_format($itemTotal, 0, ',', ' ') . " Ft</td>
-            </tr>";
+            if ($item['akcios_ar'] > -1) {
+                $itemTotal = $item['darabszam'] * $item['akcios_ar'];
+                $emailBody .= "<tr>
+                        <td>{$item['nev']}</td>
+                        <td>{$item['cikkszam']}</td>
+                        <td>{$item['darabszam']}</td>
+                        <td>
+                            <s>" . number_format($item['egysegar'], 0, ',', ' ') . " Ft</s><br>
+                            <span style='color: green; font-weight: bold;'>" . number_format($item['akcios_ar'], 0, ',', ' ') . " Ft</span>
+                        </td>
+                    <td>" . number_format($itemTotal, 0, ',', ' ') . " Ft</td>
+                </tr>";
+            } else {
+                $itemTotal = $item['darabszam'] * $item['egysegar'];
+                $emailBody .= "<tr>
+                    <td>{$item['nev']}</td>
+                    <td>{$item['cikkszam']}</td>
+                    <td>{$item['darabszam']}</td>
+                    <td>" . number_format($item['egysegar'], 0, ',', ' ') . " Ft</td>
+                    <td>" . number_format($itemTotal, 0, ',', ' ') . " Ft</td>
+                </tr>";
+            }
         }
 
         $emailBody .= "</tbody>
