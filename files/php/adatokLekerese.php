@@ -56,6 +56,7 @@ if (is_array($eredmeny)) {
     // Az ár formázása a PHP oldalon
     foreach ($eredmeny as &$adat) {
         $adat['egysegar'] = number_format($adat['egysegar'], 0, ',', ' ');  // Formázott ár
+        $adat['akcios_ar'] = number_format($adat['akcios_ar'], 0, ',', ' ');
     }
     echo json_encode($eredmeny, JSON_UNESCAPED_UNICODE);  // JSON válasz küldése
 } else {
