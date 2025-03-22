@@ -17,10 +17,12 @@ body {
         transform: scale(1) translateY(0);
         opacity: 1;
     }
+
     50% {
         transform: scale(0.5) translateY(-50px);
         opacity: 0.7;
     }
+
     100% {
         transform: scale(0.2) translate(var(--cart-x), var(--cart-y));
         opacity: 0;
@@ -52,14 +54,16 @@ body {
     flex-direction: column;
     position: fixed;
     left: 0;
-    top: 80px; /* Navbar alatt kezdődik */
+    top: 80px;
+    /* Navbar alatt kezdődik */
     width: 300px;
     background-color: #f9f9f9;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
     box-sizing: border-box;
     overflow-y: auto;
-    height: auto; /* A magasságot a JS állítja be */
+    height: auto;
+    /* A magasságot a JS állítja be */
     transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
 }
 
@@ -67,7 +71,8 @@ body {
 #szuro-container.hidden {
     opacity: 0;
     transform: translateX(-100%);
-    pointer-events: none; /* Így nem lesz kattintható */
+    pointer-events: none;
+    /* Így nem lesz kattintható */
 }
 
 /* Ha újra megjelenik, ne növekedjen */
@@ -79,11 +84,13 @@ body {
 }
 
 #szuro-container.expanded {
-    min-height: auto; /* A panel magasságát az új tartalomhoz igazítja */
+    min-height: auto;
+    /* A panel magasságát az új tartalomhoz igazítja */
 }
 
 /* Kis képernyőre vonatkozó beállítások */
 @media (max-width: 1200px) {
+
     /* Szűrőpanel: alapból csukva, majd animáltan jelenik meg fentről */
     #szuro-container {
         position: fixed;
@@ -94,7 +101,8 @@ body {
         max-width: none;
         /* A teljes magasságot biztosítja, amennyiben tartalom van */
         height: auto;
-        max-height: 90vh; /* Kicsit marad hely a felső sávnak vagy más tartalomnak */
+        max-height: 90vh;
+        /* Kicsit marad hely a felső sávnak vagy más tartalomnak */
         padding: 15px;
         z-index: 1050;
         transform: translateY(-100%);
@@ -103,12 +111,14 @@ body {
         overflow-y: hidden;
         transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
     }
+
     /* Nyitásnál fentről lefelé csúszik be */
     #szuro-container.show {
         transform: translateY(0);
         opacity: 1;
         pointer-events: all;
     }
+
     /* Bezárásnál viszont felfelé csúszik ki */
     #szuro-container.hidden {
         transform: translateY(-100%);
@@ -133,13 +143,18 @@ body {
     gap: 12px;
     justify-content: center;
     align-items: center;
-    transition: all 0.5s ease-in-out; /* Animáció a szélesség változására */
+    transition: all 0.5s ease-in-out;
+    /* Animáció a szélesség változására */
     width: calc(100% - 320px);
     margin-left: 320px;
-    display: flex;             /* Már létezik, de felülírjuk a flex irányt */
-    flex-direction: column;    /* Oszlopos elrendezés */
-    min-height: calc(100vh - 100px); /* Biztosítja, hogy mindig elég magas legyen, módosítsd igény szerint */
-    justify-content: space-between; /* A lapozás mindig a konténer alján lesz */
+    display: flex;
+    /* Már létezik, de felülírjuk a flex irányt */
+    flex-direction: column;
+    /* Oszlopos elrendezés */
+    min-height: calc(100vh - 100px);
+    /* Biztosítja, hogy mindig elég magas legyen, módosítsd igény szerint */
+    justify-content: space-between;
+    /* A lapozás mindig a konténer alján lesz */
 }
 
 /* Ha a szűrő eltűnik, a kártyák teljes szélességet kapnak */
@@ -152,23 +167,28 @@ body {
 #kartyak {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(246px, 1fr));
-    gap: 12px; /* Alap távolság */
-    justify-content: center; /* Kártyák középre igazítása */
+    gap: 12px;
+    /* Alap távolság */
+    justify-content: center;
+    /* Kártyák középre igazítása */
     width: 100%;
-    margin: 0 auto; /* Teljes szélesség középre helyezve */
+    margin: 0 auto;
+    /* Teljes szélesség középre helyezve */
     flex: 1;
 }
 
 /* Kisebb kijelzők esetén csökkentjük a távolságot */
 @media (max-width: 1024px) {
     #kartyak {
-        gap: 8px; /* Csökkentett távolság, hogy ne legyen túl szellős */
+        gap: 8px;
+        /* Csökkentett távolság, hogy ne legyen túl szellős */
     }
 }
 
 @media (max-width: 768px) {
     #kartyak {
-        gap: 6px; /* Még kisebb távolság, hogy jobban nézzen ki mobilon */
+        gap: 6px;
+        /* Még kisebb távolság, hogy jobban nézzen ki mobilon */
     }
 }
 
@@ -190,8 +210,10 @@ body {
 
 /* Kártya hover */
 .card:hover {
-    transform: translateY(-5px); /* Kisebb elmozdulás */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Finomabb árnyék */
+    transform: translateY(-5px);
+    /* Kisebb elmozdulás */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    /* Finomabb árnyék */
 }
 
 .card-header {
@@ -343,18 +365,24 @@ input[type="range"]::-moz-range-thumb {
 .szuroContent {
     display: flex;
     flex-direction: column;
-    height: 100%; /* Kitölti a teljes rendelkezésre álló teret */
-    justify-content: space-between; /* Egyenletesen elosztott elemek */
+    height: 100%;
+    /* Kitölti a teljes rendelkezésre álló teret */
+    justify-content: space-between;
+    /* Egyenletesen elosztott elemek */
 }
 
 /* Egyes szűrési szekciók elrendezése */
 .szuroSector {
-    flex-grow: 1; /* Egyenletes eloszlás */
+    flex-grow: 1;
+    /* Egyenletes eloszlás */
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Középre igazítás */
-    min-height: 100px; /* Alapértelmezett minimális magasság */
-    padding-bottom: 2vh; /* Dinamikus térköz a szekciók között */
+    justify-content: center;
+    /* Középre igazítás */
+    min-height: 100px;
+    /* Alapértelmezett minimális magasság */
+    padding-bottom: 2vh;
+    /* Dinamikus térköz a szekciók között */
 }
 
 /* Szűrőpanel visszatérési állapotának helyes beállítása */
@@ -377,14 +405,16 @@ input[type="range"]::-moz-range-thumb {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px; /* Távolság a Min és Max mezők között */
+    gap: 10px;
+    /* Távolság a Min és Max mezők között */
 }
 
 .form_control_container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    flex: 1; /* Egyenlő szélesség */
+    flex: 1;
+    /* Egyenlő szélesség */
 }
 
 .form_control_container__time {
@@ -395,7 +425,8 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .form_control_container__time__input {
-    width: 100px; /* Szélesség rögzítése */
+    width: 100px;
+    /* Szélesség rögzítése */
     padding: 5px;
     text-align: center;
     font-size: 1rem;
@@ -451,7 +482,8 @@ input[type='range'] {
 }
 
 #szures_button {
-    margin-top: auto; /* Az aljára nyomja a többi tartalmat */
+    margin-top: auto;
+    /* Az aljára nyomja a többi tartalmat */
     padding: 10px;
     background-color: #262d3f;
     color: #fff;
@@ -484,7 +516,8 @@ a:hover {
 /* Fejléc konténer beállítása */
 #fejlec-container {
     display: flex;
-    justify-content: space-between; /* A két végére igazítja az elemeket */
+    justify-content: space-between;
+    /* A két végére igazítja az elemeket */
     align-items: center;
     padding: 10px 0;
     z-index: 10;
@@ -530,10 +563,12 @@ a:hover {
         transform: scale(1) translateY(0);
         opacity: 1;
     }
+
     50% {
         transform: scale(0.5) translateY(-50px);
         opacity: 0.7;
     }
+
     100% {
         transform: scale(0.2) translate(var(--cart-x), var(--cart-y));
         opacity: 0;
@@ -578,14 +613,16 @@ a:hover {
         left: 0;
         right: 0;
         width: 100%;
-        height: 100vh; /* A teljes képernyő magasságát lefedi */
+        height: 100vh;
+        /* A teljes képernyő magasságát lefedi */
         max-height: 100vh;
         padding: 15px;
         z-index: 1050;
         transform: translateY(-100%);
         opacity: 0;
         pointer-events: none;
-        overflow: hidden; /* Kikapcsolja a görgetést */
+        overflow: hidden;
+        /* Kikapcsolja a görgetést */
         transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
     }
 
@@ -593,12 +630,14 @@ a:hover {
         transform: translateY(0);
         opacity: 1;
         pointer-events: all;
-        overflow-y: visible; /* Engedélyezi a tartalom teljes megjelenítését */
+        overflow-y: visible;
+        /* Engedélyezi a tartalom teljes megjelenítését */
     }
 
     /* Ha nagyon sok elem van, és mégis kellene görgetés */
     #szuro-container.show .szuroContent {
-        max-height: 90vh; /* Csak akkor görgethető, ha TÉNYLEG szükséges */
+        max-height: 90vh;
+        /* Csak akkor görgethető, ha TÉNYLEG szükséges */
         overflow-y: auto;
     }
 
@@ -610,7 +649,8 @@ a:hover {
 
     #kartyak-container {
         display: flex;
-        justify-content: center; /* Középre igazítja a kártyákat vízszintesen */
+        justify-content: center;
+        /* Középre igazítja a kártyákat vízszintesen */
         align-items: center;
         width: 100%;
         margin: 0 auto;
@@ -618,8 +658,9 @@ a:hover {
 
     #kartyak {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-        justify-content: center; /* Középre igazítja a rácsot */
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        justify-content: center;
+        /* Középre igazítja a rácsot */
         gap: 12px;
     }
 
@@ -628,70 +669,86 @@ a:hover {
     }
 
     #fejlec-container {
-        flex-direction: column; /* Váltson oszlopos elrendezésre */
+        flex-direction: column;
+        /* Váltson oszlopos elrendezésre */
         align-items: center;
         padding: 10px;
-        gap: 10px; /* Térköz a tartalmak között */
+        gap: 10px;
+        /* Térköz a tartalmak között */
     }
 
-    #fejlec-container > *:not(#talalatok) {
-        order: 1; /* A gombok és egyéb elemek kerüljenek előre */
+    #fejlec-container>*:not(#talalatok) {
+        order: 1;
+        /* A gombok és egyéb elemek kerüljenek előre */
     }
 
     #talalatok {
-        order: 2; /* A találatok száma legyen a második sor */
-        margin-top: 0; /* Ne legyen extra távolság felül */
-        align-self: center; /* Balra igazítás */
+        order: 2;
+        /* A találatok száma legyen a második sor */
+        margin-top: 0;
+        /* Ne legyen extra távolság felül */
+        align-self: center;
+        /* Balra igazítás */
         margin-top: 10px;
     }
 }
 
-#kategoriak a, #gyartok a {
+#kategoriak a,
+#gyartok a {
     font-size: 14px;
     text-decoration: underline;
     cursor: pointer;
-    display: block; /* Az összes gomb legyen blokk elem, hogy megfelelően sorba rendeződjön */
+    display: block;
+    /* Az összes gomb legyen blokk elem, hogy megfelelően sorba rendeződjön */
     margin: 5px 0;
 }
 
-#kategoriak a:hover, #gyartok a:hover {
+#kategoriak a:hover,
+#gyartok a:hover {
     color: blue;
 }
 
 /* További gombok */
-#kategoriak a:last-child, #gyartok a:last-child {
+#kategoriak a:last-child,
+#gyartok a:last-child {
     font-weight: bold;
     color: blue;
     cursor: pointer;
 }
 
 /* Hover állapot további gombnál */
-#kategoriak a:last-child:hover, #gyartok a:last-child:hover {
+#kategoriak a:last-child:hover,
+#gyartok a:last-child:hover {
     color: blue;
 }
 
 /* Szűrőpanel kibővített állapota */
 #filter_div.expanded {
-    max-height: 1000px; /* Vagy bármilyen magas érték, hogy eltakarja a további tartalmat */
+    max-height: 1000px;
+    /* Vagy bármilyen magas érték, hogy eltakarja a további tartalmat */
     overflow: auto;
 }
 
 /* A "További" gomb eltüntetése alapértelmezetten */
-#kategoriak .tovabbi, #gyartok .tovabbi {
+#kategoriak .tovabbi,
+#gyartok .tovabbi {
     display: none;
 }
 
 /* A "Bezárás" gomb megjelenítése */
-#kategoriak .bezaras, #gyartok .bezaras {
+#kategoriak .bezaras,
+#gyartok .bezaras {
     display: none;
 }
 
 /* Ha a "További" gombot megnyitjuk, akkor a "Bezárás" gombot is megjelenítjük */
-#kategoriak.expanded .tovabbi, #gyartok.expanded .tovabbi {
+#kategoriak.expanded .tovabbi,
+#gyartok.expanded .tovabbi {
     display: none;
 }
 
-#kategoriak.expanded .bezaras, #gyartok.expanded .bezaras {
+#kategoriak.expanded .bezaras,
+#gyartok.expanded .bezaras {
     display: block;
 }
 
@@ -724,7 +781,8 @@ a:hover {
 
 /* Akciós ár kiemelve */
 .card-body .akcios-ar {
-    color: #d9534f; /* Pirosas kiemelés */
+    color: #d9534f;
+    /* Pirosas kiemelés */
     font-weight: bold;
     font-size: 1.2rem;
 }
@@ -733,7 +791,8 @@ a:hover {
     position: absolute;
     top: 10px;
     left: 10px;
-    background-color: #22ff26; /* Badge színe */
+    background-color: #22ff26;
+    /* Badge színe */
     color: white;
     padding: 5px 10px;
     font-size: 0.9rem;
@@ -771,7 +830,7 @@ a:hover {
     font-size: 16px;
     border-radius: 8px;
     transition: background 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .page-btn:hover {
@@ -783,4 +842,57 @@ a:hover {
     background-color: #22ff26;
     font-weight: bold;
     transform: scale(1.05);
+}
+
+.cart-button-container {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.add-to-cart {
+    padding: 6px 12px;
+    font-weight: bold;
+}
+
+.quantity-control {
+    display: inline-flex;
+    justify-content: center;
+    gap: 5px;
+    align-items: center;
+}
+
+.quantity-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+    color: white;
+    background-color: #293144;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.quantity-input {
+    width: 45px !important;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 28px;
+}
+
+.cart-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }

@@ -19,6 +19,12 @@ h2 {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Ha a gomb disabled állapotban van */
+.quantity-btn:disabled {
+    background: #aaa !important; /* Szürke háttér */
+    cursor: not-allowed !important; /* Nem kattintható */
+}
+
 .cart-table th {
     background: #293144;
     color: white;

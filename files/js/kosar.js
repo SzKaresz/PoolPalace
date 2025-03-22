@@ -31,34 +31,114 @@ function updateQuantity(termekId, change) {
         return;
     }
 
-    let newQuantity = parseInt(quantityElement.textContent, 10) + change;
-    if (newQuantity < 1) newQuantity = 1;
+    let currentQuantity = parseInt(quantityElement.textContent, 10);
+    let newQuantity = currentQuantity + change;
 
+    // 🔹 Lekérjük a termék raktárkészletét az adatbázisból
     fetch('../php/kosarMuvelet.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            action: 'update',
-            termek_id: termekId,
-            mennyiseg: newQuantity
+            action: 'getStock',
+            termek_id: termekId
         })
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
-            quantityElement.textContent = newQuantity;
-            const row = quantityElement.closest('tr');
-            updateRowTotal(row, newQuantity);
-            updateCartTotal();
-            updateCartCount();
-        } else {
-            console.error("Hiba történt a mennyiség frissítésekor: " + data.error);
+        if (!data.success) {
+            console.error("Hiba történt a készlet lekérdezésekor:", data.error);
+            return;
         }
+
+        let maxStock = data.raktar_keszlet;
+
+        // 🔹 Nem engedjük a mínusz gombot 1 alá menni
+        if (newQuantity < 1) {
+            newQuantity = 1;
+        }
+
+        // 🔹 Nem engedjük a plusz gombot a készlet fölé menni
+        if (newQuantity > maxStock) {
+            newQuantity = maxStock;
+        }
+
+        // 🔹 Frissítsük az adatbázist
+        fetch('../php/kosarMuvelet.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'update',
+                termek_id: termekId,
+                mennyiseg: newQuantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                quantityElement.textContent = newQuantity;
+                const row = quantityElement.closest('tr');
+                updateRowTotal(row, newQuantity);
+                updateCartTotal();
+                updateCartCount();
+
+                // 🔹 + és - gombok frissítése
+                const plusButton = row.querySelector(".quantity-btn.plus");
+                const minusButton = row.querySelector(".quantity-btn.minus");
+
+                if (plusButton) {
+                    plusButton.disabled = (newQuantity >= maxStock);
+                }
+
+                if (minusButton) {
+                    minusButton.disabled = (newQuantity <= 1);
+                }
+            } else {
+                console.error("Hiba történt a mennyiség frissítésekor:", data.error);
+            }
+        });
     })
-    .catch(error => {
-        console.error("Hiba:", error);
+    .catch(error => console.error("Hiba:", error));
+}
+
+function disableCartButtons() {
+    document.querySelectorAll(".cart-table tbody tr").forEach(row => {
+        let termekId = row.dataset.id.padStart(6, '0');
+        let quantityElement = row.querySelector(".quantity");
+        let plusButton = row.querySelector(".quantity-btn.plus");
+        let minusButton = row.querySelector(".quantity-btn.minus");
+
+        if (!quantityElement || !plusButton || !minusButton) return;
+
+        let currentQuantity = parseInt(quantityElement.textContent, 10);
+
+        // 🔹 Lekérjük a raktárkészletet minden termékre
+        fetch('../php/kosarMuvelet.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'getStock',
+                termek_id: termekId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) return;
+
+            let maxStock = data.raktar_keszlet;
+
+            // 🔹 Ha elérte a maximumot, a `+` gomb inaktiválása
+            plusButton.disabled = (currentQuantity >= maxStock);
+
+            // 🔹 Ha már 1 a mennyiség, a `-` gomb inaktiválása
+            minusButton.disabled = (currentQuantity <= 1);
+        });
     });
 }
+
+// 🔹 Betöltéskor is ellenőrizzük
+document.addEventListener("DOMContentLoaded", function () {
+    disableCartButtons();
+});
 
 function removeItem(termekId) {
     fetch('../php/kosarMuvelet.php', {
@@ -85,6 +165,32 @@ function removeItem(termekId) {
     .catch(error => {
         console.error("Hiba:", error);
     });
+}
+
+function updateCartItem(termekId, change) {
+    fetch("../php/kosarMuvelet.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update", termek_id: termekId, mennyiseg: change })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateCartCount();
+            let productCard = document.querySelector(`.card[data-id="${termekId}"]`);
+            let quantityInput = productCard.querySelector(".quantity-input");
+            let newValue = parseInt(quantityInput.value) + change;
+
+            if (newValue < 1) {
+                newValue = 1;
+            }
+            quantityInput.value = newValue;
+            quantityInput.dataset.currentValue = newValue;
+        } else {
+            alert(data.error);
+        }
+    })
+    .catch(error => console.error("Hiba:", error));
 }
 
 function removeAllItems() {
