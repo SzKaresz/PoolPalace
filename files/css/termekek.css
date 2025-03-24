@@ -834,12 +834,11 @@ a:hover {
 }
 
 .page-btn:hover {
-    background-color: #37d2a5;
     transform: translateY(-2px);
 }
 
 .page-btn.active {
-    background-color: #22ff26;
+    background-color: rgb(37, 218, 165);
     font-weight: bold;
     transform: scale(1.05);
 }
