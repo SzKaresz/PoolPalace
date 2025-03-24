@@ -148,7 +148,6 @@ function setupPagination(totalPages, current) {
         if (isActive) button.classList.add("active");
         button.addEventListener("click", () => {
             if (!disabled) {
-                currentPage = page;
                 loadProducts(page);
                 tetejere();
             }
@@ -156,11 +155,16 @@ function setupPagination(totalPages, current) {
         return button;
     }
 
+    // 🔹 Ha csak 1 oldal van, ne jelenítsük meg a lapozót
+    if (totalPages <= 1) {
+        return;
+    }
+
     // « és < gombok
     leftContainer.appendChild(createPageButton("«", 1, current === 1));
     leftContainer.appendChild(createPageButton("<", current - 1, current === 1));
 
-    // 🔹 Dinamikus "csúszóablak" – max 5 oldalszám jelenik meg
+    // Csúszóablak – max. 5 oldalszám
     const visibleCount = 5;
     let startPage = Math.max(1, current - Math.floor(visibleCount / 2));
     let endPage = startPage + visibleCount - 1;
@@ -214,7 +218,7 @@ function loadProducts(page = 1, sortType = '') {
     fetch(`./termekek_api.php?${queryParams.toString()}`)
         .then(response => response.json())
         .then(data => {
-            displayProducts(data.termekek, data.total_items);
+            displayProducts(data.termekek, data.total_items, page, data.total_pages);
             setupPagination(data.total_pages, page);
         })
         .catch(error => console.error("Hiba a termékek betöltésekor:", error));
@@ -475,9 +479,14 @@ document.querySelectorAll('#dropdown-options li').forEach(option => {
     });
 });
 
-function frissitTalalatokSzama(osszDarab) {
-    const oldalSzoveg = `<b>${osszDarab}</b> termék - <b>${currentPage}.</b> oldal`;
-    document.getElementById('talalatok').innerHTML = oldalSzoveg;
+function frissitTalalatokSzama(osszDarab, oldalSzam = 1, osszesOldal = 1) {
+    let szoveg;
+    if (osszesOldal <= 1) {
+        szoveg = `<b>Találatok: ${osszDarab} termék</b>`;
+    } else {
+        szoveg = `<b>${osszDarab} termék | ${oldalSzam}. oldal</b>`;
+    }
+    document.getElementById('talalatok').innerHTML = szoveg;
 }
 
 function toggleDropdown() {
@@ -959,7 +968,7 @@ function animateFromCart(productCard) {
 }
 
 // Kártyák feltöltése
-function displayProducts(products, totalItems) {
+function displayProducts(products, totalItems, oldalSzam = 1, osszesOldal = 1) {
     let container = document.getElementById("kartyak");
     container.innerHTML = "";
 
@@ -1079,7 +1088,7 @@ function displayProducts(products, totalItems) {
         container.appendChild(card);
     });
 
-    frissitTalalatokSzama(totalItems);
+    frissitTalalatokSzama(totalItems, oldalSzam, osszesOldal);
     checkCartState(); // Frissíti a darabszámokat és vezérlőket
 }
 
