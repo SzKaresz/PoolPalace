@@ -95,11 +95,13 @@ function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
             .footer { text-align: center; padding: 15px; font-size: 14px; color: #666; margin-top: 20px; }
             .button { display: inline-block; padding: 10px 20px; background: #293144; color: #ffffff; text-decoration: none; border-radius: 5px; margin-top: 15px; }
             table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
-            th, td { padding: 15px; border: 1px solid #ddd; text-align: left; }
+            th { padding: 15px; border: 1px solid #ddd; text-align: center; }
+            td { padding: 15px; border: 1px solid #ddd; text-align: center; }
             th { background-color: #293144; color: white; font-size: 16px; }
             tr:nth-child(even) { background-color: #f2f2f2; }
             tr:hover { background-color: #e9ecef; }
             .order-summary { margin-top: 20px; font-size: 18px; font-weight: bold; }
+            .ar {white-space: nowrap;}
             @media (max-width: 768px) {
                 body { font-size: 14px; }
                 th, td { padding: 8px; font-size: 13px; }
@@ -140,12 +142,12 @@ function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
                 $emailBody .= "<tr>
                         <td>{$item['nev']}</td>
                         <td>{$item['cikkszam']}</td>
-                        <td>{$item['darabszam']}</td>
+                        <td class='ar'>{$item['darabszam']}</td>
                         <td>
                             <s>" . number_format($item['egysegar'], 0, ',', ' ') . " Ft</s><br>
-                            <span style='color: green; font-weight: bold;'>" . number_format($item['akcios_ar'], 0, ',', ' ') . " Ft</span>
+                            <span class='ar' style='color: green; font-weight: bold;'>" . number_format($item['akcios_ar'], 0, ',', ' ') . " Ft</span>
                         </td>
-                    <td>" . number_format($itemTotal, 0, ',', ' ') . " Ft</td>
+                    <td class='ar'>" . number_format($itemTotal, 0, ',', ' ') . " Ft</td>
                 </tr>";
             } else {
                 $itemTotal = $item['darabszam'] * $item['egysegar'];
@@ -153,8 +155,8 @@ function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
                     <td>{$item['nev']}</td>
                     <td>{$item['cikkszam']}</td>
                     <td>{$item['darabszam']}</td>
-                    <td>" . number_format($item['egysegar'], 0, ',', ' ') . " Ft</td>
-                    <td>" . number_format($itemTotal, 0, ',', ' ') . " Ft</td>
+                    <td class='ar'>" . number_format($item['egysegar'], 0, ',', ' ') . " Ft</td>
+                    <td class='ar'>" . number_format($itemTotal, 0, ',', ' ') . " Ft</td>
                 </tr>";
             }
         }
