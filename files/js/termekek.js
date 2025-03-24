@@ -131,26 +131,46 @@ function tetejere() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function setupPagination(totalPages, currentPage = 1) {
+function setupPagination(totalPages, current) {
     const paginationContainer = document.getElementById("pagination");
     paginationContainer.innerHTML = "";
 
-    for (let i = 1; i <= totalPages; i++) {
+    function createPageButton(label, page, disabled = false, isActive = false) {
         const button = document.createElement("button");
-        button.textContent = i;
-        button.setAttribute("onclick", "tetejere()");
-        button.classList.add("pagination-btn");
-
-        if (i === currentPage) {
+        button.textContent = label;
+        button.classList.add("page-btn");
+        if (disabled) {
+            button.disabled = true;
+            button.classList.add("disabled");
+        }
+        if (isActive) {
             button.classList.add("active");
         }
-
-        button.addEventListener("click", function () {
-            loadProducts(i);
+        button.addEventListener("click", () => {
+            if (!disabled) {
+                loadProducts(page);
+                tetejere();
+            }
         });
-
         paginationContainer.appendChild(button);
     }
+
+    // « Első oldal
+    createPageButton("«", 1, current === 1);
+
+    // < Előző oldal
+    createPageButton("<", current - 1, current === 1);
+
+    // Oldalszámok (pl. 1 2 3 ...)
+    for (let i = 1; i <= totalPages; i++) {
+        createPageButton(i, i, false, i === current);
+    }
+
+    // > Következő oldal
+    createPageButton(">", current + 1, current === totalPages);
+
+    // » Utolsó oldal
+    createPageButton("»", totalPages, current === totalPages);
 }
 
 // Fő függvények
