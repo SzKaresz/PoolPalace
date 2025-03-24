@@ -657,7 +657,7 @@ function updateCartItem(termekId, change) {
                             animateToCart({ target: productCard });
                         } else if (change < 0 && uj > 0) {
                             animateFromCart(productCard);
-                        }                        
+                        }
                     } else {
                         alert(data.error);
                     }
@@ -957,7 +957,17 @@ function displayProducts(products, totalItems) {
         cardTitle.innerHTML = adat.nev;
 
         let cardPrice = document.createElement("h6");
-        cardPrice.innerHTML = `${adat.egysegar} Ft`;
+        cardPrice.classList.add("card-subtitle", "mb-2", "text-muted");
+
+        let akcios_ar = parseFloat(adat.akcios_ar.replace(/\s/g, ''));
+        let egysegar = parseFloat(adat.egysegar.replace(/\s/g, ''));
+        if (akcios_ar > -1 && akcios_ar < egysegar) {
+            cardPrice.innerHTML = `<span class="original-price">${adat.egysegar}</span> 
+                                 <span class="discounted-price">${adat.akcios_ar}</span>`;
+            cardHeader.innerHTML += `<div class="badge">Akció!</div>`;
+        } else {
+            cardPrice.innerHTML = `${adat.egysegar} Ft`;
+        }
 
         let cartButtonContainer = document.createElement("div");
         cartButtonContainer.classList.add("cart-button-container");

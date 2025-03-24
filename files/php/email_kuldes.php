@@ -127,8 +127,8 @@ function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
                             <tr>
                                 <th>Terméknév</th>
                                 <th>Cikkszám</th>
-                                <th>Darabszám</th>
-                                <th>Egységár</th>
+                                <th>Darab</th>
+                                <th>Ár</th>
                                 <th>Összeg</th>
                             </tr>
                         </thead>
