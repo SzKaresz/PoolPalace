@@ -72,9 +72,7 @@ ob_start();
             <!-- Termékkártyák -->
             <div id="kartyak-container">
                 <div id="fejlec-container">
-                    <div id="talalatok">
-                        Találatok: <span id="talalatok-szam">0</span> termék
-                    </div>
+                    <div id="talalatok"></div>
                     <div id="fejlec-rendezes">
                         <button id="szures-button" class="btn btn-dark">Szűrők elrejtése</button>
                         <div class="dropdown">
