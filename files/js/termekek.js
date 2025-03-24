@@ -939,6 +939,11 @@ function displayProducts(products, totalItems) {
     products.forEach(adat => {
         let card = document.createElement("div");
         card.classList.add("card");
+        card.addEventListener("click", (event) => {
+            if (!event.target.closest("button") && !event.target.closest("input")) {
+                window.location.href = `../php/termekOldal.php?cikkszam=${adat.cikkszam}`;
+            }
+        });
 
         let cardHeader = document.createElement("div");
         cardHeader.classList.add("card-header");
@@ -966,7 +971,7 @@ function displayProducts(products, totalItems) {
                                  <span class="discounted-price">${adat.akcios_ar}</span>`;
             cardHeader.innerHTML += `<div class="badge">Akció!</div>`;
         } else {
-            cardPrice.innerHTML = `${adat.egysegar} Ft`;
+            cardPrice.innerHTML = `${adat.egysegar}`;
         }
 
         let cartButtonContainer = document.createElement("div");
@@ -974,7 +979,7 @@ function displayProducts(products, totalItems) {
 
         let cartButton = document.createElement("button");
         cartButton.classList.add("btn", "add-to-cart");
-        cartButton.innerHTML = `Kosárba`;
+        cartButton.innerHTML = `<img src="../img/cart.png" class="cart-icon-img" alt="Kosár"> Kosárba`;
         cartButton.setAttribute("data-id", adat.cikkszam);
 
         // Ha a termék nincs raktáron

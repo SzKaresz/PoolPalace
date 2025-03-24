@@ -45,6 +45,8 @@ function getUserCartCount($db, $user_email)
 if (isset($_SESSION['user_email'])) {
     $user_email = $_SESSION['user_email'];
 
+    $hasStatement = false;
+
     switch ($action) {
         case 'getCount':
             $uj_mennyiseg = getUserCartCount($db, $user_email);
@@ -114,21 +116,25 @@ if (isset($_SESSION['user_email'])) {
                 $stmt = $db->prepare("INSERT INTO kosar (felhasznalo_id, termek_id, darabszam) VALUES (?, ?, ?)");
                 $stmt->bind_param("ssi", $user_email, $termek_id, $mennyiseg);
             }
+            $hasStatement = true;
             break;
 
         case 'update':
             $stmt = $db->prepare("UPDATE kosar SET darabszam = ? WHERE termek_id = ? AND felhasznalo_id = ?");
             $stmt->bind_param("iss", $mennyiseg, $termek_id, $user_email);
+            $hasStatement = true;
             break;
 
         case 'remove':
             $stmt = $db->prepare("DELETE FROM kosar WHERE termek_id = ? AND felhasznalo_id = ?");
             $stmt->bind_param("ss", $termek_id, $user_email);
+            $hasStatement = true;
             break;
 
         case 'removeAll':
             $stmt = $db->prepare("DELETE FROM kosar WHERE felhasznalo_id = ?");
             $stmt->bind_param("s", $user_email);
+            $hasStatement = true;
             break;
 
         default:
@@ -136,11 +142,11 @@ if (isset($_SESSION['user_email'])) {
             exit;
     }
 
-    if ($stmt->execute()) {
+    if ($hasStatement && $stmt->execute()) {
         $uj_mennyiseg = getUserCartCount($db, $user_email);
         echo json_encode(["success" => true, "uj_mennyiseg" => $uj_mennyiseg]);
-    } else {
-        echo json_encode(["success" => false, "error" => "Hiba történt az adatbázisban"]);
+    } elseif ($hasStatement) {
+        echo json_encode(["success" => false, "error" => "Hiba történt az adatbázis művelet során."]);
     }
 } else {
     if (!isset($_SESSION['kosar'])) {

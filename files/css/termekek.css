@@ -853,8 +853,14 @@ a:hover {
 }
 
 .add-to-cart {
-    padding: 6px 12px;
-    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    min-width: 90px;
+    max-width: 105px;
+    font-weight: 500;
 }
 
 .quantity-control {
@@ -895,4 +901,11 @@ a:hover {
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+}
+
+.cart-icon-img {
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+    vertical-align: middle;
 }
