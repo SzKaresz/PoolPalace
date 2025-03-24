@@ -22,6 +22,9 @@ $url_vege = getUrlVege();
 $kategoria = isset($_POST['kategoria']) ? $_POST['kategoria'] : '';
 $gyarto = isset($_POST['gyarto']) ? $_POST['gyarto'] : '';
 
+$jsonData = file_get_contents("php://input");
+$data = json_decode($jsonData, true);
+
 // Szűrési feltételek összeállítása
 $szuresi_adatok = [];
 if ($kategoria) {
@@ -31,12 +34,19 @@ if ($gyarto) {
     $szuresi_adatok[] = "gyarto.nev = '$gyarto'";
 }
 
-// Alap lekérdezés
+
 $szures_sql = count($szuresi_adatok) > 0 ? "WHERE " . implode(" AND ", $szuresi_adatok) : "";
+
+$kereses = $data["kereses"]??null;
+$kereses_sql = "";
+if (!empty($kereses)) {
+    $kereses_sql = ($szures_sql ? " AND" : " WHERE") . " termekek.nev LIKE '%".$kereses."%'";
+}
+
 $lekeres = "SELECT termekek.*, termekek.nev as termek_nev, gyarto.nev as gyarto_nev, kategoria.nev as kategoria_nev FROM `termekek` 
             INNER JOIN kategoria ON kategoria.id = termekek.kategoria_id 
             LEFT JOIN gyarto ON gyarto.id = termekek.gyarto_id 
-            $szures_sql";
+            $szures_sql $kereses_sql";
 
 // Ha az URL vége tartalmaz kategóriát, azt szűrjük, különben mindent megjelenítünk
 if (!empty($url_vege)) {
@@ -56,7 +66,6 @@ if (is_array($eredmeny)) {
     // Az ár formázása a PHP oldalon
     foreach ($eredmeny as &$adat) {
         $adat['egysegar'] = number_format($adat['egysegar'], 0, ',', ' ');  // Formázott ár
-        $adat['akcios_ar'] = number_format($adat['akcios_ar'], 0, ',', ' ');
     }
     echo json_encode($eredmeny, JSON_UNESCAPED_UNICODE);  // JSON válasz küldése
 } else {

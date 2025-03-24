@@ -21,7 +21,6 @@ if (isset($_SESSION['user_email'])) {
         $termekekSzama = array_sum($_SESSION['kosar']);
     }
 }
-$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <nav class="navbar navbar-dark navbar-expand-xl w-100 fixed-top">
     <div class="container-fluid">
@@ -38,28 +37,40 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Navigáció: Bootstrap collapse, automatikusan nyitva desktopon -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item <?php echo ($current_page === 'index.php') ? 'active' : ''; ?>">
-                    <a class="nav-link" href="index.php">Kezdőlap</a>
-                </li>
-                <li class="nav-item <?php echo ($current_page === 'akcios.php') ? 'active' : ''; ?>">
-                    <a class="nav-link" href="akcios.php">Akciós</a>
-                </li>
-                <li class="nav-item <?php echo ($current_page === 'termekek.php') ? 'active' : ''; ?>">
-                    <a class="nav-link" href="termekek.php">Termékek</a>
-                </li>
-                <li class="nav-item <?php echo ($current_page === 'rolunk.php') ? 'active' : ''; ?>">
-                    <a class="nav-link" href="rolunk.php">Rólunk</a>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="./index.php">Kezdőlap</a></li>
+                <li class="nav-item"><a class="nav-link" href="./akcios.php">Akciós</a></li>
+                <li class="nav-item"><a class="nav-link" href="./termekek.php">Termékek</a></li>
+                <li class="nav-item"><a class="nav-link" href="./rolunk.php">Rólunk</a></li>
             </ul>
         </div>
 
         <!-- Egyetlen kereső űrlap: mindenhol jelen van, de a CSS vezérli a láthatóságát -->
-        <form id="searchForm" action="search.php" method="GET" class="search-container">
-            <input type="text" name="query" placeholder="Keresés..." class="form-control" />
-            <button type="submit" class="btn search-btn">
+        <form id="searchForm" onsubmit="redirectToProducts(event)" method="GET" class="search-container">
+            <input type="text" name="query" id="keresomezo" placeholder="Keresés..." class="form-control" />
+            <button type="submit" class="btn search-btn" id="kereses_button">
                 <img src="../img/search.png" alt="Keresés">
             </button>
         </form>
+
+        <script>
+            async function redirectToProducts(event) {
+                event.preventDefault();
+                window.location.href = "./termekek.php";
+                try {
+                    let keres = await fetch("../php/adatokLekerese.php", ({
+                        method: "POST",
+                        headers: {
+                            "Content-type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            kereses: document.getElementById("keresomezo").value
+                        })
+                    }))
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+        </script>
 
         <!-- Jobb oldali ikonok -->
         <div class="ms-auto d-flex align-items-center">
@@ -97,10 +108,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <form id="logout-form" action="./index.php" method="post" style="display: none;">
-                                <input type="hidden" name="logout" value="true">
+                            <form method="POST" class="dropdown-item p-0 m-0">
+                                <button type="submit" name="logout" class="btn btn-link text-decoration-none text-dark">Kijelentkezés</button>
                             </form>
-                            <button id="logout-button" class="btn btn-link text-decoration-none text-dark">Kijelentkezés</button>
                         </li>
                     </ul>
                 </div>
@@ -156,13 +166,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
             searchForm.style.opacity = "1";
         }
     }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        let logoutButton = document.getElementById("logout-button");
-        if (logoutButton) {
-            logoutButton.addEventListener("click", function() {
-                document.getElementById("logout-form").submit();
-            });
-        }
-    });
 </script>

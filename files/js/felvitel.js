@@ -27,12 +27,12 @@ document.getElementById("felvitel_button").addEventListener("click", async funct
         let result = await response.json();
         
         if (result.success) {
-            showToast("Sikeres termék felvitel!", "success");
+            showToast(result.message, "success");
             setTimeout(() => {
                 location.reload();
             }, 2500);
         } else {
-            showToast("Sikertelen termék felvitel!", "danger");
+            showToast(result.message, "danger");
         }
     } catch (error) {
         console.error("Hiba történt:", error);

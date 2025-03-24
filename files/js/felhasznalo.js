@@ -100,21 +100,21 @@ async function felhasznaloLeker() {
                     };
 
                     let mentesSikeres = await felhasznaloModosit(adatok);
-                    if (mentesSikeres) {
-                        showToast("Sikeres módosítás!", "success");
+                    console.log(mentesSikeres)
+                    if (mentesSikeres.success) {
+                        showToast(mentesSikeres.message, "success");
                         inputMezok.forEach(input => input.disabled = true);
                         modositasGomb.classList.remove("d-none");
                         mentesGomb.classList.add("d-none");
                         visszaGomb.classList.add("d-none");
                     } else {
-                        showToast("Nem történt módosítás!", "danger");
+                        showToast(mentesSikeres.message, "danger");
                     }
 
                 });
 
                 visszaGomb.addEventListener("click", function () {
-                    inputMezok.forEach((input, index) => {
-                        input.value = eredetiAdatok[index];
+                    inputMezok.forEach((input) => {
                         input.disabled = true;
                     });
                     modositasGomb.classList.remove("d-none");
@@ -135,17 +135,18 @@ async function felhasznaloLeker() {
                 document.getElementById("megerositesTorles").addEventListener("click", async function () {
                     if (torlendoEmail) {
                         let torlesSikeres = await felhasznaloTorles(torlendoEmail);
-                        if (torlesSikeres) {
-                            showToast("Felhasználó sikeresen törölve!", "success");
+                        if (torlesSikeres.success) {
+                            showToast(torlesSikeres.message, "success");
                             document.getElementById("torlesModal").querySelector(".btn-close").click(); // Modal bezárása
                             felhasznaloLeker(); // Frissíti a listát
                         } else {
-                            showToast("Hiba történt a törlés során!", "danger");
+                            showToast(torlesSikeres.message, "danger");
                         }
                         torlendoEmail = null;
                     }
                 });
-
+               
+                
 
             }
         }
@@ -165,7 +166,7 @@ async function felhasznaloModosit(adatok) {
         });
 
         let valasz = await keres.json();
-        return valasz.success;
+        return valasz;
     } catch (error) {
         console.log(error);
         return false;
@@ -185,7 +186,7 @@ async function felhasznaloTorles(emailcim) {
         });
 
         let valasz = await keres.json();
-        return valasz.success;
+        return valasz;
     } catch (error) {
         console.log(error);
         return false;
