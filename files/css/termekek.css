@@ -691,6 +691,18 @@ a:hover {
         /* Balra igazítás */
         margin-top: 10px;
     }
+
+    .pagination-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 0.5rem;
+    }
+
+    .pagination-container button {
+        margin: 0.25rem;
+        font-size: 0.8rem;
+    }
 }
 
 #kategoriak a,
@@ -811,14 +823,62 @@ a:hover {
     font-weight: bold;
 }
 
-/* Frissített lapozás stílusok */
-#pagination {
+.pagination-container {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    padding: 15px 0;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.pagination-side {
+    display: flex;
+    flex-shrink: 0;
+    gap: 4px;
+}
+
+.pagination-center {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    max-width: 100%;
+    flex-grow: 1;
+}
+
+.pagination button {
+    min-width: 36px;
+    height: 36px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+    .pagination-center {
+        justify-content: center;
+        flex-grow: 1;
+        flex-basis: 100%;
+    }
+
+    .pagination-side {
+        flex-basis: 100%;
+        justify-content: space-between;
+    }
+
+    .pagination-container {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 1rem;
 }
 
 .page-btn {

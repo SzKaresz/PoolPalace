@@ -93,7 +93,19 @@ ob_start();
                 </div>
 
                 <div id="kartyak"></div>
-                <div id="pagination"></div>
+                <div class="pagination-container">
+                    <div class="pagination-side pagination-left">
+                        <button>«</button>
+                        <button><</button>
+                    </div>
+
+                    <div class="pagination-center"></div>
+
+                    <div class="pagination-side pagination-right">
+                        <button>></button>
+                        <button>»</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -502,3 +502,8 @@
         min-height: 12px;
     }
 }
+
+.nav-item.active .nav-link {
+    color: white !important;
+    font-weight: bold;
+}

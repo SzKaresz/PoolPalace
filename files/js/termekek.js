@@ -132,45 +132,50 @@ function tetejere() {
 }
 
 function setupPagination(totalPages, current) {
-    const paginationContainer = document.getElementById("pagination");
-    paginationContainer.innerHTML = "";
+    const leftContainer = document.querySelector(".pagination-left");
+    const centerContainer = document.querySelector(".pagination-center");
+    const rightContainer = document.querySelector(".pagination-right");
+
+    leftContainer.innerHTML = "";
+    centerContainer.innerHTML = "";
+    rightContainer.innerHTML = "";
 
     function createPageButton(label, page, disabled = false, isActive = false) {
         const button = document.createElement("button");
         button.textContent = label;
         button.classList.add("page-btn");
-        if (disabled) {
-            button.disabled = true;
-            button.classList.add("disabled");
-        }
-        if (isActive) {
-            button.classList.add("active");
-        }
+        if (disabled) button.disabled = true;
+        if (isActive) button.classList.add("active");
         button.addEventListener("click", () => {
             if (!disabled) {
                 loadProducts(page);
                 tetejere();
             }
         });
-        paginationContainer.appendChild(button);
+        return button;
     }
 
-    // « Első oldal
-    createPageButton("«", 1, current === 1);
+    // « és < gombok
+    leftContainer.appendChild(createPageButton("«", 1, current === 1));
+    leftContainer.appendChild(createPageButton("<", current - 1, current === 1));
 
-    // < Előző oldal
-    createPageButton("<", current - 1, current === 1);
+    // 🔹 Dinamikus "csúszóablak" – max 5 oldalszám jelenik meg
+    const visibleCount = 5;
+    let startPage = Math.max(1, current - Math.floor(visibleCount / 2));
+    let endPage = startPage + visibleCount - 1;
 
-    // Oldalszámok (pl. 1 2 3 ...)
-    for (let i = 1; i <= totalPages; i++) {
-        createPageButton(i, i, false, i === current);
+    if (endPage > totalPages) {
+        endPage = totalPages;
+        startPage = Math.max(1, endPage - visibleCount + 1);
     }
 
-    // > Következő oldal
-    createPageButton(">", current + 1, current === totalPages);
+    for (let i = startPage; i <= endPage; i++) {
+        centerContainer.appendChild(createPageButton(i, i, false, i === current));
+    }
 
-    // » Utolsó oldal
-    createPageButton("»", totalPages, current === totalPages);
+    // > és » gombok
+    rightContainer.appendChild(createPageButton(">", current + 1, current === totalPages));
+    rightContainer.appendChild(createPageButton("»", totalPages, current === totalPages));
 }
 
 // Fő függvények
