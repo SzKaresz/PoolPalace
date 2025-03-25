@@ -230,3 +230,41 @@ form {
   cursor: pointer;
   margin-left: 10px;
 }
+
+#megrendeles_table th, #megrendeles_table td{
+  text-align: center;
+}
+
+
+.quantity-control {
+  display: inline-flex;
+  justify-content: center;
+  gap: 5px;
+  align-items: center;
+}
+
+.quantity-btn {
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  color: white;
+  background-color: #293144;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quantity-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantity-input {
+  width: 45px !important;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  height: 28px;
+}
