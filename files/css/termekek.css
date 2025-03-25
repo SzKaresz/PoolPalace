@@ -907,6 +907,21 @@ a:hover {
     cursor: not-allowed;
 }
 
+.page-btn:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.page-btn:disabled:hover,
+.page-btn:disabled:focus {
+    background-color: #ccc;
+    box-shadow: none;
+    transform: none;
+}
+
 .cart-button-container {
     margin-top: auto;
     display: flex;
