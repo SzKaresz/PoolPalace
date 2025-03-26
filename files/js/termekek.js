@@ -424,49 +424,8 @@ function compareHungarian(a, b) {
 // Rendezés frissítése
 function rendezes(sortType) {
     localStorage.setItem("currentSort", sortType);
-
-    if (sortType === 'kiemelt') {
-        loadProducts(1, 'kiemelt');
-        return;
-    }
-
-    const kartyakContainer = document.getElementById('kartyak');
-    const kartyak = Array.from(kartyakContainer.children);
-
-    kartyak.sort((a, b) => {
-        const adatA = {
-            nev: a.querySelector('h5') ? a.querySelector('h5').innerText.trim().toLowerCase() : '',
-            akciosAr: a.querySelector('.discounted-price') ? parseInt(a.querySelector('.discounted-price').innerText.replace(/[^0-9]/g, ''), 10) : null,
-            eredetiAr: a.querySelector('h6') ? parseInt(a.querySelector('h6').innerText.replace(/[^0-9]/g, ''), 10) : 0
-        };
-
-        const adatB = {
-            nev: b.querySelector('h5') ? b.querySelector('h5').innerText.trim().toLowerCase() : '',
-            akciosAr: b.querySelector('.discounted-price') ? parseInt(b.querySelector('.discounted-price').innerText.replace(/[^0-9]/g, ''), 10) : null,
-            eredetiAr: b.querySelector('h6') ? parseInt(b.querySelector('h6').innerText.replace(/[^0-9]/g, ''), 10) : 0
-        };
-
-        const arA = adatA.akciosAr !== null ? adatA.akciosAr : adatA.eredetiAr;
-        const arB = adatB.akciosAr !== null ? adatB.akciosAr : adatB.eredetiAr;
-
-        if (sortType === 'ar-csokkeno') {
-            return arB - arA;
-        } else if (sortType === 'ar-novekvo') {
-            return arA - arB;
-        } else if (sortType === 'nev-az') {
-            return compareHungarian(adatA.nev, adatB.nev);
-        } else if (sortType === 'nev-za') {
-            return compareHungarian(adatB.nev, adatA.nev);
-        }
-        return 0;
-    });
-
-    const fragment = document.createDocumentFragment();
-    kartyak.forEach(kartya => fragment.appendChild(kartya));
-    kartyakContainer.innerHTML = '';
-    kartyakContainer.appendChild(fragment);
-
-    frissitTalalatokSzama(kartyak.length);
+    currentPage = 1; // rendezés mindig az első oldaltól induljon
+    loadProducts(currentPage, sortType); // szerverről újra lekérjük, most már rendezve
 }
 
 // Dropdown események a rendezéshez
