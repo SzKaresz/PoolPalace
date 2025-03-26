@@ -53,13 +53,13 @@ async function accordFeltolt(id) {
                 <th>Termék db</th>
                 <th>Termék ára</th>
                 <th>Összeg</th>
+                <th>#</th>
             </tr>
         </thead>
         <tbody>
         ${valasz.map(item => {
             let ar = (item.akcios_ar == -1) ? item.egysegar : item.akcios_ar;
-            let osszeg = item.darabszam * ar; // Kezdeti összeg
-        
+            let osszeg = item.darabszam * ar;
             return `
             <tr data-ar="${ar}">
                 <td>${item.cikkszam}</td>
@@ -73,11 +73,30 @@ async function accordFeltolt(id) {
                 </td>
                 <td>${ar} Ft</td>
                 <td class="osszeg">${osszeg} Ft</td>
+                <td>
+                    <button type="button" class="btn btn-primary save-btn" data-id="${item.megrendeles_id}" data-cikkszam="${item.cikkszam}">Mentés</button> 
+                </td>
             </tr>`;}).join('')}
         
         </tbody>
     </table>
+    <div class="mt-3">
+        <label for="status_${id}">Rendelés státusza:</label>
+        <select id="status_${id}" class="form-select">
+            <option value="Feldolgozás alatt">Feldolgozás alatt</option>
+            <option value="Fizetésre vár">Fizetésre vár</option>
+            <option value="Fizetve">Fizetve</option>
+            <option value="Szállítás alatt">Szállítás alatt</option>
+            <option value="Teljesítve">Teljesítve</option>
+            <option value="Törölve">Törölve</option>
+        </select>
+        <button type="button" class="btn btn-primary save-status" data-id=${item.megrendeles_id}>Státusz módosítása</button>
+    </div>
 `;
+let statusSelect = document.getElementById(`status_${id}`);
+if (item.statusz) {
+    statusSelect.value = item.statusz;
+}
 return
 }
             }
@@ -88,6 +107,92 @@ return
         console.log(error);
     }
 }
+
+async function saveChanges(termekId, megrendelesId, newQuantity) {
+    try {
+        let response = await fetch("../php/mentes.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                "termekId": termekId,
+                "megrendelesId": megrendelesId,
+                "newQuantity": newQuantity
+            })
+        });
+
+        if (response.ok) {
+            let result = await response.json();
+            if (result.success) {
+                alert("A változások sikeresen mentve.");
+            } else {
+                alert("Hiba történt a mentés során.");
+            }
+        }
+    } catch (error) {
+        console.log(error);
+        alert("Hiba történt a mentés során.");
+    }
+}
+
+async function saveStatusChange(megrendelesId, newStatus) {
+    try {
+        let response = await fetch("../php/statusz.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                "megrendelesId": megrendelesId,
+                "newStatus": newStatus
+            })
+        });
+
+        if (response.ok) {
+            let result = await response.json();
+            if (result.success) {
+                alert("A státusz sikeresen frissítve.");
+            } else {
+                alert("Hiba történt a státusz módosítása során.");
+            }
+        }
+    } catch (error) {
+        console.log(error);
+        alert("Hiba történt a státusz mentése során.");
+    }
+}
+
+document.addEventListener("click", function (event) {
+    if (event.target && event.target.classList.contains("save-status")) {
+        let button = event.target;
+        let megrendelesId = button.getAttribute("data-id");
+        let statusSelect = document.getElementById(`status_${megrendelesId}`);
+        let newStatus = statusSelect.value;
+        saveStatusChange(megrendelesId, newStatus);
+    }
+});
+
+document.addEventListener("click", function (event) {
+    if (event.target && event.target.classList.contains("save-btn")) {
+        let row = event.target.closest("tr");
+        if (row) {
+            let buttons = row.querySelectorAll("button");
+            if (buttons.length >= 3) {
+                let thirdButton = buttons[2];
+                let termekId = thirdButton.getAttribute("data-cikkszam");
+                let megrendelesId = thirdButton.getAttribute("data-id");
+                let input = row.querySelector(".quantity-input");
+                let newQuantity = parseInt(input.value, 10);
+                if (isNaN(newQuantity) || newQuantity < 1) {
+                    alert("Érvénytelen mennyiség! Kérlek, adj meg egy érvényes mennyiséget.");
+                    return;
+                }
+                saveChanges(termekId, megrendelesId, newQuantity);
+            }
+        }
+    }
+});
 
 document.addEventListener("input", function (event) {
     if (event.target.classList.contains("quantity-input")) {
