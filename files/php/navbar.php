@@ -21,7 +21,9 @@ if (isset($_SESSION['user_email'])) {
         $termekekSzama = array_sum($_SESSION['kosar']);
     }
 }
+$current_page = basename($_SERVER['PHP_SELF']);
 ?>
+
 <nav class="navbar navbar-dark navbar-expand-xl w-100 fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="./index.php">
@@ -37,10 +39,18 @@ if (isset($_SESSION['user_email'])) {
         <!-- Navigáció: Bootstrap collapse, automatikusan nyitva desktopon -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="./index.php">Kezdőlap</a></li>
-                <li class="nav-item"><a class="nav-link" href="./akcios.php">Akciós</a></li>
-                <li class="nav-item"><a class="nav-link" href="./termekek.php">Termékek</a></li>
-                <li class="nav-item"><a class="nav-link" href="./rolunk.php">Rólunk</a></li>
+                <li class="nav-item <?php echo ($current_page === 'index.php') ? 'active' : ''; ?>">
+                    <a class="nav-link" href="index.php">Kezdőlap</a>
+                </li>
+                <li class="nav-item <?php echo ($current_page === 'akcios.php') ? 'active' : ''; ?>">
+                    <a class="nav-link" href="akcios.php">Akciós</a>
+                </li>
+                <li class="nav-item <?php echo ($current_page === 'termekek.php') ? 'active' : ''; ?>">
+                    <a class="nav-link" href="termekek.php">Termékek</a>
+                </li>
+                <li class="nav-item <?php echo ($current_page === 'rolunk.php') ? 'active' : ''; ?>">
+                    <a class="nav-link" href="rolunk.php">Rólunk</a>
+                </li>
             </ul>
         </div>
 
