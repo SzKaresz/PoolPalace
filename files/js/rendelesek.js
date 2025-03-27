@@ -6,7 +6,7 @@ async function rendelesBetolt() {
             let tartalom = document.getElementById("tartalom");
             tartalom.innerHTML = `<div id="accord_div" class="accordion accordion-flush"></div>`;
             let accord_div = document.getElementById("accord_div");
-            
+
             for (const item of valasz) {
                 let egyediId = `flush-collapse-${item.id}`; // Egyedi ID minden elemnek
 
@@ -58,9 +58,11 @@ async function accordFeltolt(id) {
         </thead>
         <tbody>
         ${valasz.map(item => {
-            let ar = (item.akcios_ar == -1) ? item.egysegar : item.akcios_ar;
-            let osszeg = item.darabszam * ar;
-            return `
+                        let ar = (item.akcios_ar == -1) ? item.egysegar : item.akcios_ar;
+                        ar = parseInt(ar);
+                        let osszeg = item.darabszam * ar;
+                        osszeg = parseInt(osszeg);
+                        return `
             <tr data-ar="${ar}">
                 <td>${item.cikkszam}</td>
                 <td>${item.termek_nev}</td>
@@ -71,12 +73,23 @@ async function accordFeltolt(id) {
                         <button class="quantity-btn plus">+</button>
                     </div>
                 </td>
-                <td>${ar} Ft</td>
-                <td class="osszeg">${osszeg} Ft</td>
+                <td>${ar.toLocaleString("hu-HU", {
+                            style: 'currency',
+                            currency: 'HUF',
+                            minimumFractionDigits: 0,
+                            useGrouping: true
+                        })}</td>
+                <td class="osszeg">${osszeg.toLocaleString("hu-HU", {
+                            style: 'currency',
+                            currency: 'HUF',
+                            minimumFractionDigits: 0,
+                            useGrouping: true
+                        })}</td>
                 <td>
                     <button type="button" class="btn btn-primary save-btn" data-id="${item.megrendeles_id}" data-cikkszam="${item.cikkszam}">Mentés</button> 
                 </td>
-            </tr>`;}).join('')}
+            </tr>`;
+                    }).join('')}
         
         </tbody>
     </table>
@@ -93,12 +106,12 @@ async function accordFeltolt(id) {
         <button type="button" class="btn btn-primary save-status" data-id=${item.megrendeles_id}>Státusz módosítása</button>
     </div>
 `;
-let statusSelect = document.getElementById(`status_${id}`);
-if (item.statusz) {
-    statusSelect.value = item.statusz;
-}
-return
-}
+                    let statusSelect = document.getElementById(`status_${id}`);
+                    if (item.statusz) {
+                        statusSelect.value = item.statusz;
+                    }
+                    return
+                }
             }
         } else {
             console.log("Hiba történt a lekérdezés során.");
