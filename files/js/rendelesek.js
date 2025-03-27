@@ -224,7 +224,12 @@ document.addEventListener("input", function (event) {
 
         // Frissítsük az árat
         let ujOsszeg = ujErtek * ar;
-        osszegElem.textContent = `${ujOsszeg} Ft`;
+        osszegElem.textContent = `${ujOsszeg.toLocaleString("hu-HU", {
+            style: 'currency',
+            currency: 'HUF',
+            minimumFractionDigits: 0,
+            useGrouping: true
+        })}`;
 
         // Frissítsük a mínusz gomb állapotát
         minusBtn.disabled = ujErtek <= 1;
@@ -249,7 +254,12 @@ document.addEventListener("click", function (event) {
 
         // Frissítsük az árat
         let ujOsszeg = input.value * ar;
-        osszegElem.textContent = `${ujOsszeg} Ft`;
+        osszegElem.textContent = `${ujOsszeg.toLocaleString("hu-HU", {
+            style: 'currency',
+            currency: 'HUF',
+            minimumFractionDigits: 0,
+            useGrouping: true
+        })}`;
 
         // Frissítsük a mínusz gomb állapotát
         minusBtn.disabled = input.value <= 1;
