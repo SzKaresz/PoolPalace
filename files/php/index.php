@@ -30,6 +30,15 @@
                 <div id="kartyak"></div>
             </div>
         </section>
+        <a href="">
+            <section class="tippek container">
+                 <img src="../img/tipp.webp" title="Tipp" alt="Tipp">
+                 <div class="tippek_content">
+                     <h2>Medence Karbantartás</h2>
+                     <p>Tanuld meg, hogyan tartsd tisztán a medencédet a megfelelő eszközök és vegyszerek használatával, hogy egész nyáron élvezhesd a kristálytiszta vizet.</p>
+                 </div>
+             </section>
+        </a>
     </div>
 
     <?php include './back-to-top.php'; ?>
