@@ -30,7 +30,7 @@
                 <div id="kartyak"></div>
             </div>
         </section>
-        <a href="">
+        <a href="./tipp.php">
             <section class="tippek container">
                  <img src="../img/tipp.webp" title="Tipp" alt="Tipp">
                  <div class="tippek_content">
