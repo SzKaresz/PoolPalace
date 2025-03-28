@@ -12,8 +12,6 @@
                 <span class="text-white mx-1">&middot;</span>
                 <a class="link-light small" href="#" data-bs-toggle="modal" data-bs-target="#adatkez-modal">Adatkezelés</a>
                 <span class="text-white mx-1">&middot;</span>
-                <a class="link-light small" href="#" data-bs-toggle="modal" data-bs-target="#suti-modal">Süti szabályzat</a>
-                <span class="text-white mx-1">&middot;</span>
                 <a class="link-light small" href="#" data-bs-toggle="modal" data-bs-target="#kapcsolat-modal">Kapcsolat</a>
             </div>
         </div>

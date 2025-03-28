@@ -91,12 +91,6 @@
                     </ul>
 
                     <h2>2. Kezelt adatok köre</h2>
-                    <h4>Weboldal látogatói adatok</h4>
-                    <ul>
-                        <li>IP-cím</li>
-                        <li>Böngésző típusa, verziója</li>
-                        <li>Weboldalon eltöltött idő, megtekintett oldalak</li>
-                    </ul>
                     <h4>Kapcsolatfelvétel során gyűjtött adatok</h4>
                     <ul>
                         <li>Név</li>
@@ -111,10 +105,7 @@
                         <li>Számlázási cím</li>
                         <li>E-mail cím</li>
                         <li>Telefonszám</li>
-                        <li>Fizetési adatok (pl. bankkártya típusa, de nem a teljes szám)</li>
                     </ul>
-                    <h4>Sütik által gyűjtött adatok</h4>
-                    <p>Lásd a külön <a href="#" data-bs-target="#suti-modal" data-bs-toggle="modal" data-bs-dismiss="modal">Süti Szabályzatban</a> részletezve.</p>
 
                     <h2>3. Az adatkezelés célja</h2>
                     <table class="table table-bordered">
@@ -127,11 +118,6 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Weboldal működésének biztosítása</td>
-                                <td>Jogos érdek</td>
-                                <td>IP-cím, sütik</td>
-                            </tr>
-                            <tr>
                                 <td>Kapcsolatfelvétel</td>
                                 <td>Hozzájárulás</td>
                                 <td>Név, e-mail, üzenet</td>
@@ -140,11 +126,6 @@
                                 <td>Vásárlások lebonyolítása</td>
                                 <td>Szerződés teljesítése</td>
                                 <td>Név, cím, e-mail, fizetési adatok</td>
-                            </tr>
-                            <tr>
-                                <td>Marketing (hírlevelek)</td>
-                                <td>Hozzájárulás</td>
-                                <td>E-mail cím</td>
                             </tr>
                             <tr>
                                 <td>Jogszabályi kötelezettségek teljesítése</td>
@@ -197,95 +178,6 @@
                     <p>A PoolPalace Kft. fenntartja a jogot az Adatkezelési Tájékoztató egyoldalú módosítására. Az aktuális verziót a Webshop felületén érheti el. Az érintetteket a lényeges változásokról tájékoztatjuk.</p>
 
                     <p class="text-muted">Ez a tájékoztató hatályos <strong>2024.11.26.</strong> dátumtól.</p>
-                </div>
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="suti-modal" tabindex="-1" aria-labelledby="suti-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="w-100 text-center">
-                    <h5 class="modal-title" id="suti-modal-label">Süti Szabályzat</h5>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" style="text-align: justify;">
-                <div class="suti-content">
-                <p><strong>Hatályba lépés dátuma:</strong> 2024.11.26.</p>
-                    <p>A PoolPalace Kft. elkötelezett az Ön személyes adatainak védelme mellett. Ez a Süti Szabályzat részletesen leírja, hogyan használjuk a sütiket a PoolPalace Webshop működése során.</p>
-        
-                    <section>
-                        <h2>1. Mik azok a sütik?</h2>
-                        <p>A sütik kisméretű szövegfájlok, amelyeket az Ön böngészője tárol a számítógépén vagy mobileszközén, amikor meglátogat egy weboldalt. Segítenek hatékonyabbá tenni a weboldalak működését és információkat gyűjtenek az oldalhasználati szokásokról.</p>
-                    </section>
-        
-                    <section>
-                        <h2>2. Milyen típusú sütiket használunk?</h2>
-                        <ul>
-                            <li><strong>Elengedhetetlen sütik:</strong>
-                                <p>Szükségesek a Webshop alapvető működéséhez, például a bejelentkezés kezeléséhez vagy a kosár tartalmának megőrzéséhez.</p>
-                            </li>
-                            <li><strong>Funkcionális sütik:</strong>
-                                <p>Ezek lehetővé teszik, hogy a Webshop emlékezzen az Ön beállításaira, például a nyelvválasztásra.</p>
-                            </li>
-                            <li><strong>Teljesítménymérési sütik:</strong>
-                                <p>Információkat gyűjtenek arról, hogyan használják a látogatók a Webshopot, és segítenek javítani annak működését.</p>
-                            </li>
-                            <li><strong>Célzott és marketing sütik:</strong>
-                                <p>Személyre szabott hirdetéseket jelenítenek meg az Ön érdeklődési köre alapján, és nyomon követik böngészési szokásait.</p>
-                            </li>
-                        </ul>
-                    </section>
-
-                    <section>
-                        <h2>3. A sütik kezelése és törlése</h2>
-                        <p>A böngésző beállításaiban bármikor törölheti vagy blokkolhatja a sütiket. Felhívjuk figyelmét, hogy bizonyos sütik letiltása esetén a Webshop egyes funkciói nem fognak megfelelően működni.</p>
-                        <p><strong>Utasítások sütik kezelésére:</strong></p>
-                        <ul>
-                            <li><a href="https://support.google.com/chrome/answer/95647" target="_blank">Google Chrome</a></li>
-                            <li><a href="https://support.mozilla.org/hu/kb/weboldalak-altal-elhelyezett-sutik-torlese-szamito" target="_blank">Mozilla Firefox</a></li>
-                            <li><a href="https://support.microsoft.com/hu-hu/windows/cookie-k-kezel%C3%A9se-a-microsoft-edge-ben-megtekint%C3%A9s-enged%C3%A9lyez%C3%A9s-letilt%C3%A1s-t%C3%B6rl%C3%A9s-%C3%A9s-haszn%C3%A1lat-168dab11-0753-043d-7c16-ede5947fc64d" target="_blank">Microsoft Edge</a></li>
-                            <li><a href="https://support.apple.com/hu-hu/guide/safari/sfri11471/mac" target="_blank">Safari</a></li>
-                        </ul>
-                    </section>
-
-                    <section>
-                        <h2>4. Hozzájárulás a sütik használatához</h2>
-                        <p>Első látogatáskor a Webshop süti figyelmeztető bannert jelenít meg. A Webshop további használatával Ön elfogadja a sütik használatát, kivéve, ha letiltja őket böngészőjében.</p>
-                    </section>
-
-                    <section>
-                        <h2>5. Az adatkezelés jogalapja</h2>
-                        <p>A sütik által gyűjtött személyes adatok kezelése az Ön hozzájárulásán vagy jogos érdekünkön alapul (GDPR 6. cikk). Az anonim statisztikai adatok gyűjtése nem tartozik a GDPR hatálya alá.</p>
-                    </section>
-
-                    <section>
-                        <h2>6. Az Ön jogai</h2>
-                        <p>A GDPR szerint Ön jogosult:</p>
-                        <ul>
-                            <li>Hozzáférni a sütik által gyűjtött adatokhoz.</li>
-                            <li>Adatok törlését, helyesbítését vagy korlátozását kérni.</li>
-                            <li>Kifogást emelni célzott hirdetések ellen.</li>
-                        </ul>
-                        <p>E jogok gyakorlására kérjük, lépjen kapcsolatba velünk az alábbi e-mail címen: <a href="mailto:info.poolpalace@gmail.com">info.poolpalace@gmail.com</a>.</p>
-                    </section>
-
-                    <section>
-                        <h2>7. Kapcsolat</h2>
-                        <p>Ha kérdése van a Süti Szabályzattal kapcsolatban, lépjen kapcsolatba velünk: 
-                            <a href="#" data-bs-target="#kapcsolat-modal" data-bs-toggle="modal" data-bs-dismiss="modal">Kapcsolatfelvétel</a>.
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2>8. Módosítások</h2>
-                        <p>A PoolPalace Kft. fenntartja a jogot a Süti Szabályzat egyoldalú módosítására. A változásokról a Webshopon keresztül tájékoztatjuk a felhasználókat.</p>
-                    </section>
                 </div>
             </div>
             <div class="modal-footer justify-content-center">
