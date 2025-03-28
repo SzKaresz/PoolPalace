@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Már 28. 10:42
+-- Létrehozás ideje: 2025. Már 28. 12:50
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -166,7 +166,9 @@ CREATE TABLE `log` (
 
 INSERT INTO `log` (`id`, `datum`, `tabla_nev`, `tabla_id`) VALUES
 (1, '2025-02-20 11:38:38', 'felhasznalok', 'info.poolpalace@gmail.com'),
-(2, '2025-03-28 10:27:51', 'felhasznalok', 'szautnerkaroly@gmail.com');
+(2, '2025-03-27 10:27:51', 'felhasznalok', 'szautnerkaroly@gmail.com'),
+(3, '2025-03-27 12:47:51', 'megrendeles', '1'),
+(4, '2025-03-27 12:52:51', 'megrendeles', '2');
 
 -- --------------------------------------------------------
 
@@ -197,6 +199,14 @@ CREATE TABLE `megrendeles` (
 INSERT INTO `megrendeles` (`id`, `email`, `nev`, `telefonszam`, `datum`, `osszeg`, `szallit_irsz`, `szallit_telep`, `szallit_cim`, `szamlaz_irsz`, `szamlaz_telep`, `szamlaz_cim`, `statusz`) VALUES
 (1, 'szautnerkaroly@gmail.com', 'Szautner Károly', '+36305198474', '2025-03-28 10:28:57', 35420, '8200', 'Veszprém', 'Muskátli utca 18/C', '8200', 'Veszprém', 'Muskátli utca 18/C', 'Feldolgozás alatt'),
 (2, 'szautnerkaroly@gmail.com', 'Szautner Károly', '+36305198474', '2025-03-28 10:30:47', 132000, '8200', 'Veszprém', 'Muskátli utca 18/C', '8200', 'Veszprém', 'Muskátli utca 18/C', 'Feldolgozás alatt');
+
+--
+-- Eseményindítók `megrendeles`
+--
+DELIMITER $$
+CREATE TRIGGER `megrendeles` AFTER INSERT ON `megrendeles` FOR EACH ROW INSERT INTO `log`(`tabla_nev`, `tabla_id`) VALUES ('felhasznalok', new.id)
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -487,7 +497,7 @@ ALTER TABLE `kosar`
 -- AUTO_INCREMENT a táblához `log`
 --
 ALTER TABLE `log`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT a táblához `megrendeles`
