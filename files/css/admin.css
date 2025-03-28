@@ -86,6 +86,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
+  overflow-x: auto;
 }
   
 /* Űrlap */
@@ -268,3 +269,51 @@ form {
   border-radius: 4px;
   height: 28px;
 }
+
+/* Accordion stílus */
+.accordion-item {
+  background-color: var(--white-color); /* Fehér háttér */
+  border-radius: 8px;
+  border: 1px solid var(--primary-color); /* Kisebb szegély a blokkoknak */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Enyhe árnyék */
+  margin-bottom: 10px; /* Kis távolság a többi elem között */
+}
+
+.accordion-header {
+  background-color: var(--secondary-color); /* Sötétkék háttér */
+  color: var(--white-color);
+  border-radius: 8px 8px 0 0; /* Csak a tetején lekerekítés */
+  font-size: 16px;
+}
+
+.accordion-button {
+  background-color: var(--secondary-color); /* Az alap gomb színe */
+  color: var(--white-color);
+  border: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease; /* Gomb színváltozás hoverre */
+}
+
+.accordion-button.collapsed {
+  background-color: var(--secondary-color); /* Ha össze van csukva */
+}
+
+.accordion-button:hover {
+  background-color: var(--primary-color); /* Hover állapotban türkiz szín */
+}
+
+.accordion-collapse {
+  background-color: var(--light-background); /* Világos háttér a tartalomhoz */
+}
+
+.accordion-body {
+  padding: 15px;
+  max-height: none; /* Biztosítja, hogy ne legyen korlátozott magasság */
+  overflow: visible; /* A tartalom egyszerűen elfér */
+  overflow-x: auto;
+  font-size: 14px;
+  color: var(--text-color);
+  background-color: var(--white-color); /* Fehér háttér */
+  border-radius: 0 0 8px 8px; /* Lekerekített sarkok alul */
+}
+

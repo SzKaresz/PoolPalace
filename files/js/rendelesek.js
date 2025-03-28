@@ -11,7 +11,7 @@ async function rendelesBetolt() {
                 let egyediId = `flush-collapse-${item.id}`; // Egyedi ID minden elemnek
 
                 accord_div.innerHTML += `
-                <div class="accordion-item m-5">
+                <div class="accordion-item m-5 border rounded shadow-sm  sm-12">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${egyediId}" aria-expanded="false" aria-controls="${egyediId}">
                             Megrendelés #${item.id} - ${item.nev}
@@ -22,6 +22,7 @@ async function rendelesBetolt() {
                         </div>
                     </div>
                 </div>
+
                 `;
                 accordFeltolt(item.id);
             }
@@ -40,78 +41,63 @@ async function accordFeltolt(id) {
             },
             body: JSON.stringify({ id: id }),
         });
+
         if (keres.ok) {
             let valasz = await keres.json();
-            for (const item of valasz) {
-                if (item.megrendeles_id == id) {
-                    document.getElementById(`accord_body_${id}`).innerHTML += `
-    <table class="table table-striped mt-2" id="megrendeles_table">
-        <thead>
-            <tr>
-                <th>Termék cikkszám</th>
-                <th>Termék név</th>
-                <th>Termék db</th>
-                <th>Termék ára</th>
-                <th>Összeg</th>
-                <th>#</th>
-            </tr>
-        </thead>
-        <tbody>
-        ${valasz.map(item => {
-                        let ar = (item.akcios_ar == -1) ? item.egysegar : item.akcios_ar;
-                        ar = parseInt(ar);
-                        let osszeg = item.darabszam * ar;
-                        osszeg = parseInt(osszeg);
-                        return `
-            <tr data-ar="${ar}">
-                <td>${item.cikkszam}</td>
-                <td>${item.termek_nev}</td>
-                <td>
-                    <div class="quantity-control" style="display: flex;">
-                        <button class="quantity-btn minus" ${item.darabszam <= 1 ? "disabled" : ""}>-</button>
-                        <input class="quantity-input" type="number" min="1" value="${item.darabszam}" data-current-value="${item.darabszam}">
-                        <button class="quantity-btn plus">+</button>
-                    </div>
-                </td>
-                <td>${ar.toLocaleString("hu-HU", {
-                            style: 'currency',
-                            currency: 'HUF',
-                            minimumFractionDigits: 0,
-                            useGrouping: true
-                        })}</td>
-                <td class="osszeg">${osszeg.toLocaleString("hu-HU", {
-                            style: 'currency',
-                            currency: 'HUF',
-                            minimumFractionDigits: 0,
-                            useGrouping: true
-                        })}</td>
-                <td>
-                    <button type="button" class="btn btn-primary save-btn" data-id="${item.megrendeles_id}" data-cikkszam="${item.cikkszam}">Mentés</button> 
-                </td>
-            </tr>`;
-                    }).join('')}
-        
-        </tbody>
-    </table>
-    <div class="mt-3">
-        <label for="status_${id}">Rendelés státusza:</label>
-        <select id="status_${id}" class="form-select">
-            <option value="Feldolgozás alatt">Feldolgozás alatt</option>
-            <option value="Fizetésre vár">Fizetésre vár</option>
-            <option value="Fizetve">Fizetve</option>
-            <option value="Szállítás alatt">Szállítás alatt</option>
-            <option value="Teljesítve">Teljesítve</option>
-            <option value="Törölve">Törölve</option>
-        </select>
-        <button type="button" class="btn btn-primary save-status" data-id=${item.megrendeles_id}>Státusz módosítása</button>
-    </div>
-`;
-                    let statusSelect = document.getElementById(`status_${id}`);
-                    if (item.statusz) {
-                        statusSelect.value = item.statusz;
-                    }
-                    return
-                }
+            let tbodyContent = valasz.map(item => {
+                let ar = (item.akcios_ar == -1) ? item.egysegar : item.akcios_ar;
+                ar = parseInt(ar);
+                let osszeg = item.darabszam * ar;
+                osszeg = parseInt(osszeg);
+                return `
+                <tr data-ar="${ar}" data-id="${item.megrendeles_id}" data-cikkszam="${item.cikkszam}">
+                    <td>${item.cikkszam}</td>
+                    <td>${item.termek_nev}</td>
+                    <td>
+                        <div class="quantity-control" style="display: flex;">
+                            <button class="quantity-btn minus" ${item.darabszam <= 1 ? "disabled" : ""}>-</button>
+                            <input class="quantity-input" type="number" min="1" value="${item.darabszam}" data-original-value="${item.darabszam}">
+                            <button class="quantity-btn plus">+</button>
+                        </div>
+                    </td>
+                    <td>${ar.toLocaleString("hu-HU", { style: 'currency', currency: 'HUF', minimumFractionDigits: 0 })}</td>
+                    <td class="osszeg">${osszeg.toLocaleString("hu-HU", { style: 'currency', currency: 'HUF', minimumFractionDigits: 0 })}</td>
+                </tr>`;
+            }).join('');
+
+            document.getElementById(`accord_body_${id}`).innerHTML += `
+                <table class="table table-striped mt-2">
+                    <thead>
+                        <tr>
+                            <th>Termék cikkszám</th>
+                            <th>Termék név</th>
+                            <th>Termék db</th>
+                            <th>Termék ára</th>
+                            <th>Összeg</th>
+                        </tr>
+                    </thead>
+                    <tbody>${tbodyContent}</tbody>
+                </table>
+                <div class="mt-3">
+                    <label for="status_${id}">Rendelés státusza:</label>
+                    <select id="status_${id}" class="form-select">
+                        <option value="Feldolgozás alatt">Feldolgozás alatt</option>
+                        <option value="Fizetésre vár">Fizetésre vár</option>
+                        <option value="Fizetve">Fizetve</option>
+                        <option value="Szállítás alatt">Szállítás alatt</option>
+                        <option value="Teljesítve">Teljesítve</option>
+                        <option value="Törölve">Törölve</option>
+                    </select>
+                </div>
+                <div class="mt-5">
+                <button type="button" class="btn btn-primary save-all-btn" style="float: left;  background-color: var(--primary-color); 
+                color: var(--white-color);border-radius: 5px;padding: 10px 15px;" data-id="${id}">Mentés</button>
+                </div>
+                    `;
+
+            let statusSelect = document.getElementById(`status_${id}`);
+            if (valasz.length > 0 && valasz[0].statusz) {
+                statusSelect.value = valasz[0].statusz;
             }
         } else {
             console.log("Hiba történt a lekérdezés során.");
@@ -121,88 +107,57 @@ async function accordFeltolt(id) {
     }
 }
 
-async function saveChanges(termekId, megrendelesId, newQuantity) {
-    try {
-        let response = await fetch("../php/mentes.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                "termekId": termekId,
-                "megrendelesId": megrendelesId,
-                "newQuantity": newQuantity
-            })
-        });
-
-        if (response.ok) {
-            let result = await response.json();
-            if (result.success) {
-                showToast(result.message, "success");
-            } else {
-                showToast(result.message, "danger");
-            }
-        }
-    } catch (error) {
-        showToast(result.message, "danger");
-    }
-}
-
-async function saveStatusChange(megrendelesId, newStatus) {
-    try {
-        let response = await fetch("../php/statusz.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                "megrendelesId": megrendelesId,
-                "newStatus": newStatus
-            })
-        });
-
-        if (response.ok) {
-            let result = await response.json();
-            if (result.success) {
-                showToast(result.message, "success");
-            } else {
-                showToast(result.message, "danger");
-            }
-        }
-    } catch (error) {
-        console.log(error);
-        showToast(result.message, "danger");
-    }
-}
-
 document.addEventListener("click", function (event) {
-    if (event.target && event.target.classList.contains("save-status")) {
-        let button = event.target;
-        let megrendelesId = button.getAttribute("data-id");
+    if (event.target.classList.contains("save-all-btn")) {
+        let megrendelesId = event.target.getAttribute("data-id");
         let statusSelect = document.getElementById(`status_${megrendelesId}`);
         let newStatus = statusSelect.value;
-        saveStatusChange(megrendelesId, newStatus);
-    }
-});
 
-document.addEventListener("click", function (event) {
-    if (event.target && event.target.classList.contains("save-btn")) {
-        let row = event.target.closest("tr");
-        if (row) {
-            let buttons = row.querySelectorAll("button");
-            if (buttons.length >= 3) {
-                let thirdButton = buttons[2];
-                let termekId = thirdButton.getAttribute("data-cikkszam");
-                let megrendelesId = thirdButton.getAttribute("data-id");
-                let input = row.querySelector(".quantity-input");
-                let newQuantity = parseInt(input.value, 10);
-                if (isNaN(newQuantity) || newQuantity < 1) {
-                    showToast("Érvénytelen mennyiség! Kérlek, adj meg egy érvényes mennyiséget.", "warning");
-                    return;
-                }
-                saveChanges(termekId, megrendelesId, newQuantity);
+        let rows = document.querySelectorAll(`#accord_body_${megrendelesId} tbody tr`);
+        let modifiedItems = [];
+
+        rows.forEach(row => {
+            let input = row.querySelector(".quantity-input");
+            let originalValue = parseInt(input.getAttribute("data-original-value"), 10);
+            let newValue = parseInt(input.value, 10);
+
+            if (originalValue !== newValue) {
+                modifiedItems.push({
+                    megrendelesId: megrendelesId,
+                    cikkszam: row.getAttribute("data-cikkszam"),
+                    newQuantity: newValue
+                });
             }
-        }
+        });
+
+        let requestBody = {
+            megrendelesId: megrendelesId,
+            newStatus: newStatus,
+            items: modifiedItems
+        };
+
+        fetch("../php/mentes.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody)
+        })
+            .then(response => response.json())
+            .then(result => {
+                console.log(result.messages);
+                if (result.success) {
+                    showToast(result.messages, "success");
+                    rows.forEach(row => {
+                        let input = row.querySelector(".quantity-input");
+                        input.setAttribute("data-original-value", input.value);
+                    });
+                } else {
+                    showToast(result.messages, "danger");
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                showToast("Hiba történt a mentés során!", "danger");
+            });
     }
 });
 
@@ -265,8 +220,6 @@ document.addEventListener("click", function (event) {
     }
 });
 
-
-
 function showToast(message, type = "success") {
     let toastContainer = document.getElementById("toast-container");
 
@@ -294,6 +247,5 @@ function showToast(message, type = "success") {
         toast.remove();
     }, 3000);
 }
-
 
 window.addEventListener("load", rendelesBetolt);
