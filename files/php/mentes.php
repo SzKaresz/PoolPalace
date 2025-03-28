@@ -17,8 +17,8 @@ if (isset($input['termekId']) && isset($input['megrendelesId']) && isset($input[
     // A frissítés végrehajtása
     $result = adatokValtoztatasa($sql);
 
-    if ($result) {
-        echo json_encode(["success" => true]);
+    if ($result=== "Sikeres művelet!") {
+        echo json_encode(["success" => true, "message"=>"Sikeres frissítés!"]);
     } else {
         echo json_encode(["success" => false, "message" => "Nem sikerült frissíteni az adatokat."]);
     }

@@ -138,14 +138,13 @@ async function saveChanges(termekId, megrendelesId, newQuantity) {
         if (response.ok) {
             let result = await response.json();
             if (result.success) {
-                alert("A változások sikeresen mentve.");
+                showToast(result.message, "success");
             } else {
-                alert("Hiba történt a mentés során.");
+                showToast(result.message, "danger");
             }
         }
     } catch (error) {
-        console.log(error);
-        alert("Hiba történt a mentés során.");
+        showToast(result.message, "danger");
     }
 }
 
@@ -165,14 +164,14 @@ async function saveStatusChange(megrendelesId, newStatus) {
         if (response.ok) {
             let result = await response.json();
             if (result.success) {
-                alert("A státusz sikeresen frissítve.");
+                showToast(result.message, "success");
             } else {
-                alert("Hiba történt a státusz módosítása során.");
+                showToast(result.message, "danger");
             }
         }
     } catch (error) {
         console.log(error);
-        alert("Hiba történt a státusz mentése során.");
+        showToast(result.message, "danger");
     }
 }
 
@@ -198,7 +197,7 @@ document.addEventListener("click", function (event) {
                 let input = row.querySelector(".quantity-input");
                 let newQuantity = parseInt(input.value, 10);
                 if (isNaN(newQuantity) || newQuantity < 1) {
-                    alert("Érvénytelen mennyiség! Kérlek, adj meg egy érvényes mennyiséget.");
+                    showToast("Érvénytelen mennyiség! Kérlek, adj meg egy érvényes mennyiséget.", "warning");
                     return;
                 }
                 saveChanges(termekId, megrendelesId, newQuantity);
@@ -265,6 +264,36 @@ document.addEventListener("click", function (event) {
         minusBtn.disabled = input.value <= 1;
     }
 });
+
+
+
+function showToast(message, type = "success") {
+    let toastContainer = document.getElementById("toast-container");
+
+    let toast = document.createElement("div");
+    toast.className = `toast align-items-center text-white bg-${type} border-0`;
+    toast.setAttribute("role", "alert");
+    toast.setAttribute("aria-live", "assertive");
+    toast.setAttribute("aria-atomic", "true");
+
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">${message}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+
+    toastContainer.appendChild(toast);
+
+    // Bootstrap toast inicializálás
+    let toastInstance = new bootstrap.Toast(toast);
+    toastInstance.show();
+
+    // Toast automatikus eltüntetése 3 másodperc után
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
 
 
 window.addEventListener("load", rendelesBetolt);

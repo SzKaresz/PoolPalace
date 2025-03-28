@@ -12,8 +12,8 @@ if (isset($input['megrendelesId']) && isset($input['newStatus'])) {
     
     $result = adatokValtoztatasa($sql);
 
-    if ($result) {
-        echo json_encode(["success" => true]);
+    if ($result=== "Sikeres művelet!") {
+        echo json_encode(["success" => true, "message"=>"Sikers státusz frissítés!"]);
     } else {
         echo json_encode(["success" => false, "message" => "Nem sikerült frissíteni a státuszt."]);
     }
