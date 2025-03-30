@@ -1,0 +1,38 @@
+<?php
+include './sql_fuggvenyek.php';
+
+$inputJSON = file_get_contents('php://input');
+$input = json_decode($inputJSON, true);
+
+if (isset($input['megrendeles_id'])) {
+    $megrendeles_id = intval($input['megrendeles_id']);
+    $sql_leker = "DELETE FROM `tetelek` WHERE megrendeles_id=$megrendeles_id";
+
+    $dropTrigger = "DROP TRIGGER IF EXISTS megrendeles_torles";
+
+    $createTrigger = "CREATE TRIGGER megrendeles_torles
+AFTER DELETE ON tetelek
+FOR EACH ROW
+BEGIN
+    
+    DECLARE itemCount INT;
+    
+    SELECT COUNT(*) INTO itemCount FROM tetelek WHERE megrendeles_id = $megrendeles_id;
+    
+    IF itemCount = 0 THEN
+        DELETE FROM megrendeles WHERE id = $megrendeles_id;
+    END IF;
+END;";
+
+    adatokValtoztatasa($dropTrigger);  
+    adatokValtoztatasa($createTrigger);  
+
+    $eredmeny = adatokValtoztatasa($sql_leker);
+    if ($eredmeny === "Sikeres művelet!") {
+        echo json_encode(["success" => true, "message" => "A törlés sikeres!"]);
+    } else {
+        echo json_encode(["status" => "error", "message" => "A törlés sikertelen!"]);
+    }
+} else {
+    echo json_encode(["hiba" => "Nincs megadva ID"]);
+}

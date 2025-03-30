@@ -102,7 +102,7 @@
                     <input type="file" class="form-control" name="productImages[]" id="productImages" multiple accept="image/*">
                 </div>
 
-                <button type="submit" id="felvitel_button" class="btn btn-primary" name="felvitel">Felvitel</button>
+                <button type="submit" id="felvitel_button" class="btn btn-primary" name="felvitel"><img src="../img/folder.png" alt="Felvitel" width="30"></button>
             </form>
 
         </div>

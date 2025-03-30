@@ -59,8 +59,12 @@ function megjelenitTermekek(adat) {
                     <td><input type="text" class="form-control" id="akciosar" value="${(item.akcios_ar == -1) ? '' : item.akcios_ar}" disabled></td>
                     <td><input type="textarea" class="form-control" id="leiras" value="${item.leiras}" disabled></td>
                     <td>
-                        <button type="button" class="btn btn-secondary modosit w-75">Módosítás</button>
-                        <button type="button" class="btn btn-danger torles w-75">Törlés</button>
+                        <button class="btn btn-outline-secondary modositas-gomb modosit">
+                                <img src="../img/pencil.png" alt="Módosítás" width="30">
+                        </button>
+                        <button class="btn btn-outline-danger torles-gomb torles" data-id="${item.email}">
+                                <img src="../img/delete.png" alt="Törlés" width="30">
+                            </button>
                     </td>
                 </tr>`;
     }
@@ -75,13 +79,26 @@ function megjelenitTermekek(adat) {
 
             let mentesBtn = document.createElement('button');
             mentesBtn.type = 'submit';
-            mentesBtn.classList.add('btn', 'btn-success', 'w-75');
-            mentesBtn.textContent = 'Mentés';
+            mentesBtn.classList.add('btn', 'btn-outline-success', 'mentés-gomb');
+
+            // Kép létrehozása és hozzáadása a gombhoz
+            let imgm = document.createElement('img');
+            imgm.src = '../img/save.png';
+            imgm.alt = 'Mentés';
+            imgm.width = 30;
+
+            mentesBtn.appendChild(imgm);
 
             let megseBtn = document.createElement('button');
             megseBtn.type = 'button';
-            megseBtn.classList.add('btn', 'btn-secondary', 'w-75');
-            megseBtn.textContent = 'Mégse';
+            megseBtn.classList.add('btn', 'btn-outline-secondary', 'vissza-gomb');
+            let img = document.createElement('img');
+            img.src = '../img/back.png';
+            img.alt = 'Vissza';
+            img.width = 30;
+
+            megseBtn.appendChild(img)
+
 
             row.querySelector('td:last-child').innerHTML = '';
             row.querySelector('td:last-child').appendChild(mentesBtn);

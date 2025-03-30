@@ -90,8 +90,8 @@ async function accordFeltolt(id) {
                     </select>
                 </div>
                 <div class="mt-5">
-                <button type="button" class="btn btn-primary save-all-btn" style="float: left;  background-color: var(--primary-color); 
-                color: var(--white-color);border-radius: 5px;padding: 10px 15px;" data-id="${id}">Mentés</button>
+                <button class="btn btn-outline-danger torles-gomb delete-all-btn" style="float: right;" data-id="${id}"><img src="../img/delete.png" alt="Törlés" width="30"></button>
+                <button class="btn btn-outline-success mentés-gomb save-all-btn" style="float: right;" data-id="${id}"><img src="../img/save.png" alt="Mentés" width="30"></button>
                 </div>
                     `;
 
@@ -160,6 +160,51 @@ document.addEventListener("click", function (event) {
             });
     }
 });
+document.addEventListener("click", function (event) {
+    if (event.target.closest(".delete-all-btn")) {
+        let megrendelesId = event.target.closest(".delete-all-btn").getAttribute("data-id");
+        let modal = new bootstrap.Modal(document.getElementById("torlesModal"));
+        modal.show();
+
+        const megerositesBtn = document.getElementById("megerositesTorles");
+        megerositesBtn.removeEventListener("click", handleTorlest);
+
+        megerositesBtn.addEventListener("click", handleTorlest);
+
+        async function handleTorlest() {
+            let requestBody = {
+                megrendeles_id: megrendelesId
+            };
+
+            try {
+                let response = await fetch("../php/megrendeles_torles.php", {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(requestBody)
+                });
+
+                let result = await response.json();
+                console.log(result);
+                
+                // Ha sikerült a törlés
+                if (result.success) {
+                    showToast(result.message, "success");
+                    rendelesBetolt()
+                    
+                } else {
+                    showToast(result.message, "danger");
+                }
+            } catch (error) {
+                console.log(error);
+                showToast("Hiba történt a törlés során!", "danger");
+            }
+
+            // A modal bezárása
+            modal.hide();
+        }
+    }
+});
+
 
 document.addEventListener("input", function (event) {
     if (event.target.classList.contains("quantity-input")) {
