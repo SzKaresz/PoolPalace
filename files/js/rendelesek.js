@@ -1,3 +1,13 @@
+var modifiedDetail = {};
+
+function adatokBekeres(obj) {
+    const inputs = document.querySelectorAll('input[type="text"]');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            obj[input.id] = input.value; // Módosítjuk az objektumot minden változáskor
+        });
+    });
+}
 async function rendelesBetolt() {
     try {
         let keres = await fetch("../php/rendelesek.php");
@@ -66,6 +76,7 @@ async function accordFeltolt(id) {
             }).join('');
 
             document.getElementById(`accord_body_${id}`).innerHTML += `
+            <div id="termekek">
                 <table class="table table-striped mt-2">
                     <thead>
                         <tr>
@@ -89,12 +100,57 @@ async function accordFeltolt(id) {
                         <option value="Törölve">Törölve</option>
                     </select>
                 </div>
-                <div class="mt-5">
+            </div>
+            <hr class="my-5">
+            <div class="row" id="adatok"></div>
+            <div class="mt-5">
                 <button class="btn btn-outline-danger torles-gomb delete-all-btn" style="float: right;" data-id="${id}"><img src="../img/delete.png" alt="Törlés" width="30"></button>
-                <button class="btn btn-outline-success mentés-gomb save-all-btn" style="float: right;" data-id="${id}"><img src="../img/save.png" alt="Mentés" width="30"></button>
-                </div>
+                <button class="btn btn-outline-success mentes-gomb save-all-btn" style="float: right;" data-id="${id}"><img src="../img/save.png" alt="Mentés" width="30"></button>
+            </div>
+
                     `;
 
+            for (const item of valasz) {
+                document.getElementById("adatok").innerHTML+=`
+                    <div class="col-md-6">
+                    <div class="mb-3">
+                        <h3>Szállítási adatok</h3>
+                    </div>
+                    <div class="mb-3">
+                        <label for="irsz" class="form-label">Irányítószám</label>
+                        <input type="text" id="irsz" class="form-control" name="irsz" value="${item.szallit_irsz}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="telepules" class="form-label">Település</label>
+                        <input type="text" id="telepules" class="form-control" name="telepules" value="${item.szallit_telep}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="utca" class="form-label">Utca és házszám</label>
+                        <input type="text" id="utca" class="form-control" name="utca" value="${item.szallit_cim}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <h3>Számlázási adatok</h3>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sz_irsz" class="form-label">Irányítószám</label>
+                        <input type="text" id="sz_irsz" class="form-control" name="sz_irsz" value="${item.szamlaz_irsz}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="sz_telepules" class="form-label">Település</label>
+                        <input type="text" id="sz_telepules" class="form-control" name="sz_telepules" value="${item.szamlaz_telep}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="sz_utca" class="form-label">Utca és házszám</label>
+                        <input type="text" id="sz_utca" class="form-control" name="sz_utca" value="${item.szamlaz_cim}">
+                    </div>
+                </div>
+
+
+                `
+            }
+        
             let statusSelect = document.getElementById(`status_${id}`);
             if (valasz.length > 0 && valasz[0].statusz) {
                 statusSelect.value = valasz[0].statusz;
@@ -108,8 +164,8 @@ async function accordFeltolt(id) {
 }
 
 document.addEventListener("click", function (event) {
-    if (event.target.classList.contains("save-all-btn")) {
-        let megrendelesId = event.target.getAttribute("data-id");
+    if (event.target.closest(".save-all-btn")) {
+        let megrendelesId = event.target.closest(".save-all-btn").getAttribute("data-id");
         let statusSelect = document.getElementById(`status_${megrendelesId}`);
         let newStatus = statusSelect.value;
 
@@ -130,10 +186,15 @@ document.addEventListener("click", function (event) {
             }
         });
 
+        adatokBekeres(modifiedDetail);  // Itt a változtatott adatokat gyűjtjük össze
+
+        console.log(modifiedDetail); // Ellenőrzés
+
         let requestBody = {
             megrendelesId: megrendelesId,
             newStatus: newStatus,
-            items: modifiedItems
+            items: modifiedItems,
+            details: modifiedDetail // Az objektumot átadjuk
         };
 
         fetch("../php/mentes.php", {
@@ -160,6 +221,7 @@ document.addEventListener("click", function (event) {
             });
     }
 });
+
 document.addEventListener("click", function (event) {
     if (event.target.closest(".delete-all-btn")) {
         let megrendelesId = event.target.closest(".delete-all-btn").getAttribute("data-id");
@@ -292,5 +354,7 @@ function showToast(message, type = "success") {
         toast.remove();
     }, 3000);
 }
+
+
 
 window.addEventListener("load", rendelesBetolt);
