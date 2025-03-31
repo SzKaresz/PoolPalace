@@ -42,9 +42,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <li class="nav-item <?php echo ($current_page === 'index.php') ? 'active' : ''; ?>">
                     <a class="nav-link" href="index.php">Kezdőlap</a>
                 </li>
-                <li class="nav-item <?php echo ($current_page === 'akcios.php') ? 'active' : ''; ?>">
-                    <a class="nav-link" href="akcios.php">Akciós</a>
-                </li>
                 <li class="nav-item <?php echo ($current_page === 'termekek.php') ? 'active' : ''; ?>">
                     <a class="nav-link" href="termekek.php">Termékek</a>
                 </li>

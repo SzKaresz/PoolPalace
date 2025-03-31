@@ -24,7 +24,6 @@
             <div class="video-caption text-center">Üdvözlünk a Webshopunkban!</div>
         </div>
         <section class="products-section mb-5">
-            <h2 style="display: none";>Kiemelet termékek</h2> <!--Örök baki vicces-->
             <h2>Kiemelt termékek</h2>
             <div class="container kontener">
                 <div id="kartyak"></div>
@@ -39,6 +38,12 @@
                  </div>
              </section>
         </a>
+        <section class="products-section mb-5">
+            <h2>Akciós termékek</h2>
+            <div class="container kontener">
+                <div id="akciok"></div>
+            </div>
+        </section>
     </div>
 
     <?php include './back-to-top.php'; ?>
