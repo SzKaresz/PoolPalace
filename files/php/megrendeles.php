@@ -167,6 +167,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $db->prepare("INSERT INTO tetelek (megrendeles_id, termek_id, darabszam, egysegar) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("isid", $megrendeles_id, $item['cikkszam'], $item['darabszam'], $item['egysegar']);
         $stmt->execute();
+
+        $stmt = $db->prepare("UPDATE termekek SET darabszam = darabszam - ? WHERE cikkszam = ? AND darabszam >= ?");
+        $stmt->bind_param("isi", $item['darabszam'], $item['cikkszam'], $item['darabszam']);
+        $stmt->execute();
     }
 
     if (!$is_guest) {
@@ -243,15 +247,15 @@ ob_end_flush();
             <h2>Megrendelés adatai</h2>
             <form id="order-form">
                 <div class="mb-3">
-                    <label for="name">Név</label>
+                    <label for="name">Név<span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="name" name="name" value="<?= htmlspecialchars($user_data['nev'] ?? '') ?>">
                 </div>
                 <div class="mb-3">
-                    <label for="email">Email</label>
+                    <label for="email">Email<span class="text-danger">*</span></label>
                     <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($user_data['email'] ?? '') ?>" <?= $is_guest ? '' : 'readonly' ?>>
                 </div>
                 <div class="mb-3">
-                    <label for="phone">Telefonszám</label>
+                    <label for="phone">Telefonszám<span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="phone" name="phone" value="<?= htmlspecialchars($user_data['telefonszam'] ?? '') ?>">
                 </div>
 
@@ -260,20 +264,20 @@ ob_end_flush();
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#shippingCollapse">
-                                Szállítási cím
+                                Szállítási cím<span class="text-danger">*</span>
                             </button>
                         </h2>
                         <div id="shippingCollapse" class="accordion-collapse collapse">
                             <div class="accordion-body">
-                                <label for="shipping-postal_code">Irányítószám</label>
+                                <label for="shipping-postal_code">Irányítószám<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control mb-2" id="shipping-postal_code" name="shipping-postal_code"
                                     value="<?= htmlspecialchars($user_data['szallitasi_iranyitoszam'] ?? '') ?>">
 
-                                <label for="shipping-city">Település</label>
+                                <label for="shipping-city">Település<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control mb-2" id="shipping-city" name="shipping-city"
                                     value="<?= htmlspecialchars($user_data['szallitasi_telepules'] ?? '') ?>">
 
-                                <label for="shipping-address">Utca, házszám</label>
+                                <label for="shipping-address">Utca, házszám<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="shipping-address" name="shipping-address"
                                     value="<?= htmlspecialchars($user_data['szallitasi_utca_hazszam'] ?? '') ?>">
                             </div>
@@ -281,25 +285,32 @@ ob_end_flush();
                     </div>
                 </div>
 
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="same-as-shipping">
+                    <label class="form-check-label" for="same-as-shipping">
+                        Számlázási cím megegyezik a szállítási címmel
+                    </label>
+                </div>
+
                 <!-- Accordion Számlázási cím -->
                 <div class="accordion" id="billingAccordion">
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#billingCollapse">
-                                Számlázási cím
+                                Számlázási cím<span class="text-danger">*</span>
                             </button>
                         </h2>
                         <div id="billingCollapse" class="accordion-collapse collapse">
                             <div class="accordion-body">
-                                <label for="billing-postal_code">Irányítószám</label>
+                                <label for="billing-postal_code">Irányítószám<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control mb-2" id="billing-postal_code" name="billing-postal_code"
                                     value="<?= htmlspecialchars($user_data['szamlazasi_iranyitoszam'] ?? '') ?>">
 
-                                <label for="billing-city">Település</label>
+                                <label for="billing-city">Település<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control mb-2" id="billing-city" name="billing-city"
                                     value="<?= htmlspecialchars($user_data['szamlazasi_telepules'] ?? '') ?>">
 
-                                <label for="billing-address">Utca, házszám</label>
+                                <label for="billing-address">Utca, házszám<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="billing-address" name="billing-address"
                                     value="<?= htmlspecialchars($user_data['szamlazasi_utca_hazszam'] ?? '') ?>">
                             </div>
@@ -308,7 +319,7 @@ ob_end_flush();
                 </div>
 
                 <div class="mb-3 mt-3">
-                    <label for="payment-method" class="form-label">Fizetési mód</label>
+                    <label for="payment-method" class="form-label">Fizetési mód<span class="text-danger">*</span></label>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="payment-method" id="payment-card" value="card" checked>
                         <label class="form-check-label" for="payment-card">Bankkártyás fizetés</label>

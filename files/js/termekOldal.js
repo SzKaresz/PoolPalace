@@ -1,24 +1,10 @@
-document.getElementById("back-to-top").hidden = true;
-
-window.onscroll = function() {gorgetes()}
-
-function gorgetes(){
-    let eddig = document.documentElement.scrollTop;
-    if(eddig >= 125){
-        document.getElementById("back-to-top").hidden = false;
-    }
-    else{
-        document.getElementById("back-to-top").hidden = true;
-    }
-}
-
 document.addEventListener("DOMContentLoaded", function() {
     const thumbnails = document.querySelectorAll(".thumbnail");
     const mainImage = document.getElementById("main-image");
     let currentIndex = 0;
     let intervalId;
 
-    // 👉 Ha csak 1 kép van, nem kell sem automatikus, sem kézi váltás
+    // Ha csak 1 kép van, nem kell sem automatikus, sem kézi váltás
     if (thumbnails.length <= 1) return;
 
     function showImage(index) {
@@ -28,18 +14,18 @@ document.addEventListener("DOMContentLoaded", function() {
         const container = document.querySelector(".main-image-container");
         const currentImage = container.querySelector("img");
 
-        // 🔹 Új kép (jobbról érkezik)
+        // Új kép (jobbról érkezik)
         const newImage = document.createElement("img");
         newImage.src = selected.src;
         newImage.style.left = "100%";
         container.appendChild(newImage);
 
-        // 🔹 Régi kép (marad a helyén egy pillanatig)
+        // Régi kép (marad a helyén egy pillanatig)
         if (currentImage) {
             currentImage.style.left = "0";
         }
 
-        // 🔹 Animáció indítása következő tick-ben
+        // Animáció indítása következő tick-ben
         setTimeout(() => {
             newImage.style.left = "0";
             if (currentImage) {
@@ -48,13 +34,13 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }, 20);
 
-        // 🔹 Takarítás animáció után
+        // Takarítás animáció után
         setTimeout(() => {
             if (currentImage) currentImage.remove();
             newImage.id = "main-image";
         }, 500);
 
-        // 🔹 Aktív bélyegkép frissítése
+        // Aktív bélyegkép frissítése
         thumbnails.forEach(t => t.classList.remove("active"));
         selected.classList.add("active");
         currentIndex = index;
@@ -80,6 +66,5 @@ document.addEventListener("DOMContentLoaded", function() {
         startAutoSlide();
     }
 
-    // Indítás
     startAutoSlide();
 });

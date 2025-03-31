@@ -16,27 +16,27 @@ document.addEventListener("DOMContentLoaded", function () {
         { id: "name", label: "Név", regex: /^(?=.*[A-Z].*[A-Z])(?=.*\s).{6,}$/, error: "A névnek tartalmaznia kell legalább egy szóközt, két nagybetűt és 6 karaktert!" },
         { id: "email", label: "Email", regex: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, error: "Kérjük, érvényes e-mail címet adjon meg!" },
         { id: "phone", label: "Telefonszám", regex: /^(\+36|06)[0-9]{9}$/, error: "Kérjük, adjon meg érvényes magyar telefonszámot (pl. +36301234567 vagy 06301234567)!" },
-    
+
         // Szállítási cím validáció
         { id: "shipping-postal_code", label: "Irányítószám", regex: /^[0-9]{4}$/, error: "Kérjük, érvényes irányítószámot adjon meg (4 számjegy)!" },
         { id: "shipping-city", label: "Település", regex: /^.{2,}$/, error: "A település neve legalább 2 karakter legyen!" },
         { id: "shipping-address", label: "Utca, házszám", regex: /^(?=.*\d)(?=.*\s).{8,}$/, error: "Az utca és házszám megadása kötelező, legalább két szóköz és minimum 8 karakter szükséges!" },
-    
+
         // Számlázási cím validáció
         { id: "billing-postal_code", label: "Irányítószám", regex: /^[0-9]{4}$/, error: "Kérjük, érvényes irányítószámot adjon meg (4 számjegy)!" },
         { id: "billing-city", label: "Település", regex: /^.{2,}$/, error: "A település neve legalább 2 karakter legyen!" },
         { id: "billing-address", label: "Utca, házszám", regex: /^(?=.*\d)(?=.*\s).{8,}$/, error: "Az utca és házszám megadása kötelező, legalább két szóköz és minimum 8 karakter szükséges!" }
-    ];    
+    ];
 
     // 🔹 Real-time validáció minden mezőnél
     validationRules.forEach(rule => {
         const field = document.getElementById(rule.id);
         if (!field) return;
-    
+
         field.addEventListener("input", function () {
             validateField(field, rule.regex);
         });
-    });    
+    });
 
     function validateField(field, regex) {
         const value = field.value.trim();
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const pwd = modalPassword.value.trim();
         const pwdConfirm = modalPasswordConfirm.value.trim();
         let errorMessage = "";
-    
+
         if (pwd.length < 8) {
             errorMessage = "A jelszónak legalább 8 karakter hosszúnak kell lennie!";
         } else if (!/[A-Z]/.test(pwd)) {
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } else if (pwd !== pwdConfirm) {
             errorMessage = "A jelszavak nem egyeznek!";
         }
-    
+
         if (errorMessage) {
             modalPassword.classList.add("is-invalid");
             modalPasswordConfirm.classList.add("is-invalid");
@@ -83,18 +83,18 @@ document.addEventListener("DOMContentLoaded", function () {
             passwordAlert.innerHTML = "";
             return true; // ✅ Minden rendben
         }
-    }    
+    }
 
     // 🔹 Gombra kattintva ellenőrizzük a mezőket
     placeOrderBtn.addEventListener("click", function () {
         let firstError = null;
         let hasError = false;
-    
+
         validationRules.forEach(rule => {
             const field = document.getElementById(rule.id);
             if (!field) return;
             const value = field.value.trim();
-    
+
             if (!rule.regex.test(value)) {
                 if (!firstError) {
                     firstError = rule.error;
@@ -105,13 +105,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 field.classList.remove("is-invalid");
             }
         });
-    
+
         // Ha van hiba, ne küldjük el
         if (hasError) {
             showErrorMessages([firstError]); // Csak az első hibát mutatja
             return;
         }
-    
+
         // **Frissített orderData, hogy tartalmazza a számlázási címet is**
         orderData = {
             action: 'placeOrder',
@@ -120,30 +120,30 @@ document.addEventListener("DOMContentLoaded", function () {
             name: document.getElementById("name").value.trim(),
             email: document.getElementById("email").value.trim(),
             phone: document.getElementById("phone").value.trim(),
-        
+
             // Szállítási adatok
             shipping_postal_code: document.getElementById("shipping-postal_code").value.trim(),
             shipping_city: document.getElementById("shipping-city").value.trim(),
             shipping_address: document.getElementById("shipping-address").value.trim(),
-        
+
             // Számlázási adatok
             billing_postal_code: document.getElementById("billing-postal_code").value.trim(),
             billing_city: document.getElementById("billing-city").value.trim(),
             billing_address: document.getElementById("billing-address").value.trim()
-        };        
+        };
 
         if (isGuest) {
             guestModal.show();
         } else {
             sendOrder(orderData);
         }
-    });                
+    });
 
     saveAccountBtn.addEventListener("click", function () {
         if (!validatePassword()) {
             return; // 🔴 Ha a jelszó hibás vagy a mező üres, nem küldi el
         }
-    
+
         orderData.register = true;
         orderData.password = modalPassword.value.trim();
         passwordAlert.innerHTML = '';
@@ -162,37 +162,37 @@ document.addEventListener("DOMContentLoaded", function () {
     function sendOrder(orderData) {
         if (isSubmitting) return;  // Ha már folyamatban van egy kérés, ne küldje el újra!
         isSubmitting = true;
-    
+
         console.log("Küldött rendelési adatok:", orderData);
-    
+
         fetch('../php/megrendeles.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(orderData)
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Szerver válasza:", data);
-    
-            if (data.success) {
-                document.getElementById("order-id").textContent = data.order_id;
-                new bootstrap.Modal(document.getElementById("orderSuccessModal")).show();
-            } else {
-                showErrorMessages([data.error]);  // 🔹 Hibaüzenetet a közös alertbe küldi
-            }
-        })
-        .catch(error => {
-            console.error("Hiba történt:", error);
-            showErrorMessages(["Hiba történt a rendelés leadása során."]);
-        })
-        .finally(() => {
-            isSubmitting = false; // Visszaállítjuk, hogy újra lehessen küldeni
-        });
-    }        
+            .then(response => response.json())
+            .then(data => {
+                console.log("Szerver válasza:", data);
+
+                if (data.success) {
+                    document.getElementById("order-id").textContent = data.order_id;
+                    new bootstrap.Modal(document.getElementById("orderSuccessModal")).show();
+                } else {
+                    showErrorMessages([data.error]);  // 🔹 Hibaüzenetet a közös alertbe küldi
+                }
+            })
+            .catch(error => {
+                console.error("Hiba történt:", error);
+                showErrorMessages(["Hiba történt a rendelés leadása során."]);
+            })
+            .finally(() => {
+                isSubmitting = false; // Visszaállítjuk, hogy újra lehessen küldeni
+            });
+    }
 
     function showErrorMessages(messages) {
         if (orderErrors) {
-            orderErrors.innerHTML = `<div class="alert alert-danger">${messages[0]}</div>`;  
+            orderErrors.innerHTML = `<div class="alert alert-danger">${messages[0]}</div>`;
             orderErrors.scrollIntoView({ behavior: "smooth" });
         }
     }
@@ -221,7 +221,7 @@ document.getElementById("place-order-btn").addEventListener("click", function ()
         { id: "billing-postal_code", label: "Számlázási irányítószám" },
         { id: "billing-city", label: "Számlázási település" },
         { id: "billing-address", label: "Számlázási utca, házszám" }
-    ];    
+    ];
     let missing = [];
     requiredFields.forEach(field => {
         let value = document.getElementById(field.id).value.trim();
@@ -266,4 +266,50 @@ document.addEventListener("DOMContentLoaded", function () {
         // Az email mezőt letiltjuk, ha a felhasználó be van jelentkezve
         document.getElementById("email").setAttribute("readonly", "true");
     }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const sameAsShippingCheckbox = document.getElementById("same-as-shipping");
+
+    const billingCollapse = document.getElementById("billingCollapse");
+    const billingToggle = document.querySelector('[data-bs-target="#billingCollapse"]');
+
+    sameAsShippingCheckbox.addEventListener("change", function () {
+        const billingFields = ["postal_code", "city", "address"];
+
+        billingFields.forEach(field => {
+            const billing = document.getElementById(`billing-${field}`);
+            const shipping = document.getElementById(`shipping-${field}`);
+
+            if (this.checked) {
+                billing.value = shipping.value;
+                billing.setAttribute("readonly", true);
+                billing.classList.remove("is-invalid");
+                billing.classList.add("is-valid");
+
+                // accordion automatikus összecsukás
+                const collapseInstance = bootstrap.Collapse.getOrCreateInstance(billingCollapse);
+                collapseInstance.hide();
+
+                billingToggle.classList.add("disabled");
+                billingToggle.setAttribute("aria-disabled", "true");
+
+                // Szinkronban tartás
+                if (!shipping.dataset.listenerAttached) {
+                    shipping.addEventListener("input", () => {
+                        if (sameAsShippingCheckbox.checked) {
+                            billing.value = shipping.value;
+                        }
+                    });
+                    shipping.dataset.listenerAttached = true;
+                }
+            } else {
+                billing.removeAttribute("readonly");
+
+                // accordion újra engedélyezése
+                billingToggle.classList.remove("disabled");
+                billingToggle.removeAttribute("aria-disabled");
+            }
+        });
+    });
 });

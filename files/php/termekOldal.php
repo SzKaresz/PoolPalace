@@ -96,7 +96,6 @@ for ($i = 1; $i <= 5; $i++) {
         </div>
     </div>
 
-    <?php include './back-to-top.php'; ?>
     <?php include './navbar.php'; ?>
     <?php include './footer.php'; ?>
     <script src="../js/termekOldal.js"></script>
