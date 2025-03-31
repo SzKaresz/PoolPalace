@@ -1,52 +1,3 @@
-function feltolesKartyakkal(adatok){
-    let kartyak = document.getElementById("kartyak");
-    for (const adat of adatok) {
-        if(adat.cikkszam.toString().startsWith("1")){
-            let col = document.createElement("div");
-            col.classList.add("col", "col-sm-6", "col-lg-4");
-            let card = document.createElement("div");
-            card.classList.add("card");
-            let img = document.createElement("img");
-            img.src = `../img/termekek/${adat.cikkszam}.webp`;
-            let cardBody = document.createElement("div");
-            cardBody.classList.add("card-body");
-            let cardTitle = document.createElement("h5");
-            cardTitle.innerHTML = adat.nev;
-            let cardTitle2 = document.createElement("h6");
-            cardTitle2.innerHTML = adat.egysegar + " Ft";
-            let cardText = document.createElement("p");
-            cardText.innerHTML = adat.cikkszam;
-            let button = document.createElement("a");
-            button.setAttribute("href", `../php/termekOldal.php?cikkszam=${adat.cikkszam}`);
-            button.classList.add("btn", "btn-primary");
-            button.innerHTML = "Bővebben";
-            cardBody.appendChild(cardTitle);
-            cardBody.appendChild(cardText);
-            cardBody.appendChild(cardTitle2)
-            cardBody.appendChild(button);
-            card.appendChild(img);
-            card.appendChild(cardBody);
-            col.appendChild(card);
-            kartyak.appendChild(col);
-        }
-    }
-}
-
-async function adatbazisbolLekeres(){
-    try {
-        let eredmeny = await fetch("../php/termekOldal.php/cikkszam");
-        if(eredmeny.ok){
-            let valasz = await eredmeny.json();
-            console.log(valasz);
-            feltolesKartyakkal(valasz);
-        }
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-window.addEventListener("load", adatbazisbolLekeres);
-
 document.getElementById("back-to-top").hidden = true;
 
 window.onscroll = function() {gorgetes()}
@@ -60,3 +11,72 @@ function gorgetes(){
         document.getElementById("back-to-top").hidden = true;
     }
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    const thumbnails = document.querySelectorAll(".thumbnail");
+    const mainImage = document.getElementById("main-image");
+    let currentIndex = 0;
+    let intervalId;
+
+    function showImage(index) {
+        const selected = thumbnails[index];
+        if (!selected) return;
+
+        const container = document.querySelector(".main-image-container");
+        const currentImage = container.querySelector("img");
+
+        // 🔹 Új kép (jobbról érkezik)
+        const newImage = document.createElement("img");
+        newImage.src = selected.src;
+        newImage.style.left = "100%";
+        container.appendChild(newImage);
+
+        // 🔹 Régi kép (marad a helyén egy pillanatig)
+        if (currentImage) {
+            currentImage.style.left = "0";
+        }
+
+        // 🔹 Animáció indítása következő tick-ben
+        setTimeout(() => {
+            newImage.style.left = "0";
+            if (currentImage) {
+                currentImage.style.transition = "left 0.5s ease";
+                currentImage.style.left = "-100%";
+            }
+        }, 20);
+
+        // 🔹 Takarítás animáció után
+        setTimeout(() => {
+            if (currentImage) currentImage.remove();
+            newImage.id = "main-image";
+        }, 500);
+
+        // 🔹 Aktív bélyegkép frissítése
+        thumbnails.forEach(t => t.classList.remove("active"));
+        selected.classList.add("active");
+        currentIndex = index;
+    }
+
+    // Manuális váltás
+    thumbnails.forEach((thumb, index) => {
+        thumb.addEventListener("click", () => {
+            showImage(index);
+            resetInterval();
+        });
+    });
+
+    function startAutoSlide() {
+        intervalId = setInterval(() => {
+            let nextIndex = (currentIndex + 1) % thumbnails.length;
+            showImage(nextIndex);
+        }, 3000);
+    }
+
+    function resetInterval() {
+        clearInterval(intervalId);
+        startAutoSlide();
+    }
+
+    // Indítás
+    startAutoSlide();
+});
