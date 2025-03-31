@@ -28,6 +28,20 @@ body {
     border: 1px solid #f5c6cb;
 }
 
+.required-icon {
+    position: relative;
+}
+
+.required-icon::after {
+    content: "*";
+    color: red;
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: large;
+    font-weight: bold;
+}
+
 .form-container {
     background-color: rgba(255, 255, 255, 0.9);
     padding: 30px;

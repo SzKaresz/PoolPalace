@@ -45,29 +45,29 @@
                 <h4>Személyes adatok</h4>
                 <div class="mb-3">
                     <div class="input-group">
-                        <span class="input-group-text"><img src="../img/felhasznalo.png" class="felhasznalo-logo" alt="Név ikon"></span>
-                        <input type="text" class="form-control" id="nev" name="nev" placeholder="Név *">
+                        <span class="input-group-text required-icon"><img src="../img/felhasznalo.png" class="felhasznalo-logo" alt="Név ikon"></span>
+                        <input type="text" class="form-control" id="nev" name="nev" placeholder="Név">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
                     <div class="input-group">
-                        <span class="input-group-text"><img src="../img/email.png" class="email-logo" alt="E-mail cím"></span>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="E-mail cím *">
+                        <span class="input-group-text required-icon"><img src="../img/email.png" class="email-logo" alt="E-mail cím"></span>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="E-mail cím">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
                     <div class="input-group">
-                        <span class="input-group-text"><img src="../img/jelszo.png" class="jelszo-logo" alt="Jelszó"></span>
-                        <input type="password" class="form-control" id="jelszo" name="jelszo" placeholder="Jelszó *">
+                        <span class="input-group-text required-icon"><img src="../img/jelszo.png" class="jelszo-logo" alt="Jelszó"></span>
+                        <input type="password" class="form-control" id="jelszo" name="jelszo" placeholder="Jelszó">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
                     <div class="input-group">
-                        <span class="input-group-text"><img src="../img/jelszo_ujra.png" class="jelszo-ujra-logo" alt="Jelszó megerősítése"></span>
-                        <input type="password" class="form-control" id="jelszo-ujra" name="jelszo-ujra" placeholder="Jelszó megerősítése *">
+                        <span class="input-group-text required-icon"><img src="../img/jelszo_ujra.png" class="jelszo-ujra-logo" alt="Jelszó megerősítése"></span>
+                        <input type="password" class="form-control" id="jelszo-ujra" name="jelszo-ujra" placeholder="Jelszó megerősítése">
                         <span class="error"></span>
                     </div>
                 </div>
