@@ -18,6 +18,9 @@ document.addEventListener("DOMContentLoaded", function() {
     let currentIndex = 0;
     let intervalId;
 
+    // 👉 Ha csak 1 kép van, nem kell sem automatikus, sem kézi váltás
+    if (thumbnails.length <= 1) return;
+
     function showImage(index) {
         const selected = thumbnails[index];
         if (!selected) return;

@@ -55,20 +55,21 @@ for ($i = 1; $i <= 5; $i++) {
                 <a href="javascript:window.history.back()" class="btn btn-custom back-button">
                     <img src="../img/arrow.png" alt="Vissza az előző oldalra">
                 </a>
+                <div class="image-wrapper d-flex">
+                    <!-- Bélyegképek oszlop -->
+                    <div class="image-column">
+                        <?php foreach ($kepek as $index => $kep): ?>
+                            <img src="../img/termekek/<?php echo $kep; ?>"
+                                alt="Bélyegkép <?php echo $index + 1; ?>"
+                                class="thumbnail <?php echo $index === 0 ? 'active' : ''; ?>"
+                                data-index="<?php echo $index; ?>">
+                        <?php endforeach; ?>
+                    </div>
 
-                <!-- Bélyegképek oszlop -->
-                <div class="image-column">
-                    <?php foreach ($kepek as $index => $kep): ?>
-                        <img src="../img/termekek/<?php echo $kep; ?>"
-                            alt="Bélyegkép <?php echo $index + 1; ?>"
-                            class="thumbnail <?php echo $index === 0 ? 'active' : ''; ?>"
-                            data-index="<?php echo $index; ?>">
-                    <?php endforeach; ?>
-                </div>
-
-                <!-- Fő kép konténer -->
-                <div class="main-image-container">
-                    <img id="main-image" src="../img/termekek/<?php echo $kepek[0]; ?>" alt="Főkép">
+                    <!-- Fő kép konténer -->
+                    <div class="main-image-container">
+                        <img id="main-image" src="../img/termekek/<?php echo $kepek[0]; ?>" alt="Főkép">
+                    </div>
                 </div>
             </div>
 
@@ -102,4 +103,5 @@ for ($i = 1; $i <= 5; $i++) {
     <?php ob_end_flush(); ?>
 
 </body>
+
 </html>
