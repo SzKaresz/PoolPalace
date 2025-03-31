@@ -89,6 +89,13 @@ if ($sort === "kiemelt") {
     $orderSQL = "ORDER BY CONVERT(t.nev USING utf8mb4) COLLATE utf8mb4_hungarian_ci ASC";
 } elseif ($sort === "nev-za") {
     $orderSQL = "ORDER BY CONVERT(t.nev USING utf8mb4) COLLATE utf8mb4_hungarian_ci DESC";
+} elseif ($sort === "akcio") {
+    $orderSQL = "ORDER BY 
+        (t.akcios_ar > -1 AND t.akcios_ar < t.egysegar) DESC,
+        CASE 
+            WHEN t.akcios_ar > -1 THEN t.akcios_ar 
+            ELSE t.egysegar 
+        END ASC";
 }
 
 // **Frissített SQL lekérdezés**
