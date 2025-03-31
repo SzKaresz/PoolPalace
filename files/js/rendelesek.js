@@ -1,13 +1,3 @@
-var modifiedDetail = {};
-
-function adatokBekeres(obj) {
-    const inputs = document.querySelectorAll('input[type="text"]');
-    inputs.forEach(input => {
-        input.addEventListener('input', function() {
-            obj[input.id] = input.value; // Módosítjuk az objektumot minden változáskor
-        });
-    });
-}
 async function rendelesBetolt() {
     try {
         let keres = await fetch("../php/rendelesek.php");
@@ -102,7 +92,7 @@ async function accordFeltolt(id) {
                 </div>
             </div>
             <hr class="my-5">
-            <div class="row" id="adatok"></div>
+            <div class="row" id="adatok_${id}"></div>
             <div class="mt-5">
                 <button class="btn btn-outline-danger torles-gomb delete-all-btn" style="float: right;" data-id="${id}"><img src="../img/delete.png" alt="Törlés" width="30"></button>
                 <button class="btn btn-outline-success mentes-gomb save-all-btn" style="float: right;" data-id="${id}"><img src="../img/save.png" alt="Mentés" width="30"></button>
@@ -110,23 +100,25 @@ async function accordFeltolt(id) {
 
                     `;
 
+            let betoltve = false
             for (const item of valasz) {
-                document.getElementById("adatok").innerHTML+=`
+                if(betoltve==false){
+                    document.getElementById(`adatok_${id}`).innerHTML+=`
                     <div class="col-md-6">
                     <div class="mb-3">
                         <h3>Szállítási adatok</h3>
                     </div>
                     <div class="mb-3">
                         <label for="irsz" class="form-label">Irányítószám</label>
-                        <input type="text" id="irsz" class="form-control" name="irsz" value="${item.szallit_irsz}">
+                        <input type="text" id="irsz_${id}" class="form-control" name="irsz" value="${item.szallit_irsz}">
                     </div>
                     <div class="mb-3">
                         <label for="telepules" class="form-label">Település</label>
-                        <input type="text" id="telepules" class="form-control" name="telepules" value="${item.szallit_telep}">
+                        <input type="text" id="telepules_${id}" class="form-control" name="telepules" value="${item.szallit_telep}">
                     </div>
                     <div class="mb-3">
                         <label for="utca" class="form-label">Utca és házszám</label>
-                        <input type="text" id="utca" class="form-control" name="utca" value="${item.szallit_cim}">
+                        <input type="text" id="utca_${id}" class="form-control" name="utca" value="${item.szallit_cim}">
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -135,20 +127,20 @@ async function accordFeltolt(id) {
                     </div>
                     <div class="mb-3">
                         <label for="sz_irsz" class="form-label">Irányítószám</label>
-                        <input type="text" id="sz_irsz" class="form-control" name="sz_irsz" value="${item.szamlaz_irsz}">
+                        <input type="text" id="sz_irsz_${id}" class="form-control" name="sz_irsz" value="${item.szamlaz_irsz}">
                     </div>
                     <div class="mb-3">
                         <label for="sz_telepules" class="form-label">Település</label>
-                        <input type="text" id="sz_telepules" class="form-control" name="sz_telepules" value="${item.szamlaz_telep}">
+                        <input type="text" id="sz_telepules_${id}" class="form-control" name="sz_telepules" value="${item.szamlaz_telep}">
                     </div>
                     <div class="mb-3">
                         <label for="sz_utca" class="form-label">Utca és házszám</label>
-                        <input type="text" id="sz_utca" class="form-control" name="sz_utca" value="${item.szamlaz_cim}">
+                        <input type="text" id="sz_utca_${id}" class="form-control" name="sz_utca" value="${item.szamlaz_cim}">
                     </div>
                 </div>
-
-
                 `
+                betoltve=true
+                }
             }
         
             let statusSelect = document.getElementById(`status_${id}`);
@@ -186,15 +178,25 @@ document.addEventListener("click", function (event) {
             }
         });
 
-        adatokBekeres(modifiedDetail);  // Itt a változtatott adatokat gyűjtjük össze
+        let personalDetails={
+            szallitas: {
+                irsz: document.getElementById(`irsz_${megrendelesId}`).value,
+                telepules: document.getElementById(`telepules_${megrendelesId}`).value,
+                utca: document.getElementById(`utca_${megrendelesId}`).value
+            },
+            szamlazas: {
+                irsz: document.getElementById(`sz_irsz_${megrendelesId}`).value,
+                telepules: document.getElementById(`sz_telepules_${megrendelesId}`).value,
+                utca: document.getElementById(`sz_utca_${megrendelesId}`).value
+            }
+        }
 
-        console.log(modifiedDetail); // Ellenőrzés
 
         let requestBody = {
             megrendelesId: megrendelesId,
             newStatus: newStatus,
             items: modifiedItems,
-            details: modifiedDetail // Az objektumot átadjuk
+            details: personalDetails
         };
 
         fetch("../php/mentes.php", {
