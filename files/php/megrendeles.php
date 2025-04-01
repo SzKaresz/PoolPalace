@@ -171,6 +171,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $db->prepare("UPDATE termekek SET darabszam = darabszam - ? WHERE cikkszam = ? AND darabszam >= ?");
         $stmt->bind_param("isi", $item['darabszam'], $item['cikkszam'], $item['darabszam']);
         $stmt->execute();
+
+        if ($stmt->affected_rows === 0) {
+            echo json_encode([
+                "success" => false,
+                "error" => "A(z) {$item['cikkszam']} cikkszámú termékből nincs elég raktáron!"
+            ]);
+            exit;
+        }
     }
 
     if (!$is_guest) {

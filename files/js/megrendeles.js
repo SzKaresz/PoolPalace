@@ -168,8 +168,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const loadingOverlay = document.getElementById("loading-overlay");
         loadingOverlay.style.display = "flex";
 
-        console.log("Küldött rendelési adatok:", orderData);
-
         fetch('../php/megrendeles.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -177,13 +175,13 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(response => response.json())
             .then(data => {
-                console.log("Szerver válasza:", data);
                 loadingOverlay.style.display = "none";
 
                 if (data.success) {
                     document.getElementById("order-id").textContent = data.order_id;
                     new bootstrap.Modal(document.getElementById("orderSuccessModal")).show();
                 } else {
+                    showToast(data.error);
                     showErrorMessages([data.error]);  // 🔹 Hibaüzenetet a közös alertbe küldi
                 }
             })
@@ -207,51 +205,43 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.style.overflow = "hidden";
 });
 
-document.getElementById("place-order-btn").addEventListener("click", function () {
-    // Clear any previous alert
-    let alertContainer = document.getElementById("form-alert");
-    if (!alertContainer) {
-        alertContainer = document.createElement("div");
-        alertContainer.id = "form-alert";
-        document.getElementById("megrendeles-form-container").insertBefore(alertContainer, document.getElementById("order-form"));
+function showToast(message, type = "danger") {
+    // Ha nincs toast-container, hozzuk létre
+    let toastContainer = document.getElementById("toast-container");
+    if (!toastContainer) {
+        toastContainer = document.createElement("div");
+        toastContainer.id = "toast-container";
+        document.body.appendChild(toastContainer);
     }
-    alertContainer.innerHTML = "";
 
-    // Only shipping required fields are validated.
-    const requiredFields = [
-        { id: "name", label: "Név" },
-        { id: "email", label: "Email" },
-        { id: "phone", label: "Telefonszám" },
-        { id: "shipping-postal_code", label: "Irányítószám" },
-        { id: "shipping-city", label: "Település" },
-        { id: "shipping-address", label: "Utca, házszám" },
-        { id: "billing-postal_code", label: "Számlázási irányítószám" },
-        { id: "billing-city", label: "Számlázási település" },
-        { id: "billing-address", label: "Számlázási utca, házszám" }
-    ];
-    let missing = [];
-    requiredFields.forEach(field => {
-        let value = document.getElementById(field.id).value.trim();
-        if (!value) {
-            missing.push(field.label);
+    // Toast elem létrehozása
+    let toast = document.createElement("div");
+    toast.className = `toast align-items-center text-white bg-${type} border-0 shadow`;
+    toast.setAttribute("role", "alert");
+    toast.setAttribute("aria-live", "assertive");
+    toast.setAttribute("aria-atomic", "true");
+
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">${message}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+
+    toastContainer.appendChild(toast);
+
+    // Bootstrap inicializálás és megjelenítés
+    let toastInstance = new bootstrap.Toast(toast);
+    toastInstance.show();
+
+    // Automatikus eltüntetés
+    setTimeout(() => {
+        toast.remove();
+        if (type === "success") {
+            window.location.reload();
         }
-    });
-    if (missing.length > 0) {
-        alertContainer.innerHTML = `<div class="alert alert-danger" role="alert">
-            Kérem, töltse ki a következő mezőket: ${missing.join(", ")}
-        </div>`;
-        return;
-    }
-
-    // If user is guest, show the registration modal
-    const isGuest = JSON.parse(document.getElementById("is-guest-data").innerText.trim());
-    if (isGuest) {
-        const guestModal = new bootstrap.Modal(document.getElementById("guestModal"));
-        guestModal.show();
-    } else {
-        submitOrder(false, null);
-    }
-});
+    }, 10000);
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     // Ellenőrizzük, hogy van-e bejelentkezett felhasználóhoz adat

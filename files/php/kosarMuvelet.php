@@ -98,12 +98,13 @@ if (isset($_SESSION['user_email'])) {
             $kosar_mennyiseg = ($result->num_rows > 0) ? intval($result->fetch_assoc()['darabszam']) : 0;
 
             $uj_mennyiseg = $kosar_mennyiseg + $mennyiseg;
+            $termek_id = $_POST["termek_id"] ?? json_decode(file_get_contents("php://input"), true)["termek_id"];
 
             // Ellenőrizzük, hogy ne lépjük túl a készletet
             if ($uj_mennyiseg > $raktar_keszlet) {
                 echo json_encode([
                     "success" => false,
-                    "error" => "Nincs elegendő készlet!"
+                    "error" => "A(z) {$termek_id} cikkszámú termékből jelenleg nincsen raktáron!"
                 ]);
                 exit;
             }
@@ -197,12 +198,13 @@ if (isset($_SESSION['user_email'])) {
             // Kosárban lévő aktuális mennyiség lekérése (ha van)
             $kosar_mennyiseg = $_SESSION['kosar'][$termek_id] ?? 0;
             $uj_mennyiseg = $kosar_mennyiseg + $mennyiseg;
+            $termek_id = $_POST["termek_id"] ?? json_decode(file_get_contents("php://input"), true)["termek_id"];
 
             // Ellenőrizzük, hogy ne lépjük túl a készletet
             if ($uj_mennyiseg > $raktar_keszlet) {
                 echo json_encode([
                     "success" => false,
-                    "error" => "Nincs elegendő készlet. Maximum " . ($raktar_keszlet - $kosar_mennyiseg) . " darabot tudsz még hozzáadni."
+                    "error" => "A(z) {$termek_id} cikkszámú termékből jelenleg nincsen raktáron!"
                 ]);
                 exit;
             }

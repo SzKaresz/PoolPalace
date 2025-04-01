@@ -219,7 +219,7 @@ function loadProducts(page = 1, sortType = '') {
     let keresesiErtek = localStorage.getItem("keresesErtek");
     if (keresesiErtek) {
         queryParams.set("kereses", keresesiErtek);
-        
+
     }
 
     console.log(queryParams.toString());
@@ -493,7 +493,7 @@ async function gyartoFeltolt() {
             let checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.name = "gyartok";
-            checkbox.id=adat.gyarto_nev
+            checkbox.id = adat.gyarto_nev
             checkbox.value = adat.gyarto_nev;
             checkbox.style.marginRight = "10px";
 
@@ -503,7 +503,7 @@ async function gyartoFeltolt() {
 
             let label = document.createElement('label');
             label.innerHTML = adat.gyarto_nev;
-            label.htmlFor=adat.gyarto_nev
+            label.htmlFor = adat.gyarto_nev
 
             div.appendChild(checkbox);
             div.appendChild(label);
@@ -833,17 +833,19 @@ function kosarbaTesz(termekId, event, maxStock) {
     })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
+            if (data && data.success) {
                 updateCartCount();
-                checkCartState(); // 🔹 új!
-
-                // Animáció itt is mehet ha kell:
+                checkCartState();
                 animateToCart(event);
             } else {
-                showToast(data.error);
+                let hiba = data?.error || "Ismeretlen hiba történt!";
+                showToast(hiba, "danger");
             }
         })
-        .catch(error => console.error("Hiba:", error));
+        .catch(error => {
+            console.error("Hiba:", error);
+            showToast("Hálózati hiba történt!", "danger");
+        });
 }
 
 function animateToCart(event) {
@@ -1131,10 +1133,17 @@ function initEventListeners() {
 }
 
 function showToast(message, type = "danger") {
+    // Ha nincs toast-container, hozzuk létre
     let toastContainer = document.getElementById("toast-container");
+    if (!toastContainer) {
+        toastContainer = document.createElement("div");
+        toastContainer.id = "toast-container";
+        document.body.appendChild(toastContainer);
+    }
 
+    // Toast elem létrehozása
     let toast = document.createElement("div");
-    toast.className = `toast align-items-center text-white bg-${type} border-0`;
+    toast.className = `toast align-items-center text-white bg-${type} border-0 shadow`;
     toast.setAttribute("role", "alert");
     toast.setAttribute("aria-live", "assertive");
     toast.setAttribute("aria-atomic", "true");
@@ -1148,17 +1157,17 @@ function showToast(message, type = "danger") {
 
     toastContainer.appendChild(toast);
 
-    // Bootstrap toast inicializálás
+    // Bootstrap inicializálás és megjelenítés
     let toastInstance = new bootstrap.Toast(toast);
     toastInstance.show();
 
-    // Toast automatikus eltüntetése 3 másodperc után
+    // Automatikus eltüntetés
     setTimeout(() => {
         toast.remove();
-        if (type == "success") {
+        if (type === "success") {
             window.location.reload();
         }
-    }, 3000);
+    }, 6000);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
