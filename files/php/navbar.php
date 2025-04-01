@@ -134,7 +134,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     session_unset();
     session_destroy();
-    header('Location: ./index.php');
     ob_end_flush();
     exit;
 }
@@ -159,13 +158,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
             }
         });
     });
-    
+
     document.getElementById("logoutButton").addEventListener("click", function() {
-        // Kijelentkezés kezelése
         fetch('./navbar.php', {
                 method: "POST",
                 body: new URLSearchParams({
-                    'logout': 'true' // A logout változó küldése
+                    'logout': 'true'
                 }),
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -173,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
             })
             .then(response => {
                 if (response.ok) {
-                    window.location.href = "./index.php"; // Kijelentkezés után átirányítás a főoldalra
+                    window.location.href = "./index.php";
                 } else {
                     console.error("Kijelentkezés nem sikerült!");
                 }
