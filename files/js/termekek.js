@@ -261,6 +261,7 @@ async function kategoriaFeltolt() {
             checkbox.type = "checkbox";
             checkbox.name = "kategoriak";
             checkbox.value = adat.kategoria_nev;
+            checkbox.id = adat.kategoria_nev;
             checkbox.style.marginRight = "10px";
 
             if (kivalasztottSzurok.kategoriak.has(adat.kategoria_nev)) {
@@ -269,6 +270,7 @@ async function kategoriaFeltolt() {
 
             let label = document.createElement('label');
             label.innerHTML = adat.kategoria_nev;
+            label.htmlFor = adat.kategoria_nev;
 
             div.appendChild(checkbox);
             div.appendChild(label);
