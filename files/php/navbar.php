@@ -60,25 +60,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </form>
 
         <script>
-            async function redirectToProducts(event) {
+            function redirectToProducts(event) {
                 event.preventDefault();
-                window.location.href = "./termekek.php";
-                try {
-                    let keres = await fetch("../php/adatokLekerese.php", ({
-                        method: "POST",
-                        headers: {
-                            "Content-type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            kereses: document.getElementById("keresomezo").value
-                        })
-                    }))
-                } catch (error) {
-                    console.log(error)
+                let ertek = document.getElementById("keresomezo").value.trim();
+
+                if (ertek !== "") {
+                    localStorage.setItem("keresesErtek", ertek); // 🔹 MENTÉS LocalStorage-ba
+                } else {
+                    localStorage.removeItem("keresesErtek"); // 🔹 Ha üres, töröljük
                 }
+
+                window.location.href = "./termekek.php"; // 🔹 Átirányítás a termékoldalra
             }
         </script>
-
         <!-- Jobb oldali ikonok -->
         <div class="ms-auto d-flex align-items-center">
             <!-- Mobil kereső ikon: most itt, kosár előtt -->

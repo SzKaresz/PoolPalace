@@ -9,6 +9,9 @@ function formatPrice($price)
     return number_format($price, 0, ',', ' ') . ' Ft';
 }
 
+// JSON kérés feldolgozása
+$input = json_decode(file_get_contents('php://input'), true);
+
 // Aktuális oldal és limit
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $items_per_page = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
@@ -46,11 +49,22 @@ if (isset($_GET['fromprice']) && isset($_GET['toprice'])) {
     $types .= "dd";
 }
 
+
+// Keresés szűrése
+if (!empty($_GET['kereses'])) {
+    $whereClauses[] = "(t.nev LIKE ? or t.cikkszam LIKE ?)";
+    $keresesParam = '%' . $_GET['kereses'] . '%';
+    $params[] = $keresesParam;
+    $params[] = $keresesParam;
+    $types .= "ss";
+}
+
+
 // **SQL WHERE feltételek összeállítása**
 $whereSQL = !empty($whereClauses) ? "WHERE " . implode(" AND ", $whereClauses) : "";
 
 // **Összes termék számának lekérdezése a szűrés figyelembevételével**
-$total_query = $db->prepare("SELECT COUNT(*) AS total FROM termekek $whereSQL");
+$total_query = $db->prepare("SELECT COUNT(*) AS total FROM termekek t $whereSQL");
 if (!empty($params)) {
     $total_query->bind_param($types, ...$params);
 }
@@ -58,44 +72,25 @@ $total_query->execute();
 $total_result = $total_query->get_result();
 $total_items = $total_result->fetch_assoc()['total'] ?? 0;
 
-// **Új szűrési opció: "kiemelt"**
+// **Rendezési beállítások**
 $sort = isset($_GET['sort']) ? $_GET['sort'] : '';
-
-$orderSQL = ""; // Alapértelmezett rendezés
+$orderSQL = "";
 
 if ($sort === "kiemelt") {
     $orderSQL = "ORDER BY 
-    (SELECT COALESCE(SUM(tt.darabszam), 0) 
-     FROM tetelek tt 
-     WHERE tt.termek_id = t.cikkszam) DESC, 
-    CAST(t.cikkszam AS UNSIGNED) ASC, 
-        CASE 
-            WHEN t.akcios_ar > -1 THEN t.akcios_ar 
-            ELSE t.egysegar 
-        END ASC";
+        (SELECT COALESCE(SUM(tt.darabszam), 0) FROM tetelek tt WHERE tt.termek_id = t.cikkszam) DESC, 
+        CAST(t.cikkszam AS UNSIGNED) ASC, 
+        CASE WHEN t.akcios_ar > -1 THEN t.akcios_ar ELSE t.egysegar END ASC";
 } elseif ($sort === "ar-novekvo") {
-    $orderSQL = "ORDER BY 
-        CASE 
-            WHEN t.akcios_ar > -1 THEN t.akcios_ar 
-            ELSE t.egysegar 
-        END ASC";
+    $orderSQL = "ORDER BY CASE WHEN t.akcios_ar > -1 THEN t.akcios_ar ELSE t.egysegar END ASC";
 } elseif ($sort === "ar-csokkeno") {
-    $orderSQL = "ORDER BY 
-        CASE 
-            WHEN t.akcios_ar > -1 THEN t.akcios_ar 
-            ELSE t.egysegar 
-        END DESC";
+    $orderSQL = "ORDER BY CASE WHEN t.akcios_ar > -1 THEN t.akcios_ar ELSE t.egysegar END DESC";
 } elseif ($sort === "nev-az") {
     $orderSQL = "ORDER BY CONVERT(t.nev USING utf8mb4) COLLATE utf8mb4_hungarian_ci ASC";
 } elseif ($sort === "nev-za") {
     $orderSQL = "ORDER BY CONVERT(t.nev USING utf8mb4) COLLATE utf8mb4_hungarian_ci DESC";
 } elseif ($sort === "akcio") {
-    $orderSQL = "ORDER BY 
-        (t.akcios_ar > -1 AND t.akcios_ar < t.egysegar) DESC,
-        CASE 
-            WHEN t.akcios_ar > -1 THEN t.akcios_ar 
-            ELSE t.egysegar 
-        END ASC";
+    $orderSQL = "ORDER BY (t.akcios_ar > -1 AND t.akcios_ar < t.egysegar) DESC, CASE WHEN t.akcios_ar > -1 THEN t.akcios_ar ELSE t.egysegar END ASC";
 }
 
 // **Frissített SQL lekérdezés**
@@ -124,21 +119,17 @@ $result = $query->get_result();
 
 $termekek = [];
 while ($row = $result->fetch_assoc()) {
-    // **🔹 Itt formázzuk az árakat a helyes megjelenítéshez**
     $row['egysegar'] = formatPrice($row['egysegar']);
     $row['akcios_ar'] = $row['akcios_ar'] !== null ? formatPrice($row['akcios_ar']) : null;
-
     $termekek[] = $row;
 }
 
-// **Összes oldal számának kiszámítása**
 $total_pages = ceil($total_items / $items_per_page);
 
-// **JSON válasz küldése**
 echo json_encode([
     "termekek" => $termekek,
     "total_items" => $total_items,
     "total_pages" => $total_pages
 ]);
 
-exit();
+exit;

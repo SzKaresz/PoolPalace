@@ -215,6 +215,15 @@ function loadProducts(page = 1, sortType = '') {
     queryParams.set("fromprice", fromPrice);
     queryParams.set("toprice", toPrice);
 
+    // **🔹 Keresési érték betöltése LocalStorage-ból**
+    let keresesiErtek = localStorage.getItem("keresesErtek");
+    if (keresesiErtek) {
+        queryParams.set("kereses", keresesiErtek);
+        localStorage.removeItem("keresesErtek"); // 🔹 Töröljük, hogy ne maradjon ott feleslegesen
+    }
+
+    console.log(queryParams.toString());
+
     fetch(`./termekek_api.php?${queryParams.toString()}`)
         .then(response => response.json())
         .then(data => {
