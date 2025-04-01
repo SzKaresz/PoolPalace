@@ -1,6 +1,7 @@
 <?php
 include './session.php';
 include 'db.php';
+ob_start();
 
 // Függvény a bejelentkezett felhasználó kosarának darabszámának lekérésére
 function getUserCartCount($db, $user_email)
@@ -175,6 +176,9 @@ if (isset($_SESSION['user_email'])) {
             </div>
         </div>
     </div>
+    <?php
+        ob_end_flush();
+    ?>
 </body>
 
 </html>
