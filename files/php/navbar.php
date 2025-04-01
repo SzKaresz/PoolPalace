@@ -110,7 +110,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </li>
                         <li>
                             <form method="POST" class="dropdown-item p-0 m-0">
-                                <button type="submit" name="logout" class="btn btn-link text-decoration-none text-dark">Kijelentkezés</button>
+                                <button type="button" id="logoutButton" name="logout" class="btn btn-link text-decoration-none text-dark">Kijelentkezés</button>
                             </form>
                         </li>
                     </ul>
@@ -128,7 +128,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     session_unset();
     session_destroy();
-    header('Location: ./index.php');
     ob_end_flush();
     exit;
 }
@@ -152,6 +151,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
                 navbarMenu.style.opacity = "1";
             }
         });
+    });
+
+    document.getElementById("logoutButton").addEventListener("click", function() {
+        fetch('./navbar.php', {
+                method: "POST",
+                body: new URLSearchParams({
+                    'logout': 'true'
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = "./index.php";
+                } else {
+                    console.error("Kijelentkezés nem sikerült!");
+                }
+            })
+            .catch(error => console.error("Hiba a kijelentkezésnél:", error));
     });
 
     function toggleSearch() {

@@ -67,7 +67,7 @@ function elfelejtettEmail($email, $nev)
     }
 }
 
-function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
+function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total, $payment)
 {
     try {
         $mail = new PHPMailer(true);
@@ -167,6 +167,7 @@ function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total)
                         Végösszeg: " . number_format($total, 0, ',', ' ') . " Ft
                     </div>
                 </div>
+                <p>Az Ön által választott fizetési mód: <strong>$payment</strong>.</p>
                 <p>Hamarosan feldolgozzuk a rendelését és értesítjük a további lépésekről.</p>
                 <br>
                 <p>Üdvözlettel, <br><strong>PoolPalace csapata</strong></p>
