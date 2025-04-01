@@ -1040,18 +1040,8 @@ function displayProducts(products, totalItems, oldalSzam = 1, osszesOldal = 1) {
         quantityControl.appendChild(quantityInput);
         quantityControl.appendChild(plusButton);
 
-        // Kosár gomb és számláló együtt
-        // Kosár gomb és számláló külön-külön
-        let kosarbaWrapper = document.createElement("div");
-        kosarbaWrapper.classList.add("text-center", "mb-2"); // Középre igazítás, kis alsó margó
-        kosarbaWrapper.appendChild(cartButton);
-
-        let quantityWrapper = document.createElement("div");
-        quantityWrapper.classList.add("text-center"); // Középre igazítás
-        quantityWrapper.appendChild(quantityControl);
-
-        cartButtonContainer.appendChild(kosarbaWrapper);
-        cartButtonContainer.appendChild(quantityWrapper);
+        cartButtonContainer.appendChild(cartButton);
+        cartButtonContainer.appendChild(quantityControl);
 
         cardBody.appendChild(cardTitle);
         cardBody.appendChild(cardPrice);

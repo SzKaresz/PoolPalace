@@ -220,7 +220,7 @@ input.quantity-input::-webkit-outer-spin-button {
 
 /* Kártyák */
 .card {
-    height: 500px;
+    height: 420px;
     width: 250px;
     background-color: #fff;
     border-radius: 12px;
@@ -261,7 +261,8 @@ input.quantity-input::-webkit-outer-spin-button {
 }
 
 .card-body {
-    padding: 16px;
+    padding: 12px;
+    padding-bottom: 16px;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -948,14 +949,6 @@ a:hover {
     transform: none;
 }
 
-.cart-button-container {
-    margin-top: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-}
-
 .add-to-cart {
     display: inline-flex !important;
     align-items: center !important;
@@ -1015,4 +1008,16 @@ a:hover {
     height: 18px;
     margin-right: 6px;
     vertical-align: middle;
+}
+
+.cart-button-container {
+    margin-top: auto;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    width: 100%;
+}
+
+.add-to-cart {
+    margin-right: 12px;
 }
