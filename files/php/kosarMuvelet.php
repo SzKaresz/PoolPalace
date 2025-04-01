@@ -103,7 +103,7 @@ if (isset($_SESSION['user_email'])) {
             if ($uj_mennyiseg > $raktar_keszlet) {
                 echo json_encode([
                     "success" => false,
-                    "error" => "Nincs elegendő készlet. Maximum " . ($raktar_keszlet - $kosar_mennyiseg) . " darabot tudsz még hozzáadni."
+                    "error" => "Nincs elegendő készlet!"
                 ]);
                 exit;
             }
