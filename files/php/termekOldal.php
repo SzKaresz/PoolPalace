@@ -53,7 +53,7 @@ for ($i = 1; $i <= 5; $i++) {
         <div class="row">
             <div class="col-md-8 position-relative d-flex justify-content-end">
                 <!-- Visszagomb a bal felső sarokba -->
-                <a href="javascript:window.history.back()" class="btn btn-custom back-button">
+                <a href="#" onclick="goBack()" class="btn btn-custom back-button">
                     <img src="../img/arrow.png" alt="Vissza az előző oldalra">
                 </a>
                 <div class="image-wrapper d-flex">

@@ -68,3 +68,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
     startAutoSlide();
 });
+
+function goBack() {
+    let previousPage = sessionStorage.getItem("previousPage");
+    if (previousPage) {
+        window.location.href = previousPage;
+    } else {
+        window.history.back();
+    }
+}
+
+// Az aktuális oldal URL-jét elmentjük
+document.addEventListener("DOMContentLoaded", function() {
+    sessionStorage.setItem("previousPage", window.location.href);
+});
