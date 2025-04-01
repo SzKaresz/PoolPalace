@@ -255,11 +255,10 @@ function updateCartCount() {
                     const cartIcon = document.querySelector(".cart-icon");
                     const badge = document.createElement("span");
                     badge.id = "cart-count";
-                    badge.className = "position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger";
+                    badge.className = "badge rounded-pill bg-danger";
                     cartIcon.appendChild(badge);
                 }
                 cartCountElement.textContent = data.uj_mennyiseg;
-                cartCountElement.style.display = "inline-block"; // Megjelenítés
             } else {
                 if (cartCountElement) {
                     cartCountElement.textContent = "0"; // Biztosan frissítse az értéket
