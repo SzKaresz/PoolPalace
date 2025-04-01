@@ -219,7 +219,7 @@ function loadProducts(page = 1, sortType = '') {
     let keresesiErtek = localStorage.getItem("keresesErtek");
     if (keresesiErtek) {
         queryParams.set("kereses", keresesiErtek);
-        localStorage.removeItem("keresesErtek"); // 🔹 Töröljük, hogy ne maradjon ott feleslegesen
+        
     }
 
     console.log(queryParams.toString());
@@ -1099,6 +1099,7 @@ function initEventListeners() {
 
     document.getElementById('clear-filters').addEventListener('click', function () {
         // Az összes checkboxot kikapcsoljuk
+        localStorage.removeItem("keresesErtek"); // 🔹 Töröljük, hogy ne maradjon ott feleslegesen
         document.querySelectorAll('input[name="kategoriak"], input[name="gyartok"]').forEach(checkbox => {
             checkbox.checked = false;
         });
