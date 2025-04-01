@@ -153,25 +153,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
         });
     });
 
-    document.getElementById("logoutButton").addEventListener("click", function() {
-        fetch('./navbar.php', {
-                method: "POST",
-                body: new URLSearchParams({
-                    'logout': 'true'
-                }),
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    window.location.href = "./index.php";
-                } else {
-                    console.error("Kijelentkezés nem sikerült!");
-                }
-            })
-            .catch(error => console.error("Hiba a kijelentkezésnél:", error));
-    });
+    const logoutBtn = document.getElementById("logoutButton");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", function() {
+            fetch('./navbar.php', {
+                    method: "POST",
+                    body: new URLSearchParams({
+                        'logout': 'true'
+                    }),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = "./index.php";
+                    } else {
+                        console.error("Kijelentkezés nem sikerült!");
+                    }
+                })
+                .catch(error => console.error("Hiba a kijelentkezésnél:", error));
+        });
+    }
 
     function toggleSearch() {
         const searchForm = document.getElementById('searchForm');
