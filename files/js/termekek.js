@@ -493,6 +493,7 @@ async function gyartoFeltolt() {
             let checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.name = "gyartok";
+            checkbox.id=adat.gyarto_nev
             checkbox.value = adat.gyarto_nev;
             checkbox.style.marginRight = "10px";
 
@@ -502,6 +503,7 @@ async function gyartoFeltolt() {
 
             let label = document.createElement('label');
             label.innerHTML = adat.gyarto_nev;
+            label.htmlFor=adat.gyarto_nev
 
             div.appendChild(checkbox);
             div.appendChild(label);
