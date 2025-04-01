@@ -176,7 +176,7 @@ function kosarbaTesz(termekId, event) {
           const cartIcon = document.querySelector(".cart-icon");
           const badge = document.createElement("span");
           badge.id = "cart-count";
-          badge.className = "position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger";
+          badge.className = "badge rounded-pill bg-danger";
           badge.textContent = data.uj_mennyiseg;
           cartIcon.appendChild(badge);
         }
