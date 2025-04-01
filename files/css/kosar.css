@@ -28,6 +28,14 @@ h2 {
     cursor: not-allowed !important; /* Nem kattintható */
 }
 
+.quantity-input {
+    width: 45px !important;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 28px;
+}
+
 .cart-table th {
     background: #293144;
     color: white;

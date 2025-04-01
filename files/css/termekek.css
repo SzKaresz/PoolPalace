@@ -24,6 +24,12 @@ body {
     pointer-events: none;
 }
 
+input.quantity-input::-webkit-inner-spin-button,
+input.quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 #toast-container .toast {
     pointer-events: auto;
     width: auto;

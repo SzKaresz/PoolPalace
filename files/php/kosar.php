@@ -22,7 +22,7 @@ $osszesen = 0;
 if (isset($_SESSION['user_email'])) {
     $user_email = $_SESSION['user_email'];
 
-    $stmt = $db->prepare("SELECT t.cikkszam, t.nev, t.egysegar, t.akcios_ar, k.darabszam 
+    $stmt = $db->prepare("SELECT t.cikkszam, t.nev, t.egysegar, t.akcios_ar, k.darabszam, t.darabszam AS raktar_keszlet 
                           FROM kosar k
                           JOIN termekek t ON k.termek_id = t.cikkszam
                           JOIN felhasznalok f ON f.email = k.felhasznalo_id
@@ -40,7 +40,8 @@ if (isset($_SESSION['user_email'])) {
             'egysegar' => $row['egysegar'] ?? 0,
             'akcios_ar' => $row['akcios_ar'] ?? null,
             'ar' => $ar,
-            'darabszam' => $row['darabszam'] ?? 0
+            'darabszam' => $row['darabszam'] ?? 0,
+            'raktar_keszlet' => $row['raktar_keszlet'] ?? 0
         ];
 
         $osszesen += $row['darabszam'] * $ar;
@@ -48,7 +49,7 @@ if (isset($_SESSION['user_email'])) {
 } else {
     if (!empty($_SESSION['kosar'])) {
         foreach ($_SESSION['kosar'] as $termek_id => $darabszam) {
-            $stmt = $db->prepare("SELECT cikkszam, nev, egysegar, akcios_ar FROM termekek WHERE cikkszam = ?");
+            $stmt = $db->prepare("SELECT cikkszam, nev, egysegar, akcios_ar, darabszam AS raktar_keszlet FROM termekek WHERE cikkszam = ?");
             $stmt->bind_param("s", $termek_id);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -63,7 +64,8 @@ if (isset($_SESSION['user_email'])) {
                     'egysegar' => $termek['egysegar'],
                     'akcios_ar' => $termek['akcios_ar'],
                     'ar' => $ar,
-                    'darabszam' => $darabszam
+                    'darabszam' => $darabszam,
+                    'raktar_keszlet' => $termek['raktar_keszlet']
                 ];
 
                 $osszesen += $darabszam * $ar;
@@ -126,9 +128,16 @@ if (isset($_SESSION['user_email'])) {
                                 <?php endif; ?>
                             </td>
                             <td id="mennyiseg">
-                                <button class="quantity-btn minus" onclick="updateQuantity(<?= str_pad($termek['cikkszam'], 6, '0', STR_PAD_LEFT) ?>, -1)">-</button>
-                                <span class="quantity"><?= $termek['darabszam'] ?></span>
-                                <button class="quantity-btn plus" onclick="updateQuantity(<?= str_pad($termek['cikkszam'], 6, '0', STR_PAD_LEFT) ?>, 1)">+</button>
+                                <div class="quantity-control">
+                                <button class="quantity-btn minus" onclick="updateQuantity('<?= str_pad($termek['cikkszam'], 6, '0', STR_PAD_LEFT) ?>', -1)">-</button>
+                                    <input type="number"
+                                        class="quantity-input"
+                                        min="1"
+                                        max="<?= $termek['raktar_keszlet'] ?>"
+                                        value="<?= $termek['darabszam'] ?>"
+                                        data-current-value="<?= $termek['darabszam'] ?>">
+                                        <button class="quantity-btn plus" onclick="updateQuantity('<?= str_pad($termek['cikkszam'], 6, '0', STR_PAD_LEFT) ?>', 1)">+</button>
+                                </div>
                             </td>
                             <td><?= number_format($termek['darabszam'] * $termek['ar'], 0, ',', ' ') ?> Ft</td>
                             <td>
@@ -140,7 +149,7 @@ if (isset($_SESSION['user_email'])) {
                     <?php endforeach; ?>
                 </tbody>
             </table>
-            <div class="row d-flex align-items-end justify-content-between"> 
+            <div class="row d-flex align-items-end justify-content-between">
                 <div class="col cart-delete"> <button type="button" class="delete-btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#clearCartModal">
                         Kosár kiürítése
                     </button>
@@ -176,7 +185,7 @@ if (isset($_SESSION['user_email'])) {
         </div>
     </div>
     <?php
-        ob_end_flush();
+    ob_end_flush();
     ?>
 </body>
 

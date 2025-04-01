@@ -16,14 +16,14 @@ function updateQuantity(termekId, change) {
         }
 
         const row = document.querySelector(`tr[data-id='${termekId}']`);
-        const quantityElement = row?.querySelector(".quantity");
+        const quantityElement = row?.querySelector(".quantity-input");
 
         if (!row || !quantityElement) {
             console.error("A quantity vagy a sor nem található a DOM-ban.");
             return;
         }
 
-        let currentQuantity = parseInt(quantityElement.textContent, 10);
+        let currentQuantity = parseInt(quantityElement.value, 10);
         let newQuantity = currentQuantity + change;
 
         // 🔹 Nem engedjük a mínusz gombot 1 alá menni
@@ -48,14 +48,15 @@ function updateQuantity(termekId, change) {
             if (data.success) {
                 // 🔁 Friss DOM lekérés újra
                 const row = document.querySelector(`tr[data-id='${termekId}']`);
-                const quantityElement = row?.querySelector(".quantity");
+                const quantityElement = row?.querySelector(".quantity-input");
 
                 if (!row || !quantityElement) {
                     console.error("A frissített sor vagy quantity nem található.");
                     return;
                 }
 
-                quantityElement.textContent = newQuantity;
+                quantityElement.value = newQuantity;
+                quantityElement.dataset.currentValue = newQuantity;
                 updateRowTotal(row, newQuantity);
                 updateCartTotal();
                 updateCartCount();
@@ -75,14 +76,14 @@ function updateQuantity(termekId, change) {
 
 function disableCartButtons() {
     document.querySelectorAll(".cart-table tbody tr").forEach(row => {
-        let termekId = row.dataset.id.padStart(6, '0');
-        let quantityElement = row.querySelector(".quantity");
+        let termekId = row.dataset.id;
+        let quantityElement = row.querySelector(".quantity-input");
         let plusButton = row.querySelector(".quantity-btn.plus");
         let minusButton = row.querySelector(".quantity-btn.minus");
 
         if (!quantityElement || !plusButton || !minusButton) return;
 
-        let currentQuantity = parseInt(quantityElement.textContent, 10);
+        let currentQuantity = parseInt(quantityElement.value, 10);
 
         // 🔹 Lekérjük a raktárkészletet minden termékre
         fetch('../php/kosarMuvelet.php', {
@@ -145,7 +146,7 @@ function updateCartItem(termekId, change) {
     .then(data => {
         if (data.success) {
             updateCartCount();
-            let productCard = document.querySelector(`.card[data-id="${termekId}"]`);
+            let productCard = document.querySelector(`tr[data-id='${termekId}`);
             let quantityInput = productCard.querySelector(".quantity-input");
             let newValue = parseInt(quantityInput.value) + change;
 
@@ -270,15 +271,37 @@ function updateCartCount() {
     .catch(error => console.error("Hiba a kosár frissítésében:", error));
 }
 
+function initQuantityInputs() {
+    document.querySelectorAll(".cart-table tbody tr").forEach(row => {
+        const termekId = row.dataset.id;
+        const input = row.querySelector(".quantity-input");
+        const plus = row.querySelector(".quantity-btn.plus");
+        const minus = row.querySelector(".quantity-btn.minus");
+
+        if (!input || !plus || !minus) return;
+
+        input.addEventListener("change", () => {
+            const newVal = parseInt(input.value);
+            const current = parseInt(input.dataset.currentValue || input.value);
+            const diff = newVal - current;
+            updateQuantity(termekId, diff);
+        });
+
+        plus.addEventListener("click", () => updateQuantity(termekId, 1));
+        minus.addEventListener("click", () => updateQuantity(termekId, -1));
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     updateCartTotal();
     updateCartCount();
-    disableCartButtons(); // ✅ egy helyre került
+    disableCartButtons();
+    initQuantityInputs();
 
     // 🛒 Mennyiség növelés/csökkentés
     document.querySelectorAll(".quantity-btn").forEach(button => {
         button.addEventListener("click", function () {
-            const termekId = this.closest("tr").dataset.id.padStart(6, '0');
+            const termekId = this.closest("tr").dataset.id;
             const change = this.classList.contains("plus") ? 1 : -1;
             updateQuantity(termekId, change);
         });
@@ -287,7 +310,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 🗑️ Termék törlése
     document.querySelectorAll(".remove-btn").forEach(button => {
         button.addEventListener("click", function () {
-            const termekId = this.closest("tr").dataset.id.padStart(6, '0');
+            const termekId = this.closest("tr").dataset.id;
             removeItem(termekId);
         });
     });
