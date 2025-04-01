@@ -230,6 +230,7 @@ document.addEventListener("click", function (event) {
 
 document.addEventListener("click", function (event) {
     if (event.target.closest(".delete-all-btn")) {
+        const loadingOverlay = document.getElementById("loading-overlay");
         let megrendelesId = event.target.closest(".delete-all-btn").getAttribute("data-id");
         let modal = new bootstrap.Modal(document.getElementById("torlesModal"));
         modal.show();
@@ -240,6 +241,7 @@ document.addEventListener("click", function (event) {
         megerositesBtn.addEventListener("click", handleTorlest);
 
         async function handleTorlest() {
+            loadingOverlay.style.display = "flex";
             let requestBody = {
                 megrendeles_id: megrendelesId
             };
@@ -253,6 +255,7 @@ document.addEventListener("click", function (event) {
 
                 let result = await response.json();
                 console.log(result);
+                loadingOverlay.style.display = "none";
                 
                 // Ha sikerült a törlés
                 if (result.success) {
@@ -264,6 +267,7 @@ document.addEventListener("click", function (event) {
                 }
             } catch (error) {
                 console.log(error);
+                loadingOverlay.style.display = "none";
                 showToast("Hiba történt a törlés során!", "danger");
             }
 
