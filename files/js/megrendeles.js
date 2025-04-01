@@ -206,7 +206,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function showToast(message, type = "danger") {
-    // Ha nincs toast-container, hozzuk létre
     let toastContainer = document.getElementById("toast-container");
     if (!toastContainer) {
         toastContainer = document.createElement("div");
@@ -214,7 +213,12 @@ function showToast(message, type = "danger") {
         document.body.appendChild(toastContainer);
     }
 
-    // Toast elem létrehozása
+    const maxToastCount = 3;
+    const currentToasts = toastContainer.querySelectorAll(".toast");
+    if (currentToasts.length >= maxToastCount) {
+        currentToasts[currentToasts.length - 1].remove();
+    }
+
     let toast = document.createElement("div");
     toast.className = `toast align-items-center text-white bg-${type} border-0 shadow`;
     toast.setAttribute("role", "alert");
@@ -230,11 +234,9 @@ function showToast(message, type = "danger") {
 
     toastContainer.appendChild(toast);
 
-    // Bootstrap inicializálás és megjelenítés
     let toastInstance = new bootstrap.Toast(toast);
     toastInstance.show();
 
-    // Automatikus eltüntetés
     setTimeout(() => {
         toast.remove();
         if (type === "success") {
