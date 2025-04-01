@@ -129,7 +129,10 @@ document.addEventListener("DOMContentLoaded", function () {
             // Számlázási adatok
             billing_postal_code: document.getElementById("billing-postal_code").value.trim(),
             billing_city: document.getElementById("billing-city").value.trim(),
-            billing_address: document.getElementById("billing-address").value.trim()
+            billing_address: document.getElementById("billing-address").value.trim(),
+
+            //Fizetési mód
+            payment_method: document.querySelector('input[name="payment-method"]:checked').value.trim()
         };
 
         if (isGuest) {

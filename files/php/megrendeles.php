@@ -184,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode(["success" => true, "order_id" => $megrendeles_id]);
 
     include 'email_kuldes.php';
-    kuldRendelesVisszaigazolas($felhasznalo_email, $data['name'], $megrendeles_id, $data['cart_items'], $data['total']);
+    kuldRendelesVisszaigazolas($felhasznalo_email, $data['name'], $megrendeles_id, $data['cart_items'], $data['total'], $data['payment_method']);
 
     exit;
 }
@@ -321,15 +321,15 @@ ob_end_flush();
                 <div class="mb-3 mt-3">
                     <label for="payment-method" class="form-label">Fizetési mód<span class="text-danger">*</span></label>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="payment-method" id="payment-card" value="card" checked>
+                        <input class="form-check-input" type="radio" name="payment-method" id="payment-card" value="Bankkártyás fizetés" checked>
                         <label class="form-check-label" for="payment-card">Bankkártyás fizetés</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="payment-method" id="payment-cash" value="cash">
+                        <input class="form-check-input" type="radio" name="payment-method" id="payment-cash" value="Utánvét (készpénz)">
                         <label class="form-check-label" for="payment-cash">Utánvét (készpénz)</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="payment-method" id="payment-transfer" value="transfer">
+                        <input class="form-check-input" type="radio" name="payment-method" id="payment-transfer" value="Banki átutalás">
                         <label class="form-check-label" for="payment-transfer">Banki átutalás</label>
                     </div>
                 </div>
