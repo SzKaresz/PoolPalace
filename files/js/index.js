@@ -1,164 +1,229 @@
 function feltolesKartyakkal(adatok) {
-  let kartyak = document.getElementById("kartyak");
-  for (const adat of adatok) {
-    let card = document.createElement("div");
-    card.classList.add("card");
-    card.style.cursor = "pointer";
+  const kartyak = document.getElementById("kartyak");
+  kartyak.innerHTML = "";
 
-    card.addEventListener("click", function () {
-      window.location.href = `../php/termekOldal.php?cikkszam=${adat.cikkszam}`;
+  adatok.forEach(adat => {
+    const card = document.createElement("div");
+    card.classList.add("card");
+    card.addEventListener("click", (event) => {
+      if (!event.target.closest("button") && !event.target.closest("input")) {
+        window.location.href = `../php/termekOldal.php?cikkszam=${adat.cikkszam}`;
+      }
     });
 
-    let card_header = document.createElement('div');
-    card_header.classList.add("card-header");
-    card.appendChild(card_header);
+    const cardHeader = document.createElement("div");
+    cardHeader.classList.add("card-header");
 
-    let img = document.createElement("img");
+    const img = document.createElement("img");
     img.src = `../img/termekek/${adat.cikkszam}.webp`;
     img.alt = adat.nev;
     img.classList.add("card-img-top");
-    card_header.appendChild(img);
+    cardHeader.appendChild(img);
 
-    let cardBody = document.createElement("div");
+    const cardBody = document.createElement("div");
     cardBody.classList.add("card-body", "d-flex", "flex-column");
 
-    let cardTitle = document.createElement("h5");
+    const cardTitle = document.createElement("h5");
     cardTitle.classList.add("card-title");
     cardTitle.innerHTML = adat.nev;
 
-    let cardTitle2 = document.createElement("h6");
-    cardTitle2.classList.add("card-subtitle", "mb-2", "text-muted");
+    const cardPrice = document.createElement("h6");
+    cardPrice.classList.add("card-subtitle", "mb-2", "text-muted");
 
-    let akcios_ar = parseFloat(adat.akcios_ar.replace(/\s/g, ''));
-    let egysegar = parseFloat(adat.egysegar.replace(/\s/g, ''));
+    const akcios_ar = parseFloat(adat.akcios_ar.replace(/\s/g, ''));
+    const egysegar = parseFloat(adat.egysegar.replace(/\s/g, ''));
     if (akcios_ar > -1 && akcios_ar < egysegar) {
-      cardTitle2.innerHTML = `<span class="original-price">${adat.egysegar} Ft</span> 
-                           <span class="discounted-price">${adat.akcios_ar} Ft</span>`;
-      card_header.innerHTML += `<div class="badge">Akció!</div>`;
+      cardPrice.innerHTML = `<span class="original-price">${adat.egysegar}</span> 
+                             <span class="discounted-price">${adat.akcios_ar}</span>`;
+      cardHeader.innerHTML += `<div class="badge">Akció!</div>`;
     } else {
-      cardTitle2.innerHTML = `${adat.egysegar} Ft`;
+      cardPrice.innerHTML = `${adat.egysegar}`;
     }
 
-    let cartButton = document.createElement("button");
-    cartButton.classList.add("btn", "btn-success", "d-flex", "align-items-center", "gap-2");
-    cartButton.innerHTML = `
-                                  <span>
-                                      <img src="../img/cart.png" alt="Kosár ikon" width="25" height="25">
-                                  </span> Kosárba
-                              `;
+    const cartButtonContainer = document.createElement("div");
+    cartButtonContainer.classList.add("cart-button-container");
+
+    const cartButton = document.createElement("button");
+    cartButton.classList.add("btn", "add-to-cart");
+    cartButton.innerHTML = `<img src="../img/cart.png" class="cart-icon-img" alt="Kosár"> Kosárba`;
     cartButton.setAttribute("data-id", adat.cikkszam);
-    cartButton.style.border = 0;
-    cartButton.style.transition = "box-shadow 0.3s ease-in-out";
 
-    cartButton.onmouseover = function () {
-      cartButton.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.8)";
-    };
-    cartButton.onmouseout = function () {
-      cartButton.style.boxShadow = "none";
-    };
+    if (adat.raktar_keszlet === 0) {
+      cartButton.disabled = true;
+      cartButton.classList.add("disabled");
+      cartButton.innerHTML = `Nincs készleten`;
+    } else {
+      cartButton.onclick = function (event) {
+        event.stopPropagation();
+        kosarbaTesz(adat.cikkszam, event, adat.raktar_keszlet);
+      };
+    }
 
-    cartButton.onclick = function (event) {
+    const quantityControl = document.createElement("div");
+    quantityControl.classList.add("quantity-control");
+    quantityControl.style.display = "none";
+
+    const minusButton = document.createElement("button");
+    minusButton.classList.add("quantity-btn", "minus");
+    minusButton.textContent = "-";
+    minusButton.onclick = (event) => {
       event.stopPropagation();
-      kosarbaTesz(adat.cikkszam, event);
+      updateCartItem(adat.cikkszam, -1, event);
     };
 
-    let buttonContainer = document.createElement("div");
-    buttonContainer.classList.add("d-flex", "justify-content-between", "mt-auto", "w-100");
-    buttonContainer.appendChild(cartButton);
+    const quantityInput = document.createElement("input");
+    quantityInput.classList.add("quantity-input");
+    quantityInput.type = "number";
+    quantityInput.value = 1;
+    quantityInput.setAttribute("min", "1");
+    quantityInput.dataset.currentValue = 1;
+    quantityInput.onchange = (event) => {
+      const currentVal = parseInt(quantityInput.dataset.currentValue, 10);
+      const newVal = parseInt(event.target.value, 10);
+      updateCartItem(adat.cikkszam, newVal - currentVal, event);
+    };
+
+    const plusButton = document.createElement("button");
+    plusButton.classList.add("quantity-btn", "plus");
+    plusButton.textContent = "+";
+    plusButton.onclick = (event) => {
+      event.stopPropagation();
+      updateCartItem(adat.cikkszam, 1, event);
+    };
+
+    quantityControl.appendChild(minusButton);
+    quantityControl.appendChild(quantityInput);
+    quantityControl.appendChild(plusButton);
+
+    cartButtonContainer.appendChild(cartButton);
+    cartButtonContainer.appendChild(quantityControl);
 
     cardBody.appendChild(cardTitle);
-    cardBody.appendChild(cardTitle2);
-    cardBody.appendChild(buttonContainer);
+    cardBody.appendChild(cardPrice);
+    cardBody.appendChild(cartButtonContainer);
 
+    card.appendChild(cardHeader);
     card.appendChild(cardBody);
-
     kartyak.appendChild(card);
-  }
+  });
+
+  checkCartState();
 }
 
 function feltolesAkcios(adatok) {
-  let kartyak = document.getElementById("akciok");
-  for (const adat of adatok) {
-    let card = document.createElement("div");
-    card.classList.add("card");
-    card.style.cursor = "pointer";
+  const kartyak = document.getElementById("akciok");
+  kartyak.innerHTML = "";
 
-    card.addEventListener("click", function () {
-      window.location.href = `../php/termekOldal.php?cikkszam=${adat.cikkszam}`;
+  adatok.forEach(adat => {
+    const card = document.createElement("div");
+    card.classList.add("card");
+    card.addEventListener("click", (event) => {
+      if (!event.target.closest("button") && !event.target.closest("input")) {
+        window.location.href = `../php/termekOldal.php?cikkszam=${adat.cikkszam}`;
+      }
     });
 
-    let card_header = document.createElement('div');
-    card_header.classList.add("card-header");
-    card.appendChild(card_header);
+    const cardHeader = document.createElement("div");
+    cardHeader.classList.add("card-header");
 
-    let img = document.createElement("img");
+    const img = document.createElement("img");
     img.src = `../img/termekek/${adat.cikkszam}.webp`;
     img.alt = adat.nev;
     img.classList.add("card-img-top");
-    card_header.appendChild(img);
+    cardHeader.appendChild(img);
 
-    let cardBody = document.createElement("div");
+    const cardBody = document.createElement("div");
     cardBody.classList.add("card-body", "d-flex", "flex-column");
 
-    let cardTitle = document.createElement("h5");
+    const cardTitle = document.createElement("h5");
     cardTitle.classList.add("card-title");
     cardTitle.innerHTML = adat.nev;
 
-    let cardTitle2 = document.createElement("h6");
-    cardTitle2.classList.add("card-subtitle", "mb-2", "text-muted");
+    const cardPrice = document.createElement("h6");
+    cardPrice.classList.add("card-subtitle", "mb-2", "text-muted");
 
-    let akcios_ar = parseFloat(adat.akcios_ar.replace(/\s/g, ''));
-    let egysegar = parseFloat(adat.egysegar.replace(/\s/g, ''));
+    const akcios_ar = parseFloat(adat.akcios_ar.replace(/\s/g, ''));
+    const egysegar = parseFloat(adat.egysegar.replace(/\s/g, ''));
     if (akcios_ar > -1 && akcios_ar < egysegar) {
-      cardTitle2.innerHTML = `<span class="original-price">${adat.egysegar} Ft</span> 
-                               <span class="discounted-price">${adat.akcios_ar} Ft</span>`;
-      card_header.innerHTML += `<div class="badge">Akció!</div>`;
+      cardPrice.innerHTML = `<span class="original-price">${adat.egysegar}</span> 
+                             <span class="discounted-price">${adat.akcios_ar}</span>`;
+      cardHeader.innerHTML += `<div class="badge">Akció!</div>`;
     } else {
-      cardTitle2.innerHTML = `${adat.egysegar} Ft`;
+      cardPrice.innerHTML = `${adat.egysegar}`;
     }
 
-    let cartButton = document.createElement("button");
-    cartButton.classList.add("btn", "btn-success", "d-flex", "align-items-center", "gap-2");
-    cartButton.innerHTML = `
-                                      <span>
-                                          <img src="../img/cart.png" alt="Kosár ikon" width="25" height="25">
-                                      </span> Kosárba
-                                  `;
+    const cartButtonContainer = document.createElement("div");
+    cartButtonContainer.classList.add("cart-button-container");
+
+    const cartButton = document.createElement("button");
+    cartButton.classList.add("btn", "add-to-cart");
+    cartButton.innerHTML = `<img src="../img/cart.png" class="cart-icon-img" alt="Kosár"> Kosárba`;
     cartButton.setAttribute("data-id", adat.cikkszam);
-    cartButton.style.border = 0;
-    cartButton.style.transition = "box-shadow 0.3s ease-in-out";
 
-    cartButton.onmouseover = function () {
-      cartButton.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.8)";
-    };
-    cartButton.onmouseout = function () {
-      cartButton.style.boxShadow = "none";
-    };
+    if (adat.raktar_keszlet === 0) {
+      cartButton.disabled = true;
+      cartButton.classList.add("disabled");
+      cartButton.innerHTML = `Nincs készleten`;
+    } else {
+      cartButton.onclick = function (event) {
+        event.stopPropagation();
+        kosarbaTesz(adat.cikkszam, event, adat.raktar_keszlet);
+      };
+    }
 
-    cartButton.onclick = function (event) {
+    const quantityControl = document.createElement("div");
+    quantityControl.classList.add("quantity-control");
+    quantityControl.style.display = "none";
+
+    const minusButton = document.createElement("button");
+    minusButton.classList.add("quantity-btn", "minus");
+    minusButton.textContent = "-";
+    minusButton.onclick = (event) => {
       event.stopPropagation();
-      kosarbaTesz(adat.cikkszam, event);
+      updateCartItem(adat.cikkszam, -1, event);
     };
 
-    let buttonContainer = document.createElement("div");
-    buttonContainer.classList.add("d-flex", "justify-content-between", "mt-auto", "w-100");
-    buttonContainer.appendChild(cartButton);
+    const quantityInput = document.createElement("input");
+    quantityInput.classList.add("quantity-input");
+    quantityInput.type = "number";
+    quantityInput.value = 1;
+    quantityInput.setAttribute("min", "1");
+    quantityInput.dataset.currentValue = 1;
+    quantityInput.onchange = (event) => {
+      const currentVal = parseInt(quantityInput.dataset.currentValue, 10);
+      const newVal = parseInt(event.target.value, 10);
+      updateCartItem(adat.cikkszam, newVal - currentVal, event);
+    };
+
+    const plusButton = document.createElement("button");
+    plusButton.classList.add("quantity-btn", "plus");
+    plusButton.textContent = "+";
+    plusButton.onclick = (event) => {
+      event.stopPropagation();
+      updateCartItem(adat.cikkszam, 1, event);
+    };
+
+    quantityControl.appendChild(minusButton);
+    quantityControl.appendChild(quantityInput);
+    quantityControl.appendChild(plusButton);
+
+    cartButtonContainer.appendChild(cartButton);
+    cartButtonContainer.appendChild(quantityControl);
 
     cardBody.appendChild(cardTitle);
-    cardBody.appendChild(cardTitle2);
-    cardBody.appendChild(buttonContainer);
+    cardBody.appendChild(cardPrice);
+    cardBody.appendChild(cartButtonContainer);
 
+    card.appendChild(cardHeader);
     card.appendChild(cardBody);
-
     kartyak.appendChild(card);
-  }
+  });
+
+  checkCartState();
 }
 
-function kosarbaTesz(termekId, event) {
-  if (!event) {
-    console.error("Nincs eseményobjektum!");
-    return;
-  }
+function kosarbaTesz(termekId, event, maxStock) {
+  if (!event) return;
 
   fetch("../php/kosarMuvelet.php", {
     method: "POST",
@@ -167,23 +232,98 @@ function kosarbaTesz(termekId, event) {
   })
     .then(response => response.json())
     .then(data => {
-      if (data.success) {
-        let cartCountElement = document.getElementById("cart-count");
-
-        if (cartCountElement) {
-          cartCountElement.textContent = data.uj_mennyiseg;
-        } else {
-          const cartIcon = document.querySelector(".cart-icon");
-          const badge = document.createElement("span");
-          badge.id = "cart-count";
-          badge.className = "badge rounded-pill bg-danger";
-          badge.textContent = data.uj_mennyiseg;
-          cartIcon.appendChild(badge);
-        }
+      if (data && data.success) {
+        updateCartCount();
+        checkCartState();
         animateToCart(event);
+      } else {
+        let hiba = data?.error || "Ismeretlen hiba történt!";
+        showToast(hiba, "danger");
       }
     })
-    .catch(error => console.error("Hiba:", error));
+    .catch(error => {
+      console.error("Hiba:", error);
+      showToast("Hálózati hiba történt!", "danger");
+    });
+}
+
+function showToast(message, type = "danger") {
+  let toastContainer = document.getElementById("toast-container");
+  if (!toastContainer) {
+    toastContainer = document.createElement("div");
+    toastContainer.id = "toast-container";
+    document.body.appendChild(toastContainer);
+  }
+
+  const maxToastCount = 3;
+  const currentToasts = toastContainer.querySelectorAll(".toast");
+  if (currentToasts.length >= maxToastCount) {
+    currentToasts[currentToasts.length - 1].remove();
+  }
+
+  let toast = document.createElement("div");
+  toast.className = `toast align-items-center text-white bg-${type} border-0 shadow`;
+  toast.setAttribute("role", "alert");
+  toast.setAttribute("aria-live", "assertive");
+  toast.setAttribute("aria-atomic", "true");
+
+  toast.innerHTML = `
+      <div class="d-flex">
+          <div class="toast-body">${message}</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+  `;
+
+  toastContainer.appendChild(toast);
+
+  let toastInstance = new bootstrap.Toast(toast);
+  toastInstance.show();
+
+  setTimeout(() => {
+    toast.remove();
+    if (type === "success") {
+      window.location.reload();
+    }
+  }, 6000);
+}
+
+function checkCartState() {
+  fetch("../php/kosarMuvelet.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "getCart" })
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (!data.success || !Array.isArray(data.kosar)) {
+        console.error("Hiba: a kosár adat nem megfelelő formátumú vagy nincs meghatározva.", data);
+        return;
+      }
+
+      data.kosar.forEach(item => {
+        const cartButtons = document.querySelectorAll(`.add-to-cart[data-id="${item.termek_id}"]`);
+
+        cartButtons.forEach(cartButton => {
+          const productCard = cartButton.closest(".card");
+          if (!productCard) return;
+
+          const quantityControl = productCard.querySelector(".quantity-control");
+          const quantityInput = productCard.querySelector(".quantity-input");
+          const minusButton = productCard.querySelector(".quantity-btn.minus");
+          const plusButton = productCard.querySelector(".quantity-btn.plus");
+
+          if (!quantityControl || !quantityInput) return;
+
+          quantityInput.value = item.darabszam;
+          quantityInput.dataset.currentValue = item.darabszam;
+          quantityControl.style.display = "flex";
+
+          minusButton.disabled = (item.darabszam <= 1);
+          plusButton.disabled = (item.darabszam >= item.raktar_keszlet);
+        });
+      });
+    })
+    .catch(error => console.error("Hiba a kosárállapot betöltésénél:", error));
 }
 
 function animateToCart(event) {
@@ -235,6 +375,49 @@ function animateToCart(event) {
   }, 800);
 }
 
+function animateFromCart(productCard) {
+  const cartIcon = document.querySelector(".cart-icon img");
+  const productImage = productCard.querySelector("img");
+  if (!productImage || !cartIcon) return;
+
+  // Lemásoljuk a termékképet
+  const img = document.createElement("img");
+  img.src = productImage.src;
+  img.classList.add("floating-image");
+  img.style.position = "fixed";
+
+  const productRect = productImage.getBoundingClientRect();
+  const cartRect = cartIcon.getBoundingClientRect();
+
+  // A kiinduló helyzet: a termék képe
+  img.style.left = `${productRect.left}px`;
+  img.style.top = `${productRect.top}px`;
+  img.style.width = `${productRect.width}px`;
+  img.style.height = `${productRect.height}px`;
+  img.style.zIndex = "9999";
+  img.style.pointerEvents = "none";
+
+  document.body.appendChild(img);
+
+  // Számoljuk a mozgás irányát: kosárból vissza a termékképhez
+  const deltaX = productRect.left - (cartRect.left + cartRect.width / 2 - productRect.width / 2);
+  const deltaY = productRect.top - (cartRect.top + cartRect.height / 2 - productRect.height / 2);
+
+  // Animáció visszafelé a kosárból a termékhez
+  img.animate([
+    { transform: `translate(${-deltaX}px, ${-deltaY}px) scale(0.2)`, opacity: 0.6 },
+    { transform: "translate(0, 0) scale(1)", opacity: 1 }
+  ], {
+    duration: 800,
+    easing: "ease-in-out",
+    fill: "forwards"
+  });
+
+  setTimeout(() => {
+    img.remove();
+  }, 800);
+}
+
 async function adatbazisbolLekeres() {
   try {
     let eredmeny = await fetch("../php/kezdolap.php");
@@ -259,7 +442,255 @@ async function adatbazisbolAkcios() {
   }
 }
 
-window.addEventListener("load", () => {
+function updateCartCount() {
+  fetch("../php/kosarMuvelet.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "getCount" })
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (!data.success) return;
+
+      let cartCountElement = document.getElementById("cart-count");
+
+      if (data.uj_mennyiseg > 0) {
+        if (!cartCountElement) {
+          const cartIcon = document.querySelector(".cart-icon");
+          if (!cartIcon) {
+            console.warn("cart-icon nem található a DOM-ban.");
+            return;
+          }
+
+          const badge = document.createElement("span");
+          badge.id = "cart-count";
+          badge.className = "badge rounded-pill bg-danger";
+          badge.textContent = data.uj_mennyiseg;
+          cartIcon.appendChild(badge);
+        } else {
+          cartCountElement.textContent = data.uj_mennyiseg;
+        }
+      } else {
+        if (cartCountElement) {
+          cartCountElement.textContent = "0";
+          cartCountElement.style.display = "none";
+        }
+      }
+    })
+    .catch(error => console.error("Hiba a kosár frissítésében:", error));
+}
+
+function updateCartItem(termekId, change, event = null) {
+  termekId = termekId.toString().padStart(6, '0');
+  const productButtons = document.querySelectorAll(`.add-to-cart[data-id="${termekId}"]`);
+
+  if (!productButtons.length) {
+    console.error("Nem található kártya a termékhez.");
+    return;
+  }
+
+  // 🔹 Lekérjük a raktárkészletet
+  fetch('../php/kosarMuvelet.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'getStock', termek_id: termekId })
+  })
+    .then(response => response.json())
+    .then(stockData => {
+      if (!stockData.success) {
+        showToast("Nem sikerült lekérni a készletet.");
+        return;
+      }
+
+      const maxStock = stockData.raktar_keszlet;
+
+      // 🔸 Meghatározzuk, hogy melyik DOM elemre kattintottunk ténylegesen
+      const clickedCard = event?.target?.closest('.card');
+
+      productButtons.forEach(button => {
+        const productCard = button.closest('.card');
+        const quantityInput = productCard.querySelector('.quantity-input');
+        const minusButton = productCard.querySelector('.quantity-btn.minus');
+        const plusButton = productCard.querySelector('.quantity-btn.plus');
+        const quantityControl = productCard.querySelector('.quantity-control');
+
+        let current = parseInt(quantityInput?.value) || 1;
+        let uj = current + change;
+
+        if (uj < 1) {
+          fetch("../php/kosarMuvelet.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "remove", termek_id: termekId })
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                updateCartCount();
+                quantityControl.style.display = "none";
+                button.style.display = "inline-block";
+
+                if (clickedCard === productCard) {
+                  animateFromCart(productCard); // 🔙 csak a kattintott kártyán
+                }
+              }
+            });
+          return;
+        }
+
+        if (uj > maxStock) uj = maxStock;
+
+        fetch("../php/kosarMuvelet.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "update",
+            termek_id: termekId,
+            mennyiseg: uj
+          })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              updateCartCount();
+
+              quantityInput.value = uj;
+              quantityInput.dataset.currentValue = uj;
+
+              minusButton.disabled = (uj <= 1);
+              plusButton.disabled = (uj >= maxStock);
+
+              if (change > 0 && event && clickedCard === productCard) {
+                animateToCart(event); // csak a kattintott kártyán
+              }
+
+              if (change < 0 && uj < current && clickedCard === productCard) {
+                animateFromCart(productCard); // csak a kattintott kártyán
+              }
+            } else {
+              showToast(data.error);
+            }
+          });
+      });
+    });
+}
+
+function disableCartButtons() {
+  document.querySelectorAll(".cart-table tbody tr").forEach(row => {
+    let termekId = row.dataset.id.padStart(6, '0');
+    let quantityElement = row.querySelector(".quantity");
+    let plusButton = row.querySelector(".quantity-btn.plus");
+    let minusButton = row.querySelector(".quantity-btn.minus");
+
+    if (!quantityElement || !plusButton || !minusButton) return;
+
+    let currentQuantity = parseInt(quantityElement.textContent, 10);
+
+    // 🔹 Lekérjük a raktárkészletet minden termékre
+    fetch('../php/kosarMuvelet.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'getStock',
+        termek_id: termekId
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (!data.success) return;
+
+        let maxStock = data.raktar_keszlet;
+
+        // 🔹 Ha elérte a maximumot, a `+` gomb inaktiválása
+        plusButton.disabled = (currentQuantity >= maxStock);
+
+        // 🔹 Ha már 1 a mennyiség, a `-` gomb inaktiválása
+        minusButton.disabled = (currentQuantity <= 1);
+      });
+  });
+}
+
+function updateQuantity(termekId, change) {
+  termekId = termekId.toString().padStart(6, '0');
+  const quantityElement = document.querySelector(`tr[data-id='${termekId}'] .quantity`);
+
+  if (!quantityElement) {
+    console.error("A quantity elem nem található a DOM-ban.");
+    return;
+  }
+
+  let currentQuantity = parseInt(quantityElement.textContent, 10);
+  let newQuantity = currentQuantity + change;
+
+  // 🔹 Lekérjük a termék raktárkészletét az adatbázisból
+  fetch('../php/kosarMuvelet.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'getStock',
+      termek_id: termekId
+    })
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (!data.success) {
+        console.error("Hiba történt a készlet lekérdezésekor:", data.error);
+        return;
+      }
+
+      let maxStock = data.raktar_keszlet;
+
+      // 🔹 Nem engedjük a mínusz gombot 1 alá menni
+      if (newQuantity < 1) {
+        newQuantity = 1;
+      }
+
+      // 🔹 Nem engedjük a plusz gombot a készlet fölé menni
+      if (newQuantity > maxStock) {
+        newQuantity = maxStock;
+      }
+
+      // 🔹 Frissítsük az adatbázist
+      fetch('../php/kosarMuvelet.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update',
+          termek_id: termekId,
+          mennyiseg: newQuantity
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            quantityElement.textContent = newQuantity;
+            const row = quantityElement.closest('tr');
+            updateRowTotal(row, newQuantity);
+            updateCartTotal();
+            updateCartCount();
+
+            // 🔹 + és - gombok frissítése
+            const plusButton = row.querySelector(".quantity-btn.plus");
+            const minusButton = row.querySelector(".quantity-btn.minus");
+
+            if (plusButton) {
+              plusButton.disabled = (newQuantity >= maxStock);
+            }
+
+            if (minusButton) {
+              minusButton.disabled = (newQuantity <= 1);
+            }
+          } else {
+            console.error("Hiba történt a mennyiség frissítésekor:", data.error);
+          }
+        });
+    })
+    .catch(error => console.error("Hiba:", error));
+}
+
+document.addEventListener("DOMContentLoaded", function () {
   adatbazisbolLekeres();
   adatbazisbolAkcios();
+  checkCartState();
+  disableCartButtons();
 });

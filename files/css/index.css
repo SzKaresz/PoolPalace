@@ -11,10 +11,12 @@ body {
         transform: scale(1) translateY(0);
         opacity: 1;
     }
+
     50% {
         transform: scale(0.5) translateY(-50px);
         opacity: 0.7;
     }
+
     100% {
         transform: scale(0.2) translate(var(--cart-x), var(--cart-y));
         opacity: 0;
@@ -31,7 +33,9 @@ body {
 }
 
 @media (max-width: 1200px) {
-    #kartyak, #akciok {
+
+    #kartyak,
+    #akciok {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 12px;
@@ -39,7 +43,8 @@ body {
     }
 }
 
-#kartyak, #akciok {
+#kartyak,
+#akciok {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(246px, 1fr));
     gap: 12px;
@@ -50,7 +55,7 @@ body {
 }
 
 .card {
-    height: 500px;
+    height: 420px;
     width: 250px;
     background-color: #fff;
     border-radius: 12px;
@@ -120,24 +125,6 @@ body {
     margin: 0;
 }
 
-.card-body .btn {
-    text-decoration: none;
-    padding: 10px 20px;
-    background-color: #293144;
-    color: #fff;
-    border-radius: 8px;
-    text-align: center;
-    font-size: 0.875rem;
-    font-weight: 600;
-    transition: background-color 0.2s ease;
-    cursor: pointer;
-    margin-top: auto;
-}
-
-.card-body .btn:active {
-    background-color: #293144;
-}
-
 .video-container {
     position: relative;
     width: 100%;
@@ -167,6 +154,7 @@ video {
     .video-caption {
         font-size: 3rem;
     }
+
     .video-container {
         height: auto;
     }
@@ -208,6 +196,7 @@ video {
     width: 100%;
     margin-bottom: 10px;
 }
+
 .tippek img {
     width: 150px;
     height: 150px;
@@ -216,18 +205,140 @@ video {
     margin-right: 20px;
     float: left;
 }
+
 .tippek_content {
     float: right;
     max-width: 600px;
 }
+
 .tippek_content h2 {
     margin: 0;
     font-size: 24px;
     color: #333;
 }
+
 .tippek_content p {
     margin: 10px 0 0;
     font-size: 16px;
     color: #666;
     line-height: 1.5;
+}
+
+.card-body .btn {
+    text-decoration: none;
+    padding: 10px 20px;
+    background-color: #293144;
+    color: #fff;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+    margin-top: auto;
+}
+
+.card-body .btn:active {
+    background-color: #293144;
+}
+
+.cart-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.cart-icon-img {
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.cart-button-container {
+    margin-top: auto;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    width: 100%;
+}
+
+.add-to-cart {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 8px 16px !important;
+    min-width: 90px;
+    max-width: 105px;
+    font-weight: 500 !important;
+    flex-shrink: 0;
+    flex-grow: 0;
+    white-space: nowrap;
+    margin-right: 12px;
+}
+
+.quantity-control {
+    display: inline-flex;
+    justify-content: center;
+    gap: 5px;
+    align-items: center;
+}
+
+.floating-image {
+    z-index: 9999;
+    pointer-events: none;
+    border-radius: 10px;
+}
+
+.quantity-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+    color: white;
+    background-color: #293144;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.quantity-input {
+    width: 45px !important;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 28px;
+}
+
+#toast-container {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+}
+
+input.quantity-input::-webkit-inner-spin-button,
+input.quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#toast-container .toast {
+    pointer-events: auto;
+    width: auto;
+    max-width: 400px;
+    margin-bottom: 10px;
 }
