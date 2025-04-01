@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Már 28. 12:50
+-- Létrehozás ideje: 2025. Ápr 01. 10:56
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -29,13 +29,16 @@ USE `poolpalace`;
 -- Tábla szerkezet ehhez a táblához `felhasznalok`
 --
 
-CREATE TABLE `felhasznalok` (
+CREATE TABLE IF NOT EXISTS `felhasznalok` (
   `email` varchar(254) NOT NULL,
   `nev` varchar(255) NOT NULL,
   `jelszo` varchar(255) NOT NULL,
   `telefonszam` varchar(15) NOT NULL,
   `szallitasi_cim_id` int(11) NOT NULL,
-  `szamlazasi_cim_id` int(11) NOT NULL
+  `szamlazasi_cim_id` int(11) NOT NULL,
+  PRIMARY KEY (`email`),
+  KEY `szallitasi_cim_id` (`szallitasi_cim_id`),
+  KEY `szamlazasi_cim_id` (`szamlazasi_cim_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
@@ -44,6 +47,7 @@ CREATE TABLE `felhasznalok` (
 
 INSERT INTO `felhasznalok` (`email`, `nev`, `jelszo`, `telefonszam`, `szallitasi_cim_id`, `szamlazasi_cim_id`) VALUES
 ('info.poolpalace@gmail.com', 'Admin', '$2y$10$GAVPPqKoVgFkV5kMgn/8ROKu2LNiYTCen0PSCcPo3jDf79UyiAdF6', '', 1, 1),
+('marcifiola66@gmail.com', 'Fiola Marcell Gyula', '$2y$10$CXYg5Bw12VLT0CB1I/ownuxgdVzrilym4tWcDI/f.6.uTHygxTWKi', '+36702070462', 3, 3),
 ('szautnerkaroly@gmail.com', 'Szautner Károly', '$2y$10$tFcF/x0yN.1ZPDwcg4kXfeEjZqeP6wuZxyzxQ0aOOTZdgUckHUKy2', '+36305198474', 2, 2);
 
 --
@@ -64,10 +68,11 @@ DELIMITER ;
 -- Tábla szerkezet ehhez a táblához `gyarto`
 --
 
-CREATE TABLE `gyarto` (
-  `id` int(11) NOT NULL,
-  `nev` varchar(25) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+CREATE TABLE IF NOT EXISTS `gyarto` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nev` varchar(25) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `gyarto`
@@ -102,10 +107,11 @@ INSERT INTO `gyarto` (`id`, `nev`) VALUES
 -- Tábla szerkezet ehhez a táblához `kategoria`
 --
 
-CREATE TABLE `kategoria` (
-  `id` int(11) NOT NULL,
-  `nev` varchar(55) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+CREATE TABLE IF NOT EXISTS `kategoria` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nev` varchar(55) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `kategoria`
@@ -140,12 +146,23 @@ INSERT INTO `kategoria` (`id`, `nev`) VALUES
 -- Tábla szerkezet ehhez a táblához `kosar`
 --
 
-CREATE TABLE `kosar` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `kosar` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `felhasznalo_id` varchar(254) NOT NULL,
   `termek_id` varchar(6) NOT NULL,
-  `darabszam` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `darabszam` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `felhasznalo_id` (`felhasznalo_id`),
+  KEY `termek_id` (`termek_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+
+--
+-- A tábla adatainak kiíratása `kosar`
+--
+
+INSERT INTO `kosar` (`id`, `felhasznalo_id`, `termek_id`, `darabszam`) VALUES
+(14, 'marcifiola66@gmail.com', '030024', 1),
+(15, 'marcifiola66@gmail.com', '021301', 1);
 
 -- --------------------------------------------------------
 
@@ -153,12 +170,13 @@ CREATE TABLE `kosar` (
 -- Tábla szerkezet ehhez a táblához `log`
 --
 
-CREATE TABLE `log` (
-  `id` int(10) NOT NULL,
+CREATE TABLE IF NOT EXISTS `log` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
   `datum` datetime NOT NULL DEFAULT current_timestamp(),
   `tabla_nev` varchar(15) NOT NULL,
-  `tabla_id` varchar(254) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `tabla_id` varchar(254) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `log`
@@ -168,7 +186,9 @@ INSERT INTO `log` (`id`, `datum`, `tabla_nev`, `tabla_id`) VALUES
 (1, '2025-02-20 11:38:38', 'felhasznalok', 'info.poolpalace@gmail.com'),
 (2, '2025-03-27 10:27:51', 'felhasznalok', 'szautnerkaroly@gmail.com'),
 (3, '2025-03-27 12:47:51', 'megrendeles', '1'),
-(4, '2025-03-27 12:52:51', 'megrendeles', '2');
+(4, '2025-03-27 12:52:51', 'megrendeles', '2'),
+(5, '2025-04-01 10:54:41', 'felhasznalok', 'marcifiola66@gmail.com'),
+(6, '2025-04-01 10:55:29', 'felhasznalok', '3');
 
 -- --------------------------------------------------------
 
@@ -176,8 +196,8 @@ INSERT INTO `log` (`id`, `datum`, `tabla_nev`, `tabla_id`) VALUES
 -- Tábla szerkezet ehhez a táblához `megrendeles`
 --
 
-CREATE TABLE `megrendeles` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `megrendeles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(254) NOT NULL,
   `nev` varchar(255) NOT NULL,
   `telefonszam` varchar(15) NOT NULL,
@@ -189,8 +209,9 @@ CREATE TABLE `megrendeles` (
   `szamlaz_irsz` varchar(10) NOT NULL,
   `szamlaz_telep` varchar(255) NOT NULL,
   `szamlaz_cim` varchar(255) NOT NULL,
-  `statusz` enum('Feldolgozás alatt','Fizetésre vár','Fizetve','Szállítás alatt','Teljesítve','Törölve') NOT NULL DEFAULT 'Feldolgozás alatt'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `statusz` enum('Feldolgozás alatt','Fizetésre vár','Fizetve','Szállítás alatt','Teljesítve','Törölve') NOT NULL DEFAULT 'Feldolgozás alatt',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `megrendeles`
@@ -198,7 +219,8 @@ CREATE TABLE `megrendeles` (
 
 INSERT INTO `megrendeles` (`id`, `email`, `nev`, `telefonszam`, `datum`, `osszeg`, `szallit_irsz`, `szallit_telep`, `szallit_cim`, `szamlaz_irsz`, `szamlaz_telep`, `szamlaz_cim`, `statusz`) VALUES
 (1, 'szautnerkaroly@gmail.com', 'Szautner Károly', '+36305198474', '2025-03-28 10:28:57', 35420, '8200', 'Veszprém', 'Muskátli utca 18/C', '8200', 'Veszprém', 'Muskátli utca 18/C', 'Feldolgozás alatt'),
-(2, 'szautnerkaroly@gmail.com', 'Szautner Károly', '+36305198474', '2025-03-28 10:30:47', 132000, '8200', 'Veszprém', 'Muskátli utca 18/C', '8200', 'Veszprém', 'Muskátli utca 18/C', 'Feldolgozás alatt');
+(2, 'szautnerkaroly@gmail.com', 'Szautner Károly', '+36305198474', '2025-03-28 10:30:47', 132000, '8200', 'Veszprém', 'Muskátli utca 18/C', '8200', 'Veszprém', 'Muskátli utca 18/C', 'Feldolgozás alatt'),
+(3, 'marcifiola66@gmail.com', 'Fiola Marcell Gyula', '+36702070462', '2025-04-01 10:55:29', 2738196, '8200', 'Veszprém', 'Ádám Iván utca 24.', '8200', 'Veszprém', 'Ádám Iván utca 24.', 'Feldolgozás alatt');
 
 --
 -- Eseményindítók `megrendeles`
@@ -214,12 +236,13 @@ DELIMITER ;
 -- Tábla szerkezet ehhez a táblához `szallitasi_cim`
 --
 
-CREATE TABLE `szallitasi_cim` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `szallitasi_cim` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `iranyitoszam` varchar(7) NOT NULL,
   `telepules` varchar(58) NOT NULL,
-  `utca_hazszam` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `utca_hazszam` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `szallitasi_cim`
@@ -227,7 +250,8 @@ CREATE TABLE `szallitasi_cim` (
 
 INSERT INTO `szallitasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`) VALUES
 (1, '', '', ''),
-(2, '8200', 'Veszprém', 'Muskátli utca 18/C');
+(2, '8200', 'Veszprém', 'Muskátli utca 18/C'),
+(3, '8200', 'Veszprém', 'Ádám Iván utca 24.');
 
 -- --------------------------------------------------------
 
@@ -235,12 +259,13 @@ INSERT INTO `szallitasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`)
 -- Tábla szerkezet ehhez a táblához `szamlazasi_cim`
 --
 
-CREATE TABLE `szamlazasi_cim` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `szamlazasi_cim` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `iranyitoszam` varchar(7) NOT NULL,
   `telepules` varchar(58) NOT NULL,
-  `utca_hazszam` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `utca_hazszam` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `szamlazasi_cim`
@@ -248,7 +273,8 @@ CREATE TABLE `szamlazasi_cim` (
 
 INSERT INTO `szamlazasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`) VALUES
 (1, '', '', ''),
-(2, '8200', 'Veszprém', 'Muskátli utca 18/C');
+(2, '8200', 'Veszprém', 'Muskátli utca 18/C'),
+(3, '8200', 'Veszprém', 'Ádám Iván utca 24.');
 
 -- --------------------------------------------------------
 
@@ -256,7 +282,7 @@ INSERT INTO `szamlazasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`)
 -- Tábla szerkezet ehhez a táblához `termekek`
 --
 
-CREATE TABLE `termekek` (
+CREATE TABLE IF NOT EXISTS `termekek` (
   `cikkszam` varchar(6) NOT NULL,
   `nev` varchar(70) NOT NULL,
   `egysegar` double NOT NULL,
@@ -264,7 +290,10 @@ CREATE TABLE `termekek` (
   `leiras` text NOT NULL,
   `gyarto_id` int(11) DEFAULT NULL,
   `kategoria_id` int(11) NOT NULL,
-  `darabszam` int(11) NOT NULL DEFAULT 0
+  `darabszam` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`cikkszam`),
+  KEY `kategoria_id` (`kategoria_id`),
+  KEY `fk_gyarto` (`gyarto_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
@@ -273,22 +302,22 @@ CREATE TABLE `termekek` (
 
 INSERT INTO `termekek` (`cikkszam`, `nev`, `egysegar`, `akcios_ar`, `leiras`, `gyarto_id`, `kategoria_id`, `darabszam`) VALUES
 ('010001', 'OLYMPIC SZKIMMER', 12640, -1, 'Olympic szkimmerPrémium szkimmer kiváló megoldás fémfalas és PP medencékhez és minden más kompakt beépítést igénylő medencék esetében. A kiváló alapanyagból készült szkimmer kiemelkedő tulajdonsága a magasított nyak, mellyel könnyedén illeszthető a medence körüli járdáhozMűszaki adatok:Csatlakozás: 6/4?Ajánlott teljesítmény: 57 m3/hSzkimmerA szkimmer feladata a víz elszívása mellett a lebegő szennyeződések (pl. falevelek, rovarok, stb.) kiszűrése a medencéből. A szkimmer szűrőkosara gyűjti össze ezeket a szennyeződéseket, emiatt érdemes azt hetente ellenőrizni. Az optimális működés érdekében a medence vízszintjét a szkimmer nyílás közepére állítsuk be.A szkimmer kosarába helyezhetünk lassan oldódó vegyszereket, mint például klór- vagy pelyhesítő tablettáka, így elkerülve az úszó vegyszeradagoló használatát. A legtöbb szkimmer kialakítása lehetővé teszi a medence porszívózását is.ABS műanyagAz ABS (akrilnitril-butadién-sztirol) egy jó ütésálló képességgel, nagy keménységgel és szilárdsággal, jó hőállósággal és vegyszerállósággal, emellett jó zaj és rezgéscsillapítással rendelkező, hőre lágyuló műanyag. Kiválósága különböző anyagai kombinálásából fakad.Az akrilnitril növeli a hő- és kémiai ellenállást, a butadién fokozza a tartósságot és szívósságot, a sztirol pedig javítja a megmunkálhatóságot, csökkenti a költségeket és fényes felületet biztosít.', 1, 10, 92),
-('010003', 'OLYMPIC SZKIMMER KOSÁR', 2100, 1999, 'Olympic szkimmerhez kosárOlympic szkimmer alkatrész. ABS műanyagból készült, minőségi szkimmer kosár, a medence kiáramló vízéhez speciálisan tervezett, kíváló minőségű mechanikus szűrő a nagyobb szennyeződések összegyűjtésére.SzkimmerA szkimmer feladata a víz elszívása mellett a lebegő szennyeződések (pl. falevelek, rovarok, stb.) kiszűrése a medencéből. A szkimmer szűrőkosara gyűjti össze ezeket a szennyeződéseket, emiatt érdemes azt hetente ellenőrizni. Az optimális működés érdekében a medence vízszintjét a szkimmer nyílás közepére állítsuk be.A szkimmer kosarába helyezhetünk lassan oldódó vegyszereket, mint például klór- vagy pelyhesítő tablettáka, így elkerülve az úszó vegyszeradagoló használatát. A legtöbb szkimmer kialakítása lehetővé teszi a medence porszívózását is.ABS műanyagAz ABS (akrilnitril-butadién-sztirol) egy jó ütésálló képességgel, nagy keménységgel és szilárdsággal, jó hőállósággal és vegyszerállósággal, emellett jó zaj és rezgéscsillapítással rendelkező, hőre lágyuló műanyag. Kiválósága különböző anyagai kombinálásából fakad.Az akrilnitril növeli a hő- és kémiai ellenállást, a butadién fokozza a tartósságot és szívósságot, a sztirol pedig javítja a megmunkálhatóságot, csökkenti a költségeket és fényes felületet biztosít.', 1, 10, 28),
+('010003', 'OLYMPIC SZKIMMER KOSÁR', 2100, 1999, 'Olympic szkimmerhez kosárOlympic szkimmer alkatrész. ABS műanyagból készült, minőségi szkimmer kosár, a medence kiáramló vízéhez speciálisan tervezett, kíváló minőségű mechanikus szűrő a nagyobb szennyeződések összegyűjtésére.SzkimmerA szkimmer feladata a víz elszívása mellett a lebegő szennyeződések (pl. falevelek, rovarok, stb.) kiszűrése a medencéből. A szkimmer szűrőkosara gyűjti össze ezeket a szennyeződéseket, emiatt érdemes azt hetente ellenőrizni. Az optimális működés érdekében a medence vízszintjét a szkimmer nyílás közepére állítsuk be.A szkimmer kosarába helyezhetünk lassan oldódó vegyszereket, mint például klór- vagy pelyhesítő tablettáka, így elkerülve az úszó vegyszeradagoló használatát. A legtöbb szkimmer kialakítása lehetővé teszi a medence porszívózását is.ABS műanyagAz ABS (akrilnitril-butadién-sztirol) egy jó ütésálló képességgel, nagy keménységgel és szilárdsággal, jó hőállósággal és vegyszerállósággal, emellett jó zaj és rezgéscsillapítással rendelkező, hőre lágyuló műanyag. Kiválósága különböző anyagai kombinálásából fakad.Az akrilnitril növeli a hő- és kémiai ellenállást, a butadién fokozza a tartósságot és szívósságot, a sztirol pedig javítja a megmunkálhatóságot, csökkenti a költségeket és fényes felületet biztosít.', 1, 10, 27),
 ('010004', 'OLYMPIC SZKIMMER PORSZÍVÓTÁNYÉR', 2700, -1, 'Olympic szkimmerhez porszívótányér\r\nKiváló alapanyagból készült porszívótányér, Olympic szkimmer alkatrész. ABS műanyagból készült, minőségi szkimmer porszívótányér, a medence aljazatának porszívózásakor a szűrőkosár tetejére helyezzük, így hatékonyabb szívóerőt tudunk képezni.\r\n\r\nSzkimmer\r\nA szkimmer feladata a víz elszívása mellett a lebegő szennyeződések (pl. falevelek, rovarok, stb.) kiszűrése a medencéből. A szkimmer szűrőkosara gyűjti össze ezeket a szennyeződéseket, emiatt érdemes azt hetente ellenőrizni. Az optimális működés érdekében a medence vízszintjét a szkimmer nyílás közepére állítsuk be.\r\nA szkimmer kosarába helyezhetünk lassan oldódó vegyszereket, mint például klór- vagy pelyhesítő tablettáka, így elkerülve az úszó vegyszeradagoló használatát. A legtöbb szkimmer kialakítása lehetővé teszi a medence porszívózását is.\r\n\r\nABS műanyag\r\nAz ABS (akrilnitril-butadién-sztirol) egy jó ütésálló képességgel, nagy keménységgel és szilárdsággal, jó hőállósággal és vegyszerállósággal, emellett jó zaj és rezgéscsillapítással rendelkező, hőre lágyuló műanyag. Kiválósága különböző anyagai kombinálásából fakad.\r\nAz akrilnitril növeli a hő- és kémiai ellenállást, a butadién fokozza a tartósságot és szívósságot, a sztirol pedig javítja a megmunkálhatóságot, csökkenti a költségeket és fényes felületet biztosít.', 1, 10, 48),
 ('010012', 'OLYMPIC SZKIMMER TETŐ', 3570, -1, 'Olympic szkimmerhez tető\r\nOlympic szkimmer alkatrész. ABS műanyagból készült, minőségi szkimmer tető, a szkimmer belső felületének és tartalmának takarására és védelmére.\r\n\r\nSzkimmer\r\nA szkimmer feladata a víz elszívása mellett a lebegő szennyeződések (pl. falevelek, rovarok, stb.) kiszűrése a medencéből. A szkimmer szűrőkosara gyűjti össze ezeket a szennyeződéseket, emiatt érdemes azt hetente ellenőrizni. Az optimális működés érdekében a medence vízszintjét a szkimmer nyílás közepére állítsuk be.\r\nA szkimmer kosarába helyezhetünk lassan oldódó vegyszereket, mint például klór- vagy pelyhesítő tablettáka, így elkerülve az úszó vegyszeradagoló használatát. A legtöbb szkimmer kialakítása lehetővé teszi a medence porszívózását is.\r\n\r\nABS műanyag\r\nAz ABS (akrilnitril-butadién-sztirol) egy jó ütésálló képességgel, nagy keménységgel és szilárdsággal, jó hőállósággal és vegyszerállósággal, emellett jó zaj és rezgéscsillapítással rendelkező, hőre lágyuló műanyag. Kiválósága különböző anyagai kombinálásából fakad.\r\nAz akrilnitril növeli a hő- és kémiai ellenállást, a butadién fokozza a tartósságot és szívósságot, a sztirol pedig javítja a megmunkálhatóságot, csökkenti a költségeket és fényes felületet biztosít.', 1, 10, 54),
 ('011460', 'DESIGN SZKIMMER BETON A400 FEHÉR', 55600, -1, 'Design Acis színes A400 szkimmerek\r\nEgyszerű és funkcionális design szkimmer elegáns vonalvezetéssel. Csatlakozása 6/4\" BM / 2\"KM / D50. Az előlap elérhető több színben.\r\n\r\nSzkimmer\r\nA szkimmer feladata a víz elszívása mellett a lebegő szennyeződések (pl. falevelek, rovarok, stb.) kiszűrése a medencéből. A szkimmer szűrőkosara gyűjti össze ezeket a szennyeződéseket, emiatt érdemes azt hetente ellenőrizni. Az optimális működés érdekében a medence vízszintjét a szkimmer nyílás közepére állítsuk be.\r\nA szkimmer kosarába helyezhetünk lassan oldódó vegyszereket, mint például klór- vagy pelyhesítő tablettáka, így elkerülve az úszó vegyszeradagoló használatát. A legtöbb szkimmer kialakítása lehetővé teszi a medence porszívózását is.\r\n\r\nABS műanyag\r\nAz ABS (akrilnitril-butadién-sztirol) egy jó ütésálló képességgel, nagy keménységgel és szilárdsággal, jó hőállósággal és vegyszerállósággal, emellett jó zaj és rezgéscsillapítással rendelkező, hőre lágyuló műanyag. Kiválósága különböző anyagai kombinálásából fakad.\r\nAz akrilnitril növeli a hő- és kémiai ellenállást, a butadién fokozza a tartósságot és szívósságot, a sztirol pedig javítja a megmunkálhatóságot, csökkenti a költségeket és fényes felületet biztosít.', 2, 10, 27),
 ('011495', 'SZKIMMER AJTÓ FEHÉR', 11650, -1, 'Színes Acis szkimmer ajtók\r\nMinőségi ABS műanyagból készült szkimmer ajtó fehér színben, hogy illeszkedjen az Acis szkimmerekhez.\r\n\r\nSzkimmerek\r\nA szkimmer feladata a víz elszívása mellett a lebegő szennyeződések (pl. falevelek, rovarok, stb.) kiszűrése a medencéből. A szkimmer szűrőkosara gyűjti össze ezeket a szennyeződéseket, emiatt érdemes azt hetente ellenőrizni. Az optimális működés érdekében a medence vízszintjét a szkimmer nyílás közepére állítsuk be.\r\nA szkimmer kosarába helyezhetünk lassan oldódó vegyszereket, mint például klór- vagy pelyhesítő tablettáka, így elkerülve az úszó vegyszeradagoló használatát. A legtöbb szkimmer kialakítása lehetővé teszi a medence porszívózását is.\r\n\r\nABS műanyag\r\nAz ABS (akrilnitril-butadién-sztirol) egy jó ütésálló képességgel, nagy keménységgel és szilárdsággal, jó hőállósággal és vegyszerállósággal, emellett jó zaj és rezgéscsillapítással rendelkező, hőre lágyuló műanyag. Kiválósága különböző anyagai kombinálásából fakad.\r\nAz akrilnitril növeli a hő- és kémiai ellenállást, a butadién fokozza a tartósságot és szívósságot, a sztirol pedig javítja a megmunkálhatóságot, csökkenti a költségeket és fényes felületet biztosít.', 2, 10, 73),
 ('020100', 'REFLEKTOR STD2002 BETONOS 300W', 28750, 27749, 'Reflektor STD2002\r\nSTD 2002 víz alatti világítás medencékhez. Hagyományos, halogén, fehér vagy RGB LED-es 12V PAR 56 izzóval, 2 x 4mm kábellel, 2,5m hosszal. Az előlap rozsdamentes rögzítő mechanizmussal van ellátva.\r\nOpcionálisan rozsdamentes acél előlappal.\r\n\r\nRozsdamentes acél\r\nA rozsdamentes acél (más néven inox acél) egy magasabb krómtartalmú acélötvözet, mely ellenállóbb a rozsdával, foltosodással szemben, de a nevével ellentétben képes a rozsdásodásra, különösen alacsony oxigéntartalmú, magas sótartalmú vagy nem szellőző körülmények között. A króm-oxid passzív réteget képez, ami megelőzi/lassítja a felület további rozsdásodását, és megakadályozza annak az acél belső rétegeibe történő haladását.', 3, 11, 83),
-('021200', 'REFLEKTOR MINI2008 BETON 50W', 23200, -1, 'Reflektor MINI2008 \"Mini 2008\" víz alatti világítás betonos medencéhez, Hőálló (ABS) műanyag test, fej fehér műanyagból, alsó kivezetéssel. Minőségi kialakítása kiváló fényerőt és élettartamot biztosít. 2 méteres kábellel kapható. 50 W / 12 V halogén izzóval. ABS műanyag Az ABS (akrilnitril-butadién-sztirol) egy jó ütésálló képességgel, nagy keménységgel és szilárdsággal, jó hőállósággal és vegyszerállósággal, emellett jó zaj és rezgéscsillapítással rendelkező, hőre lágyuló műanyag. Kiválósága különböző anyagai kombinálásából fakad. Az akrilnitril növeli a hő- és kémiai ellenállást, a butadién fokozza a tartósságot és szívósságot, a sztirol pedig javítja a megmunkálhatóságot, csökkenti a költségeket és fényes felületet biztosít.', 3, 11, 94),
+('021200', 'REFLEKTOR MINI2008 BETON 50W', 23200, -1, 'Reflektor MINI2008 \"Mini 2008\" víz alatti világítás betonos medencéhez, Hőálló (ABS) műanyag test, fej fehér műanyagból, alsó kivezetéssel. Minőségi kialakítása kiváló fényerőt és élettartamot biztosít. 2 méteres kábellel kapható. 50 W / 12 V halogén izzóval. ABS műanyag Az ABS (akrilnitril-butadién-sztirol) egy jó ütésálló képességgel, nagy keménységgel és szilárdsággal, jó hőállósággal és vegyszerállósággal, emellett jó zaj és rezgéscsillapítással rendelkező, hőre lágyuló műanyag. Kiválósága különböző anyagai kombinálásából fakad. Az akrilnitril növeli a hő- és kémiai ellenállást, a butadién fokozza a tartósságot és szívósságot, a sztirol pedig javítja a megmunkálhatóságot, csökkenti a költségeket és fényes felületet biztosít.', 3, 11, 93),
 ('021301', 'REFLEKTOR MINI-CLICKER FÓLIA WH 7W', 29000, 27999, 'MINI-Clicker reflektor A közepes méretű MINI-Clicker ideális a medencék megvilágítására, villámgyors szerelés, kompakt kialakítás jellemzi. A reflektor tervezésekor a fő szempont flexibilis felhasználhatóság mellett a minél egyszerűbb szerelhetőség volt. További jellemzők: - Könnyű, polikarbonát lámpatest - SMD LED-del - ABS előlappal - 1.2 m hosszú kábellel szerelve.', 3, 11, 23),
-('030024', 'VÁLTÓSZELEP 4-UTÚ TOP 1 1/2\" BASIC', 21500, 20999, 'Váltószelep - Basic szűrőhöz 4-utú váltószelep Basic (TOP) szűrőtartályhoz, kiváló minőségű, magas élettartamú szűrőtartály alkatrész. A csatlakozás mérete: - 1 1/2\". Váltószelep Szűrőtartály alkatrész. Feladata a vízáramlás irányának szabályozása, ezzel kiválasztva a funkciót, hogy mit csináljon a szűrő. A szelep állásai lehetnek: - Szűrés - Visszamosás - Öblítés - Zárva Fontos, hogy csak akkor állítsunk fokozatot a váltószelepen, ha a szivattyú ki van kapcsolva!', 4, 16, 30),
+('030024', 'VÁLTÓSZELEP 4-UTÚ TOP 1 1/2\" BASIC', 21500, 20999, 'Váltószelep - Basic szűrőhöz 4-utú váltószelep Basic (TOP) szűrőtartályhoz, kiváló minőségű, magas élettartamú szűrőtartály alkatrész. A csatlakozás mérete: - 1 1/2\". Váltószelep Szűrőtartály alkatrész. Feladata a vízáramlás irányának szabályozása, ezzel kiválasztva a funkciót, hogy mit csináljon a szűrő. A szelep állásai lehetnek: - Szűrés - Visszamosás - Öblítés - Zárva Fontos, hogy csak akkor állítsunk fokozatot a váltószelepen, ha a szivattyú ki van kapcsolva!', 4, 16, 29),
 ('033001', 'SZŰRŐHOMOK 0.5 - 1.0 MM 25KG/ZSÁK', 4380, -1, 'Szűrőhomok Osztályozott, tűziszárított gránithomok. A szárítás után, két méretre osztályozott, pormentesített szűrőhomok 25 kg-os zsákokba csomagolva.', 5, 16, 79),
 ('033101', 'SZŰRŐÜVEG STAGE-1, 0.6 - 1.2 MM', 9400, 8990, 'Szűrőüveg\r\nA Nature Works a legújabb generációs szűz újrahasznosított üvegen alapuló szűrőanyag, amelyet kizárólag víz szűrésére terveztek.\r\nA Nature Works High Tech Filter Media a rendelkezésre álló források optimalizásának egészséges és higiénikus módja, amely magas szintre emeli a víz minőségét.\r\nUgyanakkor ez egy újrahasznosított és újra hasznosítható környezetbarát termék, amely lecsökkenti a hagyományos víztisztítási módszerekből származó környezeti hatásokat.\r\nFelhasználható minden ipari víz- vagy medencevíz-szűrőnél és hatásai azonnal szemmel láthatóak.\r\nA biofilm felelős a klóraminokért és a szűrőközeg mikrocsatornáinak eltömődéséért.\r\nA Nature Works? aszeptikus (baktériumtól mentes) tulajdonságai és az Anti-Compaction Technology? megakadályozza a biofilm képződését, ezzel a szűrőtöltet élettartamát a végtelenségig megnövelve.\r\n\r\nÖsszehasonlítva a szűrőhomokkal\r\nJobb vízminőség\r\nEgyedi és célirányosan fejlesztett szűrőközeg, hosszú élettartammal\r\nKevesebb elpazarolt energia, víz és vegyszer\r\nKörnyezetkímélő megoldás\r\nOptimalizált áramlás\r\nNincs többé biofilm képződés, nem szükséges pelyhesítő szer\r\nRészecskék\r\nMikroszkopikusan lapos és sima szélű részecskék. A gyártási eljárással kapcsolatos élek nélküli termék létrehozására szolgáló MC2 tömörödésgátló technológiának (Anticompaction Technology) két célja van:\r\n\r\nKiküszöbölni a baktériumoknak otthont adó éles széleket\r\nBiztosítani, hogy a termék biztonságos legyen\r\nMaximális Szűrési teljesítmény\r\nA Nature Works? hatékonysága úszomedencékben előforduló leggyakoribb részecskék eltávolításán alapul, melyek ködössé teszik a vizet.\r\nEzt a jól megválasztott szemcseformáknak és szemcsék felületkezelési technológiájának köszönhetően érjük el, amely lehetővé teszi a Biofilm kialakulásának elkerülését, a mikrocsatornák nyitvatartását, és a szemcsék teljesen biztonságos kezelését.', 5, 16, 8),
-('037101', 'BARENT 1M O620 SIDE D75/D50', 705999, -1, 'Barent szűrőtartály Szűrőtartály közületi medencékhez, iparági szabványoknak megfelelő kialakítás, üvegszállal erősített tartály, UV sugárzás elleni védőréteg, kollektor karos kialakítás. Nyomásmérővel és 6-állásos váltószeleppel szerelve. Tulajdonságok: - Glicerines nyomásmérővel - Minden tartály nyomástesztelt - 5 év garanciával - 620/750/900 mm-es átmérővel - Szűrőágy magassága 1 méter - A szűrőtartály OTH engedéllyel rendelkezik Műszaki adatok: - Üzemi nyomás: 0,6 -1,6 kg/cm2 - Maximum nyomás: 2 kg/cm2 - Teszt nyomás: 3 kg/cm2 - Üzemi hőmérséklet: 1°C - 40°C Szűrőtartály A medence vizének tisztaságát folyamatos vízforgatással és szűréssel tudjuk fenn tartani. Az álló vízben, melyet süt a nap, könnyedén elszaporodhatnak az algák és más szennyeződések, melyek nem csak a látványt rontják, de a fürdőzők egészségére is veszélyesek lehetnek. A szűrőtartály a vízforgató készülék segítségével az egészen finom szennyeződéseket is kiszűrhetik a vízből, amelyek így fennakadnak a szűrőközegen.', 6, 16, 2),
-('037111', 'OCEAN O1050 1M D110/D90', 1450000, -1, 'Ocean szűrőtartály Üvegszál erősített szűrőtartály közületi medencékhez, iparági szabványoknak megfelelő kialakítás, UV sugárzás elleni védőréteg, kollektor karos kialakítás. Opcionális: Oldalsó búvónyílás, Kémlelő ablak Tulajdonságok: - Szűrőágy magassága 1,0 méter - Üvegszállal erősített tartályfedél, átmérője 400mm - Leeresztő nyílás átmérő 75mm - PVC csatlakozó karmantyú - A szűrő külön speciális ózonnak ellenálló bevonattal is rendelhető - 10 év garancia - A szűrőtartály OTH engedéllyel rendelkezik Műszaki adatok: - Üzemi nyomás: 0,6 -2 kg/cm2 - Maximum nyomás: 2,5 kg/cm2 - Teszt nyomás: 3,75 kg/cm2 - Üzemi hőmérséklet: 1°C - 40°C - Felső búvónyílás: ? 400 mm - Szűrőágy magasság: 1000 mm Szűrőtartály A medence vizének tisztaságát folyamatos vízforgatással és szűréssel tudjuk fenn tartani. Az álló vízben, melyet süt a nap, könnyedén elszaporodhatnak az algák és más szennyeződések, melyek nem csak a látványt rontják, de a fürdőzők egészségére is veszélyesek lehetnek. A szűrőtartály a vízforgató készülék segítségével az egészen finom szennyeződéseket is kiszűrhetik a vízből, amelyek így fennakadnak a szűrőközegen.', 7, 16, 86),
+('037101', 'BARENT 1M O620 SIDE D75/D50', 705999, -1, 'Barent szűrőtartály Szűrőtartály közületi medencékhez, iparági szabványoknak megfelelő kialakítás, üvegszállal erősített tartály, UV sugárzás elleni védőréteg, kollektor karos kialakítás. Nyomásmérővel és 6-állásos váltószeleppel szerelve. Tulajdonságok: - Glicerines nyomásmérővel - Minden tartály nyomástesztelt - 5 év garanciával - 620/750/900 mm-es átmérővel - Szűrőágy magassága 1 méter - A szűrőtartály OTH engedéllyel rendelkezik Műszaki adatok: - Üzemi nyomás: 0,6 -1,6 kg/cm2 - Maximum nyomás: 2 kg/cm2 - Teszt nyomás: 3 kg/cm2 - Üzemi hőmérséklet: 1°C - 40°C Szűrőtartály A medence vizének tisztaságát folyamatos vízforgatással és szűréssel tudjuk fenn tartani. Az álló vízben, melyet süt a nap, könnyedén elszaporodhatnak az algák és más szennyeződések, melyek nem csak a látványt rontják, de a fürdőzők egészségére is veszélyesek lehetnek. A szűrőtartály a vízforgató készülék segítségével az egészen finom szennyeződéseket is kiszűrhetik a vízből, amelyek így fennakadnak a szűrőközegen.', 6, 16, 1),
+('037111', 'OCEAN O1050 1M D110/D90', 1450000, -1, 'Ocean szűrőtartály Üvegszál erősített szűrőtartály közületi medencékhez, iparági szabványoknak megfelelő kialakítás, UV sugárzás elleni védőréteg, kollektor karos kialakítás. Opcionális: Oldalsó búvónyílás, Kémlelő ablak Tulajdonságok: - Szűrőágy magassága 1,0 méter - Üvegszállal erősített tartályfedél, átmérője 400mm - Leeresztő nyílás átmérő 75mm - PVC csatlakozó karmantyú - A szűrő külön speciális ózonnak ellenálló bevonattal is rendelhető - 10 év garancia - A szűrőtartály OTH engedéllyel rendelkezik Műszaki adatok: - Üzemi nyomás: 0,6 -2 kg/cm2 - Maximum nyomás: 2,5 kg/cm2 - Teszt nyomás: 3,75 kg/cm2 - Üzemi hőmérséklet: 1°C - 40°C - Felső búvónyílás: ? 400 mm - Szűrőágy magasság: 1000 mm Szűrőtartály A medence vizének tisztaságát folyamatos vízforgatással és szűréssel tudjuk fenn tartani. Az álló vízben, melyet süt a nap, könnyedén elszaporodhatnak az algák és más szennyeződések, melyek nem csak a látványt rontják, de a fürdőzők egészségére is veszélyesek lehetnek. A szűrőtartály a vízforgató készülék segítségével az egészen finom szennyeződéseket is kiszűrhetik a vízből, amelyek így fennakadnak a szűrőközegen.', 7, 16, 85),
 ('050504', 'BADU Magic II/4', 123250, -1, 'BADU MAGIC II szivattyú\r\nBADU Magic II/4 1~, 0.18KW\r\nLakossági szegmens számára fejlesztett önfelszívó, keringető szivattyú kis és közepes méretű szűrő rendszerekhez.\r\nNagy hatásfokú megbízható német szivattyú márka földfelszín feletti medencékhez.\r\n\r\nMűszaki információk\r\nMax 2m-rel a vízfelszín felé vagy max 3m-rel alá szerelhető\r\nMonoblokkos szivattyú beépített előszűrővel\r\nAjánlott medenceméret: 10 - 60m3\r\nSósvizes rendszerekhez telepíthető, max 5g/l só koncentrációig\r\nMűszaki adatok\r\nMűködési tartomány: 6 m3/h H=6m\r\nTápfeszültség: 230 V', 8, 17, 21),
-('051006', 'MINI STREAMER STR 033M', 103000, 99999, 'Mini Streamer szivattyú GEMAS Mini Streamer előszűrős önfelszívó szivattyú, termoplasztik műanyagból. Minden típusú kis méretű medencéhez telepíthető. Minden eleme korrózióálló, erősített termoplasztikból készül a tartósság és hosszú élettartam érdekében. Szívó és nyomó csatlakozása 1 1/2?. Műszaki adatok - Működési tartomány: 6 m3/h H=9m - Teljesítmény: 0,33 HP - Tápfeszültség: 230 V', 3, 17, 50),
-('054023', 'IE3 BRAVUS 300 230/400V', 436000, -1, 'IE3 Bravus szivattyú A Bravus szivattyú egy kompakt méretű, kiváló hidraulikus hatásfokú szivattyú élményelemekhez, masszázs rendszerekhez, ellenáramoltatók szereléséhez. A szivattyú ház üvegszál erősítésű polipropilénből készült, ami rendkívül tartóssá teszi azt. Járókerék és diffúzor alapanyaga NORYL. Alkalmazási terület - Élményelemekhez - Masszázs rendszerekhez - Ellenáramoltatók szereléséhez Műszaki adatok - Működési tartomány: 52 m3/h H=10m - Teljesítmény: 3,0 HP - Tápfeszültség: 230/400 V - Tengely: Rozsdamentes acél (AISI 316). - Csúszógyűrű: szilikon-kerámia / inox (AISI 316). - Motor: 2900 rpm. - Védelem: IP55. Sós víznek ellenálló kivitel.', 9, 17, 83),
+('051006', 'MINI STREAMER STR 033M', 103000, 99999, 'Mini Streamer szivattyú GEMAS Mini Streamer előszűrős önfelszívó szivattyú, termoplasztik műanyagból. Minden típusú kis méretű medencéhez telepíthető. Minden eleme korrózióálló, erősített termoplasztikból készül a tartósság és hosszú élettartam érdekében. Szívó és nyomó csatlakozása 1 1/2?. Műszaki adatok - Működési tartomány: 6 m3/h H=9m - Teljesítmény: 0,33 HP - Tápfeszültség: 230 V', 3, 17, 49),
+('054023', 'IE3 BRAVUS 300 230/400V', 436000, -1, 'IE3 Bravus szivattyú A Bravus szivattyú egy kompakt méretű, kiváló hidraulikus hatásfokú szivattyú élményelemekhez, masszázs rendszerekhez, ellenáramoltatók szereléséhez. A szivattyú ház üvegszál erősítésű polipropilénből készült, ami rendkívül tartóssá teszi azt. Járókerék és diffúzor alapanyaga NORYL. Alkalmazási terület - Élményelemekhez - Masszázs rendszerekhez - Ellenáramoltatók szereléséhez Műszaki adatok - Működési tartomány: 52 m3/h H=10m - Teljesítmény: 3,0 HP - Tápfeszültség: 230/400 V - Tengely: Rozsdamentes acél (AISI 316). - Csúszógyűrű: szilikon-kerámia / inox (AISI 316). - Motor: 2900 rpm. - Védelem: IP55. Sós víznek ellenálló kivitel.', 9, 17, 82),
 ('056118', 'INVERECO DE18', 269000, -1, 'InverEco DE18\r\nInverteres szivattyú lakossági medencékhez. Az inverteres technológiának köszönhetően a motor fordulatszáma 1 fordulatonként pontosan szabályozható.\r\nAmikor visszamosásra van szükség, a szivattyú 100%-os kapacitással működhet. A napi szűrési, vízforgatási igény esetén, amely alacsonyabb térfogatáramot igényel, a szivattyú kisebb teljesítménnyel működhet, aminek köszönhetően rendkívül csendes és energiatakarékos. Az Aquagem inverteres technológiának köszönhetően a szivattyú élettartama is hosszabb lesz.\r\n\r\nTulajdonságok\r\nEgyszerű érintőkijelzős kezelőfelület\r\nNaponta 4 különböző időzíthető program\r\nSzabályozható teljesítmény: 30% ~ 100%\r\nEnergiafogyasztás megjelenítése\r\nVisszamosás gombnyomásra', 10, 17, 67),
 ('056225', 'InverMaster IM25', 609850, -1, 'InverMaster IM25\r\nAquagem inverteres szivattyú. Az Aquagem kombinálta az InverSilence technológiát a vízhűtéssel, így megalkotva egy ventilátormentes szivattyút. Ennek eredménye, hogy a működési zaj 30 dBA@1m-ig csökkent, ami 40-szer csendesebb a hagyományos szivattyúkhoz képest.\r\n\r\nTulajdonságok\r\nMaximum 3m-el a vízszint fölé szerelhető\r\nIE5 kefe nélküli DC motor\r\n20x energiamegtakarítás\r\nAuto Inverter/Manual Inverter üzemmód\r\nAktuális térfogatáram megjelenítése\r\nKülső vezérlési lehetőségek: applikáció, digitális jel, RS485\r\nSósvízhez alkalmas, max 5g/l só koncentrációig\r\n40x csöndesebb, mint egy hagyományos szivattyú\r\nAktuális energiafogyasztás megjelenítése\r\nWi-Fi / Bluetooth', 11, 17, 86),
 ('060005', 'D-KWT D50 RAGASZTHATÓ CSATLAKOZÓ', 5800, -1, 'Hőcserélőhöz ragasztható csatlakozó D-KWT típusú hőcserélő csatlakoztatásához szükséges cilinder, prémium minőségű műanyagból. Jellemzők: - Átmérő: D50 mm.', 12, 3, 26),
@@ -341,7 +370,8 @@ INSERT INTO `termekek` (`cikkszam`, `nev`, `egysegar`, `akcios_ar`, `leiras`, `g
 ('109165', 'INOX MERÜLŐ MEDENCE 1500 MM X 1100 MM', 4552160, -1, 'Rozsdamentes merülő medence Rozsdamentes acél merülőmedence AISI 316 anyagból, csúszásmentes medence aljzattal. Alapfelszereltség része: - Szkimmer, DN50 csatlakozó - Padlóbefúvó és ürítű rozsdamentes acélból - Rögzített, rozsdamentes acél 3 fokos létra - Fehér fényű LED MR16, 4 x 1W, 12V Méretek: - Oldalfal vastagság: 2,5 mm - Aljzat vastagság: 1,5 mm - D 1390 x H 1080 mm.', 16, 4, 41),
 ('110002', 'LÉTRA, KIS ÍVŰ 2 FOKOS AISI304', 79600, -1, 'Kis ívű medence létra A kis ívű medence létra lehetővé teszi a könnyed és kényelmes be- és klépést a medencéből. Ha szeretné, hogy medencéjébe egyszerűen és biztonságosan léphessen be, valamint könnyedén kiléphessen onnan, akkor ez a létra ideális választás. A medence létrát kifejezetten a könnyű hozzáférés érdekében tervezték, így növelve a medence használatának élvezetét és kényelmét. A medence létra ergonomikus tervezéssel rendelkezik, hogy a lehető legkényelmesebb legyen a használata, legyen szó gyermekről vagy felnőttről. A létra fokai megfelelő távolsággal helyezkednek el, így biztosítva a stabil és biztonságos közlekedést. Az egyes fokokon csúszásmentes felületek találhatók, amelyek extra tapadást biztosítanak, így minimalizálva a lehetséges baleseti kockázatokat. Könnyen fel- és leszerelhető, könnyedén tárolható vagy szállítható. Könnyen tisztántartható, karbantartható rozsdamentes acélból (AISI304) készült létra hosszú élettartammal rendelkezik, és ellenáll a különböző időjárási viszonyoknak és vízi környezetnek. A létra nemcsak kényelmet nyújt, hanem stílusos kiegészítője is lehet medencéjének. Az esztétikus kialakítás és a letisztult design segít abban, hogy harmonizáljon a medence környezetével, így emelve a medence összhangját és megjelenését. AISI304 Az AISI 304-es acél az egyik legelterjedtebb és leggyakrabban használt rozsdamentes acél ötvözet a piacon. Kiváló korrózióállósággal rendelkezik, és ellenáll a legtöbb környezeti hatásnak, beleértve az oxidációt, savakat, lúgokat és nedvességet is.', NULL, 7, 91),
 ('111012', 'LÉTRA, NAGY ÍVŰ 2 FOKOS AISI316', 103900, -1, 'Nagy ívű medence létra A nagy ívű medence létra lehetővé teszi a könnyed és kényelmes be- és klépést a medencéből. Ha szeretné, hogy medencéjébe egyszerűen és biztonságosan léphessen be, valamint könnyedén kiléphessen onnan, akkor ez a létra ideális választás. A medence létrát kifejezetten a könnyű hozzáférés érdekében tervezték, így növelve a medence használatának élvezetét és kényelmét. A medence létra ergonomikus tervezéssel rendelkezik, hogy a lehető legkényelmesebb legyen a használata, legyen szó gyermekről vagy felnőttről. A létra fokai megfelelő távolsággal helyezkednek el, így biztosítva a stabil és biztonságos közlekedést. Az egyes fokokon csúszásmentes felületek találhatók, amelyek extra tapadást biztosítanak, így minimalizálva a lehetséges baleseti kockázatokat. Könnyen fel- és leszerelhető, könnyedén tárolható vagy szállítható. Könnyen tisztántartható, karbantartható rozsdamentes acélból (AISI316) készült létra hosszú élettartammal rendelkezik, és ellenáll a különböző időjárási viszonyoknak és vízi környezetnek. A létra nemcsak kényelmet nyújt, hanem stílusos kiegészítője is lehet medencéjének. Az esztétikus kialakítás és a letisztult design segít abban, hogy harmonizáljon a medence környezetével, így emelve a medence összhangját és megjelenését. AISI316 Az AISI 316-os acél az egyik legelterjedtebb és leggyakrabban használt rozsdamentes acél ötvözet a piacon, amelyek kiváló ellenállást nyújtanak a korróziónak és oxidációnak, valamint magas hőmérsékleti és mechanikai terheléseknek is ellenállnak.', NULL, 7, 33),
-('112020', 'HIDRAULIKUS LIFT', 4701000, -1, 'Hidraulikus lift Egy lift, amely hidraulikus mechanizmusokat használ, hogy segítsen az embereknek?különösen a mozgáskorlátozottaknak?biztonságosan be- és kiszállni az úszómedencéből. Ezek a liftek elengedhetetlenek az akadálymentesség biztosításához. Ezek a hidraulikus medenceliftek kulcsfontosságúak az inkluzivitás előmozdításában, lehetővé téve, hogy mindenki élvezhesse az úszást tevékenységeket fizikai korlátoktól függetlenül. Használata egyszerű, kialakítása tökéletes a sima és szabályozott emeléshez és süllyesztéshez. Felhasználóbarát, könnyen használható vezérlőkkel vannak ellátva mind a felhasználó, mind az üzemeltető számára. Tartós kialakítás, korrózióálló anyagokból készül, amelyek alkalmasak vizes környezetben. Közületi medencék többségéhez felszerelhető. Jellemzők: - Egyszerű rögzítés - Csőszerkezet: rozsdamentes acélból (AISI-316L) - Három ponton rögzített, kettő a medence külső oldalán, a harmadik a medence belső falán - Két helyről vezérelhető, egyrészt a medencepartról, illetve a medencéből - Maximális terhelhetőség: 120kg - Forgási szög: 150° - Víznyomás: > 3bar - Ülés: szintetikus anyag, kültéri használatra is.', NULL, 7, 92),
+('112020', 'HIDRAULIKUS LIFT', 4701000, -1, 'Hidraulikus lift Egy lift, amely hidraulikus mechanizmusokat használ, hogy segítsen az embereknek?különösen a mozgáskorlátozottaknak?biztonságosan be- és kiszállni az úszómedencéből. Ezek a liftek elengedhetetlenek az akadálymentesség biztosításához. Ezek a hidraulikus medenceliftek kulcsfontosságúak az inkluzivitás előmozdításában, lehetővé téve, hogy mindenki élvezhesse az úszást tevékenységeket fizikai korlátoktól függetlenül. Használata egyszerű, kialakítása tökéletes a sima és szabályozott emeléshez és süllyesztéshez. Felhasználóbarát, könnyen használható vezérlőkkel vannak ellátva mind a felhasználó, mind az üzemeltető számára. Tartós kialakítás, korrózióálló anyagokból készül, amelyek alkalmasak vizes környezetben. Közületi medencék többségéhez felszerelhető. Jellemzők: - Egyszerű rögzítés - Csőszerkezet: rozsdamentes acélból (AISI-316L) - Három ponton rögzített, kettő a medence külső oldalán, a harmadik a medence belső falán - Két helyről vezérelhető, egyrészt a medencepartról, illetve a medencéből - Maximális terhelhetőség: 120kg - Forgási szög: 150° - Víznyomás: > 3bar - Ülés: szintetikus anyag, kültéri használatra is.', NULL, 7, 92);
+INSERT INTO `termekek` (`cikkszam`, `nev`, `egysegar`, `akcios_ar`, `leiras`, `gyarto_id`, `kategoria_id`, `darabszam`) VALUES
 ('113013', 'LÉTRA, EXTRA NAGY ÍVŰ ÍVŰ 3 FOKOS', 251090, -1, 'Extra nagy ívű medence létra Az extra nagy ívű medence létra lehetővé teszi a könnyed és kényelmes be- és klépést a medencéből. Ha szeretné, hogy medencéjébe egyszerűen és biztonságosan léphessen be, valamint könnyedén kiléphessen onnan, akkor ez a létra ideális választás. A medence létrát kifejezetten a könnyű hozzáférés érdekében tervezték, így növelve a medence használatának élvezetét és kényelmét. A medence létra ergonomikus tervezéssel rendelkezik, hogy a lehető legkényelmesebb legyen a használata, legyen szó gyermekről vagy felnőttről. A létra fokai megfelelő távolsággal helyezkednek el, így biztosítva a stabil és biztonságos közlekedést. Az egyes fokokon csúszásmentes felületek találhatók, amelyek extra tapadást biztosítanak, így minimalizálva a lehetséges baleseti kockázatokat. Könnyen fel- és leszerelhető, könnyedén tárolható vagy szállítható. Könnyen tisztántartható, karbantartható rozsdamentes acélból (AISI304) készült létra hosszú élettartammal rendelkezik, és ellenáll a különböző időjárási viszonyoknak és vízi környezetnek. A létra nemcsak kényelmet nyújt, hanem stílusos kiegészítője is lehet medencéjének. Az esztétikus kialakítás és a letisztult design segít abban, hogy harmonizáljon a medence környezetével, így emelve a medence összhangját és megjelenését. AISI316 Az AISI 316-os acél az egyik legelterjedtebb és leggyakrabban használt rozsdamentes acél ötvözet a piacon, amelyek kiváló ellenállást nyújtanak a korróziónak és oxidációnak, valamint magas hőmérsékleti és mechanikai terheléseknek is ellenállnak.', NULL, 7, 61),
 ('114012', 'LÉTRA, OSZTOTT 2 FOKOS AISI316', 185400, -1, 'Osztott létra Fedezd fel kiváló minőségű rozsdamentes létráinkat, amelyek tökéletesen illeszkednek a medencedesignhoz! Az AISI316 anyagból készült, polírozott létrák 43 mm átmérőjű csövekből állnak, és praktikus műanyag rögzítő elemekkel érkeznek. Ezek a létrák elsősorban monolit, vízzáró beton medencékhez lettek tervezve. A létra rögzítése a medencetest belső falába történik csavarokkal. Fontos megjegyezni, hogy fóliás burkolatú vagy kerámia medencéknél a csavarozás érintkezhet a vízzáró felülettel, és növelheti a vízvesztés kockázatát. Ezért javasoljuk ezen típusú medencék esetén figyelmesen eljárni. AISI316 Az AISI 316-os acél az egyik legelterjedtebb és leggyakrabban használt rozsdamentes acél ötvözet a piacon, amelyek kiváló ellenállást nyújtanak a korróziónak és oxidációnak, valamint magas hőmérsékleti és mechanikai terheléseknek is ellenállnak.', NULL, 7, 30),
 ('115004', 'MŰANYAG LÉTRA RÖGZÍTŐ', 4900, -1, 'Műanyag létra rögzítő Kiváló minőségű kiegészítők a készletünkben megtalálható rozsdamentes létrákhoz és lépcsőkhöz.', 16, 7, 63),
@@ -379,13 +409,16 @@ INSERT INTO `termekek` (`cikkszam`, `nev`, `egysegar`, `akcios_ar`, `leiras`, `g
 -- Tábla szerkezet ehhez a táblához `tetelek`
 --
 
-CREATE TABLE `tetelek` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `tetelek` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `megrendeles_id` int(11) NOT NULL,
   `termek_id` varchar(6) NOT NULL,
   `darabszam` int(11) NOT NULL,
-  `egysegar` double NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `egysegar` double NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `megrendeles_id` (`megrendeles_id`),
+  KEY `termek_id` (`termek_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `tetelek`
@@ -397,131 +430,14 @@ INSERT INTO `tetelek` (`id`, `megrendeles_id`, `termek_id`, `darabszam`, `egyseg
 (3, 1, '010004', 1, 2700),
 (4, 1, '033101', 2, 9400),
 (5, 2, '021301', 1, 29000),
-(6, 2, '051006', 1, 103000);
-
---
--- Indexek a kiírt táblákhoz
---
-
---
--- A tábla indexei `felhasznalok`
---
-ALTER TABLE `felhasznalok`
-  ADD PRIMARY KEY (`email`),
-  ADD KEY `szallitasi_cim_id` (`szallitasi_cim_id`),
-  ADD KEY `szamlazasi_cim_id` (`szamlazasi_cim_id`);
-
---
--- A tábla indexei `gyarto`
---
-ALTER TABLE `gyarto`
-  ADD PRIMARY KEY (`id`);
-
---
--- A tábla indexei `kategoria`
---
-ALTER TABLE `kategoria`
-  ADD PRIMARY KEY (`id`);
-
---
--- A tábla indexei `kosar`
---
-ALTER TABLE `kosar`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `felhasznalo_id` (`felhasznalo_id`),
-  ADD KEY `termek_id` (`termek_id`);
-
---
--- A tábla indexei `log`
---
-ALTER TABLE `log`
-  ADD PRIMARY KEY (`id`);
-
---
--- A tábla indexei `megrendeles`
---
-ALTER TABLE `megrendeles`
-  ADD PRIMARY KEY (`id`);
-
---
--- A tábla indexei `szallitasi_cim`
---
-ALTER TABLE `szallitasi_cim`
-  ADD PRIMARY KEY (`id`);
-
---
--- A tábla indexei `szamlazasi_cim`
---
-ALTER TABLE `szamlazasi_cim`
-  ADD PRIMARY KEY (`id`);
-
---
--- A tábla indexei `termekek`
---
-ALTER TABLE `termekek`
-  ADD PRIMARY KEY (`cikkszam`),
-  ADD KEY `kategoria_id` (`kategoria_id`),
-  ADD KEY `fk_gyarto` (`gyarto_id`);
-
---
--- A tábla indexei `tetelek`
---
-ALTER TABLE `tetelek`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `megrendeles_id` (`megrendeles_id`),
-  ADD KEY `termek_id` (`termek_id`);
-
---
--- A kiírt táblák AUTO_INCREMENT értéke
---
-
---
--- AUTO_INCREMENT a táblához `gyarto`
---
-ALTER TABLE `gyarto`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
-
---
--- AUTO_INCREMENT a táblához `kategoria`
---
-ALTER TABLE `kategoria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
-
---
--- AUTO_INCREMENT a táblához `kosar`
---
-ALTER TABLE `kosar`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT a táblához `log`
---
-ALTER TABLE `log`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT a táblához `megrendeles`
---
-ALTER TABLE `megrendeles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT a táblához `szallitasi_cim`
---
-ALTER TABLE `szallitasi_cim`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT a táblához `szamlazasi_cim`
---
-ALTER TABLE `szamlazasi_cim`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT a táblához `tetelek`
---
-ALTER TABLE `tetelek`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+(6, 2, '051006', 1, 103000),
+(7, 3, '010003', 1, 2100),
+(8, 3, '051006', 1, 103000),
+(9, 3, '030024', 1, 21500),
+(10, 3, '021200', 1, 23200),
+(11, 3, '054023', 1, 436000),
+(12, 3, '037111', 1, 1450000),
+(13, 3, '037101', 1, 705999);
 
 --
 -- Megkötések a kiírt táblákhoz
