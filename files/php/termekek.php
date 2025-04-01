@@ -73,6 +73,7 @@ ob_start();
             <div id="kartyak-container">
                 <div id="fejlec-container">
                     <div id="talalatok"></div>
+                    <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;"></div>
                     <div id="fejlec-rendezes">
                         <button id="szures-button" class="btn btn-dark">Szűrők elrejtése</button>
                         <div class="dropdown">

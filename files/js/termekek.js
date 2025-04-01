@@ -636,7 +636,7 @@ function updateCartItem(termekId, change) {
         .then(res => res.json())
         .then(stockData => {
             if (!stockData.success) {
-                alert("Nem sikerült lekérni a készletet.");
+                showToast("Nem sikerült lekérni a készletet.");
                 return;
             }
 
@@ -667,7 +667,7 @@ function updateCartItem(termekId, change) {
                             animateFromCart(productCard);
                         }
                     } else {
-                        alert(data.error);
+                        showToast(data.error);
                     }
                 });
         });
@@ -841,7 +841,7 @@ function kosarbaTesz(termekId, event, maxStock) {
                 // Animáció itt is mehet ha kell:
                 animateToCart(event);
             } else {
-                alert(data.error);
+                showToast(data.error);
             }
         })
         .catch(error => console.error("Hiba:", error));
@@ -1129,6 +1129,37 @@ function initEventListeners() {
         itemsPerPage = getItemsPerPage();
         loadProducts(currentPage);
     });
+}
+
+function showToast(message, type = "danger") {
+    let toastContainer = document.getElementById("toast-container");
+
+    let toast = document.createElement("div");
+    toast.className = `toast align-items-center text-white bg-${type} border-0`;
+    toast.setAttribute("role", "alert");
+    toast.setAttribute("aria-live", "assertive");
+    toast.setAttribute("aria-atomic", "true");
+
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">${message}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+
+    toastContainer.appendChild(toast);
+
+    // Bootstrap toast inicializálás
+    let toastInstance = new bootstrap.Toast(toast);
+    toastInstance.show();
+
+    // Toast automatikus eltüntetése 3 másodperc után
+    setTimeout(() => {
+        toast.remove();
+        if (type == "success") {
+            window.location.reload();
+        }
+    }, 3000);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
