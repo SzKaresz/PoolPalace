@@ -33,11 +33,11 @@ function feltolesKartyakkal(adatok) {
     const akcios_ar = parseFloat(adat.akcios_ar.replace(/\s/g, ''));
     const egysegar = parseFloat(adat.egysegar.replace(/\s/g, ''));
     if (akcios_ar > -1 && akcios_ar < egysegar) {
-      cardPrice.innerHTML = `<span class="original-price">${adat.egysegar}</span> 
-                             <span class="discounted-price">${adat.akcios_ar}</span>`;
+      cardPrice.innerHTML = `<span class="original-price">${adat.egysegar} Ft</span> 
+                             <span class="discounted-price">${adat.akcios_ar} Ft</span>`;
       cardHeader.innerHTML += `<div class="badge">Akció!</div>`;
     } else {
-      cardPrice.innerHTML = `${adat.egysegar}`;
+      cardPrice.innerHTML = `${adat.egysegar} Ft`;
     }
 
     const cartButtonContainer = document.createElement("div");
@@ -145,11 +145,11 @@ function feltolesAkcios(adatok) {
     const akcios_ar = parseFloat(adat.akcios_ar.replace(/\s/g, ''));
     const egysegar = parseFloat(adat.egysegar.replace(/\s/g, ''));
     if (akcios_ar > -1 && akcios_ar < egysegar) {
-      cardPrice.innerHTML = `<span class="original-price">${adat.egysegar}</span> 
-                             <span class="discounted-price">${adat.akcios_ar}</span>`;
+      cardPrice.innerHTML = `<span class="original-price">${adat.egysegar} Ft</span> 
+                             <span class="discounted-price">${adat.akcios_ar} Ft</span>`;
       cardHeader.innerHTML += `<div class="badge">Akció!</div>`;
     } else {
-      cardPrice.innerHTML = `${adat.egysegar}`;
+      cardPrice.innerHTML = `${adat.egysegar} Ft`;
     }
 
     const cartButtonContainer = document.createElement("div");

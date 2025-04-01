@@ -203,12 +203,20 @@ video {
     object-fit: cover;
     border-radius: 10px;
     margin-right: 20px;
-    float: left;
+    flex-shrink: 0;
 }
 
 .tippek_content {
-    float: right;
     max-width: 600px;
+    flex-grow: 1;
+}
+
+.tippek a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
 }
 
 .tippek_content h2 {

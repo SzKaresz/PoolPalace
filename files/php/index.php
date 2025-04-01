@@ -29,15 +29,15 @@
                 <div id="kartyak"></div>
             </div>
         </section>
-        <a href="./tipp.php">
-            <section class="tippek container">
-                 <img src="../img/tipp.webp" title="Tipp" alt="Tipp">
-                 <div class="tippek_content">
-                     <h2>Medence Karbantartás</h2>
-                     <p>Tanuld meg, hogyan tartsd tisztán a medencédet a megfelelő eszközök és vegyszerek használatával, hogy egész nyáron élvezhesd a kristálytiszta vizet.</p>
-                 </div>
-             </section>
-        </a>
+        <section class="tippek container">
+            <a href="./tipp.php">
+                <img src="../img/tipp.webp" title="Tipp" alt="Tipp">
+                <div class="tippek_content">
+                    <h2>Medence Karbantartás</h2>
+                    <p>Tanuld meg, hogyan tartsd tisztán a medencédet a megfelelő eszközök és vegyszerek használatával, hogy egész nyáron élvezhesd a kristálytiszta vizet.</p>
+                </div>
+            </a>
+        </section>
         <section class="products-section mb-5">
             <h2>Akciós termékek</h2>
             <div class="container kontener">
