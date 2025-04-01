@@ -125,7 +125,7 @@ if (isset($_SESSION['user_email'])) {
                                     <?= number_format($termek['egysegar'], 0, ',', ' ') ?> Ft
                                 <?php endif; ?>
                             </td>
-                            <td>
+                            <td id="mennyiseg">
                                 <button class="quantity-btn minus" onclick="updateQuantity(<?= str_pad($termek['cikkszam'], 6, '0', STR_PAD_LEFT) ?>, -1)">-</button>
                                 <span class="quantity"><?= $termek['darabszam'] ?></span>
                                 <button class="quantity-btn plus" onclick="updateQuantity(<?= str_pad($termek['cikkszam'], 6, '0', STR_PAD_LEFT) ?>, 1)">+</button>
@@ -140,9 +140,8 @@ if (isset($_SESSION['user_email'])) {
                     <?php endforeach; ?>
                 </tbody>
             </table>
-            <div class="row">
-                <div class="col cart-delete">
-                    <button type="button" class="delete-btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#clearCartModal">
+            <div class="row d-flex align-items-end justify-content-between"> 
+                <div class="col cart-delete"> <button type="button" class="delete-btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#clearCartModal">
                         Kosár kiürítése
                     </button>
                 </div>

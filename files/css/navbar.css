@@ -247,7 +247,7 @@
     }
 }
 
-@media (min-width: 1200px) and (max-width: 1499px) {
+@media (min-width: 1199px) and (max-width: 1499px) {
     body {
         padding-top: 70px;
     }
@@ -322,7 +322,7 @@
     }
 }
 
-@media (min-width: 460px) and (max-width: 1199px) {
+@media (min-width: 459px) and (max-width: 1199px) {
     body {
         padding-top: 60px;
     }

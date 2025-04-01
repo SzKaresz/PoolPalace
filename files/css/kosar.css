@@ -9,7 +9,6 @@ h2 {
     color: #293144;
 }
 
-/* Kosár táblázat */
 .cart-table {
     width: 100%;
     border-collapse: collapse;
@@ -17,6 +16,10 @@ h2 {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#mennyiseg {
+    white-space: nowrap;
 }
 
 /* Ha a gomb disabled állapotban van */
@@ -93,10 +96,8 @@ h2 {
     background: darkred;
 }
 
-/* Kosár összegző */
 .cart-summary {
     text-align: right;
-    margin-top: 20px;
     font-size: 18px;
     font-weight: bold;
     color: #293144;
@@ -104,7 +105,10 @@ h2 {
 
 .cart-delete{
     text-align: left;
-    margin-top: 58px;
+}
+
+.row.d-flex.align-items-end.justify-content-between {
+    margin-top: 25px;
 }
 
 .checkout-btn, .delete-btn {
@@ -137,7 +141,8 @@ a:hover {
     .cart-table {
         display: block;
         overflow-x: auto;
-        white-space: nowrap;
+        overflow: hidden;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     .cart-table th, .cart-table td {
@@ -150,7 +155,7 @@ a:hover {
         font-size: 14px;
     }
 
-    .checkout-btn {
+    .checkout-btn, .delete-btn {
         font-size: 16px;
         padding: 10px 16px;
     }
@@ -160,6 +165,107 @@ a:hover {
         align-items: center;
         text-align: center;
     }
+}
+
+@media (max-width: 450px) {
+    .container {
+        margin-top: 15px;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    .cart-table{
+        overflow: hidden;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-table th,
+    .cart-table td {
+        padding: 6px 4px;
+        font-size: 12px;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .cart-product {
+         gap: 5px;
+    }
+
+    .cart-table img {
+        width: 40px;
+    }
+
+    .cart-name {
+        font-size: 13px;
+        white-space: normal;
+    }
+
+    .cart-table td#mennyiseg {
+        white-space: normal;
+        min-width: 70px;
+    }
+
+     .cart-table td#mennyiseg .quantity-btn,
+     .cart-table td#mennyiseg .quantity {
+         display: block;
+         margin: 2px auto;
+         padding: 3px 6px;
+         font-size: 13px;
+         width: fit-content;
+     }
+
+    .cart-table td#mennyiseg .quantity {
+        margin-bottom: 4px;
+        margin-top: 4px;
+    }
+
+     .original-price,
+     .discounted-price {
+         display: block;
+         font-size: 12px;
+         margin-right: 0;
+     }
+     .original-price {
+         margin-bottom: 2px;
+     }
+
+     .remove-btn {
+         padding: 4px 6px;
+         font-size: 12px;
+     }
+    .remove-btn .bi-trash {
+        font-size: 1rem;
+    }
+
+    .row.d-flex.align-items-end.justify-content-between {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .cart-delete,
+    .cart-summary {
+        text-align: center;
+        width: 100%;
+    }
+
+     .cart-summary h3 {
+         font-size: 1.1rem;
+         margin-bottom: 10px;
+     }
+
+     .checkout-btn,
+     .delete-btn {
+         padding: 8px 15px;
+         font-size: 14px;
+         width: 80%;
+         max-width: 200px;
+     }
 }
 
 .empty-cart-message {
