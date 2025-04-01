@@ -60,8 +60,8 @@ async function accordFeltolt(id) {
                             <button class="quantity-btn plus">+</button>
                         </div>
                     </td>
-                    <td>${ar.toLocaleString("hu-HU", { style: 'currency', currency: 'HUF', minimumFractionDigits: 0 })}</td>
-                    <td class="osszeg">${osszeg.toLocaleString("hu-HU", { style: 'currency', currency: 'HUF', minimumFractionDigits: 0 })}</td>
+                    <td>${ar.toLocaleString("hu-HU", { style: 'currency', currency: 'HUF', minimumFractionDigits: 0, useGrouping: true })}</td>
+                    <td class="osszeg">${osszeg.toLocaleString("hu-HU", { style: 'currency', currency: 'HUF', minimumFractionDigits: 0, useGrouping: true })}</td>
                 </tr>`;
             }).join('');
 
