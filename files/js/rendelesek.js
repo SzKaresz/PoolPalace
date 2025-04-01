@@ -157,6 +157,8 @@ async function accordFeltolt(id) {
 
 document.addEventListener("click", function (event) {
     if (event.target.closest(".save-all-btn")) {
+        const loadingOverlay = document.getElementById("loading-overlay");
+        loadingOverlay.style.display = "flex";
         let megrendelesId = event.target.closest(".save-all-btn").getAttribute("data-id");
         let statusSelect = document.getElementById(`status_${megrendelesId}`);
         let newStatus = statusSelect.value;
@@ -207,6 +209,7 @@ document.addEventListener("click", function (event) {
             .then(response => response.json())
             .then(result => {
                 console.log(result.messages);
+                loadingOverlay.style.display = "none";
                 if (result.success) {
                     showToast(result.messages, "success");
                     rows.forEach(row => {
@@ -218,6 +221,7 @@ document.addEventListener("click", function (event) {
                 }
             })
             .catch(error => {
+                loadingOverlay.style.display = "none";
                 console.log(error);
                 showToast("Hiba történt a mentés során!", "danger");
             });

@@ -339,6 +339,11 @@ ob_end_flush();
         </div>
     </div>
 
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Kérjük várjon...</p>
+    </div>
+
     <!-- Hidden elements to pass data to JavaScript -->
     <div id="cart-items-data" style="display: none;"><?= htmlspecialchars(json_encode($cart_items)) ?></div>
     <div id="total-price-data" style="display: none;"><?= htmlspecialchars($total) ?></div>

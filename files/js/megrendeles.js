@@ -165,6 +165,8 @@ document.addEventListener("DOMContentLoaded", function () {
     function sendOrder(orderData) {
         if (isSubmitting) return;  // Ha már folyamatban van egy kérés, ne küldje el újra!
         isSubmitting = true;
+        const loadingOverlay = document.getElementById("loading-overlay");
+        loadingOverlay.style.display = "flex";
 
         console.log("Küldött rendelési adatok:", orderData);
 
@@ -176,6 +178,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data => {
                 console.log("Szerver válasza:", data);
+                loadingOverlay.style.display = "none";
 
                 if (data.success) {
                     document.getElementById("order-id").textContent = data.order_id;
@@ -186,6 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Hiba történt:", error);
+                loadingOverlay.style.display = "none";
                 showErrorMessages(["Hiba történt a rendelés leadása során."]);
             })
             .finally(() => {

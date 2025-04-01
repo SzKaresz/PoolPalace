@@ -186,3 +186,139 @@ function kuldRendelesVisszaigazolas($email, $name, $orderId, $cartItems, $total,
         return false;
     }
 }
+
+function kuldRendelesStatuszValtozas($email, $name, $orderId, $newStatus)
+{
+    try {
+        $mail = new PHPMailer(true);
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'info.poolpalace@gmail.com';
+        $mail->Password = $_ENV['SMTP_PASSWORD'];
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port = 465;
+
+        $mail->setFrom('info.poolpalace@gmail.com', 'PoolPalace');
+        $mail->addAddress($email, $name);
+
+        $mail->isHTML(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->Subject = 'Rendelés státuszának frissítése - #' . $orderId;
+
+        $emailBody = "<html><head>
+        <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+        <style>
+            body { font-family: Arial, sans-serif; background-color: #f4f4f4; font-size: 16px; }
+            .container { background: #ffffff; margin: auto; width: 100%; max-width: 100%; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+            .header { background: #293144; color: #ffffff; text-align: center; padding: 20px; font-size: 24px; border-radius: 5px 5px 0 0; }
+            .footer { text-align: center; padding: 15px; font-size: 14px; color: #666; margin-top: 20px; }
+            .button { display: inline-block; padding: 10px 20px; background: #293144; color: #ffffff; text-decoration: none; border-radius: 5px; margin-top: 15px; }
+            .order-summary { margin-top: 20px; font-size: 18px; font-weight: bold; }
+            @media (max-width: 768px) {
+                body { font-size: 14px; }
+                .header { font-size: 20px; padding: 15px; }
+                .footer { font-size: 12px; }
+            }
+            @media (max-width: 480px) {
+                body { font-size: 12px; }
+                .header { font-size: 18px; padding: 10px; }
+                .footer { font-size: 10px; }
+            }
+        </style></head><body>
+        <div class='container'>
+            <div class='header'>Rendelés státuszának frissítése</div>
+            <div class='content'>
+                <p>Kedves <strong>$name</strong>,</p>
+                <p>Ezúton értesítjük, hogy rendelésének státusza megváltozott.</p>
+                <div class='order-details'>
+                    <h3>Rendelés részletei:</h3>
+                    <p>Rendelési azonosító: <strong>#$orderId</strong></p>
+                    <p>Új státusz: <strong>$newStatus</strong></p>
+                </div>
+                <p>Ha bejelentkezik fiókjába nyomon tudja követni rendelése állapotát.</p>
+                <p>Amint új információk állnak rendelkezésre, értesítjük Önt a további lépésekről.</p>
+                <br>
+                <p>Üdvözlettel, <br><strong>PoolPalace csapata</strong></p>
+            </div>
+            <div class='footer'>
+                <p>&copy; " . date('Y') . " PoolPalace | <a href='localhost/PoolPalace/files/php'>Weboldalunk</a></p>
+            </div>
+        </div>
+        </body></html>";
+
+        $mail->Body = $emailBody;
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        error_log("Email küldési hiba: " . $mail->ErrorInfo);
+        return false;
+    }
+}
+
+function kuldRendelesTorles($email, $name, $orderId)
+{
+    try {
+        $mail = new PHPMailer(true);
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'info.poolpalace@gmail.com';
+        $mail->Password = $_ENV['SMTP_PASSWORD'];
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port = 465;
+
+        $mail->setFrom('info.poolpalace@gmail.com', 'PoolPalace');
+        $mail->addAddress($email, $name);
+
+        $mail->isHTML(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->Subject = 'Rendelés törlésének értesítése - #' . $orderId;
+
+        $emailBody = "<html><head>
+        <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+        <style>
+            body { font-family: Arial, sans-serif; background-color: #f4f4f4; font-size: 16px; }
+            .container { background: #ffffff; margin: auto; width: 100%; max-width: 100%; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+            .header { background: #293144; color: #ffffff; text-align: center; padding: 20px; font-size: 24px; border-radius: 5px 5px 0 0; }
+            .footer { text-align: center; padding: 15px; font-size: 14px; color: #666; margin-top: 20px; }
+            .button { display: inline-block; padding: 10px 20px; background: #293144; color: #ffffff; text-decoration: none; border-radius: 5px; margin-top: 15px; }
+            @media (max-width: 768px) {
+                body { font-size: 14px; }
+                .header { font-size: 20px; padding: 15px; }
+                .footer { font-size: 12px; }
+            }
+            @media (max-width: 480px) {
+                body { font-size: 12px; }
+                .header { font-size: 18px; padding: 10px; }
+                .footer { font-size: 10px; }
+            }
+        </style></head><body>
+        <div class='container'>
+            <div class='header'>Rendelés törlésének értesítése</div>
+            <div class='content'>
+                <p>Kedves <strong>$name</strong>,</p>
+                <p>Ezúton értesítjük, hogy rendelése törlésre került.</p>
+                <div class='order-details'>
+                    <h3>Rendelés részletei:</h3>
+                    <p>Rendelési azonosító: <strong>#$orderId</strong></p>
+                </div>
+                <p>Ha kérdése van a törléssel kapcsolatban, kérjük, lépjen kapcsolatba ügyfélszolgálatunkkal.</p>
+                <p>Ha úgy dönt, hogy újra szeretné rendelni, ne habozzon felkeresni minket.</p>
+                <br>
+                <p>Üdvözlettel, <br><strong>PoolPalace csapata</strong></p>
+            </div>
+            <div class='footer'>
+                <p>&copy; " . date('Y') . " PoolPalace | <a href='localhost/PoolPalace/files/php'>Weboldalunk</a></p>
+            </div>
+        </div>
+        </body></html>";
+
+        $mail->Body = $emailBody;
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        error_log("Email küldési hiba: " . $mail->ErrorInfo);
+        return false;
+    }
+}

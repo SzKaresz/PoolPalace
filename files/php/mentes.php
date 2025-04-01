@@ -32,7 +32,7 @@ if (!empty($input['megrendelesId']) && isset($input['newStatus'])) {
     $megrendelesId = intval($input['megrendelesId']);
     $status = $input['newStatus'];
 
-    $sql_ellen = "SELECT statusz FROM `megrendeles` WHERE id=$megrendelesId";
+    $sql_ellen = "SELECT statusz, email, nev FROM `megrendeles` WHERE id=$megrendelesId";
     $ered = adatokLekerdezese($sql_ellen);
 
     if ($ered[0]["statusz"] != $status) {
@@ -43,6 +43,13 @@ if (!empty($input['megrendelesId']) && isset($input['newStatus'])) {
             $response["messages"][] = "Nem sikerült frissíteni a rendelés státuszát.";
         } else {
             $response["success"] = true;
+            include './email_kuldes.php';
+            if($status == "Törölve"){
+                kuldRendelesTorles($ered[0]["email"], $ered[0]["nev"], $megrendelesId);
+            }
+            else{
+                kuldRendelesStatuszValtozas($ered[0]["email"], $ered[0]["nev"], $megrendelesId, $status);
+            }
         }
     }
 }
