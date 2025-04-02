@@ -178,6 +178,12 @@ function loadProducts(page = 1, sortType = '') {
     const limitPerPage = getItemsPerPage();
     let queryParams = new URLSearchParams();
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const kategoriaParam = urlParams.get("kategoria");
+    if (kategoriaParam && kategoriaParam !== "") {
+        queryParams.set("kategoriak", kategoriaParam);
+    }
+
     if (sortType) {
         queryParams.set("sort", sortType);
         localStorage.setItem("currentSort", sortType);

@@ -3,7 +3,6 @@ ob_start();
 include './session.php';
 include 'db.php';
 
-// Cikkszám lekérése az URL-ből
 if (!isset($_GET['cikkszam'])) {
     header('Location: termekek.php');
     exit();
@@ -85,6 +84,7 @@ $kategoria_link = "termekek.php?kategoria=" . urlencode($kategoria_nev);
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="index.php">Főoldal</a></li>
+                <li class="breadcrumb-item"><a href="termekek.php">Termékek</a></li>
                 <li class="breadcrumb-item"><a href="<?= htmlspecialchars($kategoria_link) ?>"><?= htmlspecialchars($kategoria_nev) ?></a></li>
                 <li class="breadcrumb-item active" aria-current="page"><?php echo htmlspecialchars($termek['nev']); ?></li>
             </ol>
@@ -171,7 +171,8 @@ $kategoria_link = "termekek.php?kategoria=" . urlencode($kategoria_nev);
                         <div class="add-to-cart-section bg-light p-3 rounded border mb-4"
                             id="product-<?= $cikkszam ?>"
                             data-cikkszam="<?= $cikkszam ?>"
-                            data-max-keszlet="<?= $max_keszlet ?>">
+                            data-max-keszlet="<?= $max_keszlet ?>"
+                            data-in-cart-quantity="0">
                             <div class="d-flex flex-column align-items-center gap-3">
                                 <div class="d-flex align-items-center gap-2 justify-content-center flex-wrap">
                                     <label for="quantityInput-<?= $cikkszam; ?>" class="form-label mb-0 fw-bold">Mennyiség:</label>
