@@ -293,11 +293,11 @@ ob_end_flush();
                 <div class="accordion" id="billingAccordion">
                     <div class="accordion-item">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#billingCollapse">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#billingCollapse" aria-expanded="false">
                                 Számlázási cím<span class="text-danger">*</span>
                             </button>
                         </h2>
-                        <div id="billingCollapse" class="accordion-collapse collapse">
+                        <div id="billingCollapse" class="accordion-collapse collapse" aria-expanded="false">
                             <div class="accordion-body">
                                 <label for="billing-postal_code">Irányítószám<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control mb-2" id="billing-postal_code" name="billing-postal_code"
@@ -390,7 +390,7 @@ ob_end_flush();
                     <p><strong>Rendelés azonosítója: <span id="order-id"></span></strong></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="window.location.href='termekek.php'">Ok</button>
+                    <button type="button" class="ok-gomb btn btn-primary" data-bs-dismiss="modal" onclick="window.location.href='termekek.php'">Ok</button>
                 </div>
             </div>
         </div>
