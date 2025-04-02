@@ -7,8 +7,8 @@ let recaptchaErrorSpan = document.querySelector(".error.recaptcha-error");
 let mezok = {
     nev: {
         mezo: document.getElementById('nev'),
-        ellenorzes: (ertek) => /^(?=.*[A-Z].*[A-Z])(?=.*\s).{6,}$/.test(ertek),
-        hibaUzenet: 'A névnek tartalmaznia kell legalább egy szóközt, két nagybetűt és 6 karaktert!',
+        ellenorzes: (ertek) => /^(?=.*[A-Z].*[A-Z])(?=.*\s).{5,}$/.test(ertek),
+        hibaUzenet: 'A névnek tartalmaznia kell legalább egy szóközt, két nagybetűt és 5 karaktert!',
         kotelezo: true,
     },
     email: {

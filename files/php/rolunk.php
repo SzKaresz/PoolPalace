@@ -115,7 +115,6 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                 <span class="error adatkez-error">Kérjük, fogadja el az Adatkezelési tájékoztatóban leírtakat!</span>
                 <div id="recaptcha-container">
                     <div class="g-recaptcha nem-robot" data-sitekey="6Lfs-4kqAAAAACPZ6RbVLP0IAz9sBeCZrsYgRzHY"></div>
-                    <!--SECRET KEY: 6Lfs-4kqAAAAAEy4wjpXoGPC3er4FusWos9bVmnh-->
                     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
                 </div>
                 <span class="error recaptcha-error">Kérjük, igazolja, hogy nem robot!</span> <br hidden id="st">
