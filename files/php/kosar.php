@@ -111,7 +111,7 @@ if (isset($_SESSION['user_email'])) {
                             <td>
                                 <a href="termekOldal.php?cikkszam=<?= $termek['cikkszam'] ?>" class="cart-product">
                                     <img src="../img/termekek/<?= $termek['cikkszam'] ?>.webp" alt="<?= htmlspecialchars($termek['nev']) ?>">
-                                    <span class="cart-name"> <?= htmlspecialchars($termek['nev']) ?> </span>
+                                    <span class="cart-name product-name"> <?= htmlspecialchars($termek['nev']) ?> </span>
                                 </a>
                             </td>
                             <td>
