@@ -93,7 +93,7 @@ function urlapValidalas(event) {
     for (let i = 0; i < Object.values(mezok).length; i++) {
         let { mezo, ellenorzes, hibaUzenet} = Object.values(mezok)[i];
 
-        if ((mezo.value && !ellenorzes(mezo.value))) {
+        if (!ellenorzes(mezo.value)) {
             if (!ellenorzes(mezo.value)) {
                 error_span[i].innerHTML = hibaUzenet;
                 error_span[i].style.display = "block";
