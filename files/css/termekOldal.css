@@ -94,13 +94,12 @@ body {
 }
 
 .thumbnail-item.active {
-    border-color: #0d6efd; /* Bootstrap primary szín az aktív kerethez */
+    border-color: black; /* Bootstrap primary szín az aktív kerethez */
     opacity: 1.0; /* Teljesen látható */
 }
 .thumbnail-item:hover {
     opacity: 1.0; /* Hoverre is láthatóbb */
 }
-
 
 /* Termékinformációs Rész */
 .product-details {
@@ -137,9 +136,12 @@ body {
     /* A színét a PHP adja (text-success vagy text-danger) */
 }
 
-/* Kosárba Tesz Szekció */
-.add-to-cart-section {
-    /* A háttér, padding, border a HTML-ben van */
+.add-to-cart-section .quantity-label {
+    font-size: 1rem;
+}
+
+.add-to-cart-section .add-to-cart {
+    width: 100%;
 }
 
 /* MENNYISÉG INPUT ÉS GOMBOK */
@@ -150,27 +152,26 @@ body {
 }
 
 .quantity-btn {
-    width: 38px; /* Gombok szélessége */
-    height: 38px; /* Gombok magassága */
-    font-size: 1.2rem;
-    font-weight: bold;
-    display: inline-flex;
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+    color: white;
+    background-color: #293144;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    border: 1px solid #ced4da; /* Bootstrap input border color */
-    background-color: #e9ecef; /* Világos szürke háttér */
-    color: #495057;
-    border-radius: 0.25rem; /* Bootstrap border-radius */
-    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
+
 .quantity-btn:hover {
-    background-color: #dee2e6;
+    color: white;
+    background-color: rgb(37, 218, 165);
 }
+
 .quantity-btn:disabled {
-    opacity: 0.65;
+    opacity: 0.5;
     cursor: not-allowed;
-    background-color: #e9ecef;
 }
 
 .quantity-input {
@@ -185,6 +186,22 @@ body {
   margin: 0;
 }
 
+.add-to-cart {
+    background-color: #293144;
+    color: white;
+}
+
+.add-to-cart:hover {
+    background-color: rgb(37, 218, 165);
+    color: white;
+}
+
+.cart-icon-img {
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+    vertical-align: middle;
+}
 
 /* Accordion Stílusok (Opcionális - Bootstrap alap felülírása) */
 .accordion-button {
