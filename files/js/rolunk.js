@@ -40,7 +40,6 @@ function hibasAdatok(mezo, helyesAdat) {
 function urlapValidalas(event) {
     let hiba = false;
 
-    // Ellenőrizzük a mezőket
     Object.values(mezok).forEach(({ mezo, ellenorzes, hibaUzenet, kotelezo }, i) => {
         if ((kotelezo && !mezo.value) || (!kotelezo && mezo.value && !ellenorzes(mezo.value))) {
             error_span[i].innerHTML = hibaUzenet;
@@ -54,7 +53,6 @@ function urlapValidalas(event) {
         }
     });
 
-    // Checkbox validálás
     if (!adatkezCheckbox.checked) {
         let adatkezErrorSpan = document.querySelector(".error.adatkez-error");
         if (adatkezErrorSpan) {
@@ -63,7 +61,6 @@ function urlapValidalas(event) {
         hiba = true;
     }
 
-    // reCAPTCHA validálás
     let recaptchaResponse = grecaptcha.getResponse();
     if (!recaptchaResponse) {
         if (recaptchaErrorSpan) {
@@ -72,7 +69,6 @@ function urlapValidalas(event) {
         }
         hiba = true;
     } else {
-        // Ha a reCaptcha sikeres, tüntessük el a hibaüzenetet
         if (recaptchaErrorSpan) {
             recaptchaErrorSpan.style.display = 'none';
             document.getElementById("st").hidden = true;
@@ -114,12 +110,10 @@ function checkRecaptcha() {
     }
 }
 
-// Eseményfigyelők hozzáadása
 form.addEventListener('submit', urlapValidalas);
 adatkezCheckbox.addEventListener('change', checkCheckbox);
 document.addEventListener('DOMContentLoaded', initInputEllenorzes);
 
-// reCAPTCHA callback
 document.addEventListener('grecaptcha.onload', function () {
     grecaptcha.render('recaptcha-container', {
         'sitekey': '6Lfs-4kqAAAAACPZ6RbVLP0IAz9sBeCZrsYgRzHY',

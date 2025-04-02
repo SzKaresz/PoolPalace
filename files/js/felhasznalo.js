@@ -127,7 +127,6 @@ async function felhasznaloLeker() {
                 kartya.querySelector(".torles-gomb").addEventListener("click", function () {
                     torlendoEmail = this.getAttribute("data-id");
 
-                    // Bootstrap modal megnyitása
                     let modal = new bootstrap.Modal(document.getElementById("torlesModal"));
                     modal.show();
                 });
@@ -137,7 +136,7 @@ async function felhasznaloLeker() {
                         let torlesSikeres = await felhasznaloTorles(torlendoEmail);
                         if (torlesSikeres.success) {
                             showToast(torlesSikeres.message, "success");
-                            document.getElementById("torlesModal").querySelector(".btn-close").click(); // Modal bezárása
+                            document.getElementById("torlesModal").querySelector(".btn-close").click();
                             felhasznaloLeker(); // Frissíti a listát
                         } else {
                             showToast(torlesSikeres.message, "danger");
@@ -211,16 +210,13 @@ function showToast(message, type = "success") {
 
     toastContainer.appendChild(toast);
 
-    // Bootstrap toast inicializálás
     let toastInstance = new bootstrap.Toast(toast);
     toastInstance.show();
 
-    // Toast automatikus eltüntetése 3 másodperc után
     setTimeout(() => {
         toast.remove();
     }, 3000);
 }
-
 
 
 window.addEventListener("load", felhasznaloLeker);

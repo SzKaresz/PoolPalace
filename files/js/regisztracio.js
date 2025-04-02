@@ -1,4 +1,3 @@
-// Elemek bekérése:
 let egyezoAdatokCheckbox = document.getElementById('egyezo-adatok');
 let osszesSzamlazasInput = document.querySelectorAll('.col-md-4:nth-child(3) .input-group input');
 let osszesSzallitasiInput = document.querySelectorAll('.col-md-4:nth-child(2) .input-group input');
@@ -11,7 +10,6 @@ let alapSzuloElem = label.parentNode;
 let error_span = document.getElementsByClassName("error");
 
 
-// Mezők és validációik:
 let mezok = {
     nev: {
         mezo: document.getElementById('nev'),
@@ -87,7 +85,6 @@ let mezok = {
     }
 };
 
-// Függvények:
 function hibasAdatok(mezo, helyesAdat) {
     if (helyesAdat) {
         mezo.classList.add('is-valid');
@@ -208,7 +205,6 @@ function szamlaloAtiranyitas() {
     }
 }
 
-// Eseménykezelés:
 form.addEventListener('submit', urlapValidalas);
 egyezoAdatokCheckbox.addEventListener('change', szamlazasSzallitashozIgazitas);
 window.addEventListener('resize', helyValtoztatas);

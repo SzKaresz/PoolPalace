@@ -8,7 +8,7 @@ async function rendelesBetolt() {
             let accord_div = document.getElementById("accord_div");
 
             for (const item of valasz) {
-                let egyediId = `flush-collapse-${item.id}`; // Egyedi ID minden elemnek
+                let egyediId = `flush-collapse-${item.id}`;
 
                 accord_div.innerHTML += `
                 <div class="accordion-item m-5 border rounded shadow-sm  sm-12">
@@ -256,8 +256,7 @@ document.addEventListener("click", function (event) {
                 let result = await response.json();
                 console.log(result);
                 loadingOverlay.style.display = "none";
-                
-                // Ha sikerült a törlés
+
                 if (result.success) {
                     showToast(result.message, "success");
                     rendelesBetolt()
@@ -271,7 +270,6 @@ document.addEventListener("click", function (event) {
                 showToast("Hiba történt a törlés során!", "danger");
             }
 
-            // A modal bezárása
             modal.hide();
         }
     }
@@ -287,13 +285,11 @@ document.addEventListener("input", function (event) {
 
         let ujErtek = parseInt(event.target.value, 10);
 
-        // Ha nem számot ír be vagy kisebb mint 1, állítsuk vissza az előző értéket
         if (isNaN(ujErtek) || ujErtek < 1) {
             event.target.value = 1;
             ujErtek = 1;
         }
 
-        // Frissítsük az árat
         let ujOsszeg = ujErtek * ar;
         osszegElem.textContent = `${ujOsszeg.toLocaleString("hu-HU", {
             style: 'currency',
@@ -302,7 +298,6 @@ document.addEventListener("input", function (event) {
             useGrouping: true
         })}`;
 
-        // Frissítsük a mínusz gomb állapotát
         minusBtn.disabled = ujErtek <= 1;
     }
 });
@@ -323,7 +318,6 @@ document.addEventListener("click", function (event) {
             input.value = currentValue - 1;
         }
 
-        // Frissítsük az árat
         let ujOsszeg = input.value * ar;
         osszegElem.textContent = `${ujOsszeg.toLocaleString("hu-HU", {
             style: 'currency',
@@ -332,7 +326,6 @@ document.addEventListener("click", function (event) {
             useGrouping: true
         })}`;
 
-        // Frissítsük a mínusz gomb állapotát
         minusBtn.disabled = input.value <= 1;
     }
 });
@@ -355,16 +348,13 @@ function showToast(message, type = "success") {
 
     toastContainer.appendChild(toast);
 
-    // Bootstrap toast inicializálás
     let toastInstance = new bootstrap.Toast(toast);
     toastInstance.show();
 
-    // Toast automatikus eltüntetése 3 másodperc után
     setTimeout(() => {
         toast.remove();
     }, 3000);
 }
-
 
 
 window.addEventListener("load", rendelesBetolt);

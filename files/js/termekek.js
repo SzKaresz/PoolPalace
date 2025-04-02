@@ -23,7 +23,6 @@ document.addEventListener("change", function (event) {
     }
 });
 
-// Gomb a szűrőpanel ki-be csúsztatásához
 const toggleButton = document.getElementById("szures-button");
 const filterPanel = document.getElementById("szuro-container");
 const cardContainer = document.getElementById("kartyak-container");
@@ -37,7 +36,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let isLargeScreen = window.innerWidth > 1200;
 
-    // Kis képernyőn alapból elrejtjük a szűrőpanelt és a megfelelő gombfeliratot állítjuk be
     if (!isLargeScreen) {
         szuroContainer.style.display = "none";
         szuroContainer.classList.add("hidden");
@@ -72,14 +70,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 }, 20);
             }
 
-            // 🔹 **Kis képernyőn az egész szűrőpanel jelenjen meg teljes méretben**
             setTimeout(() => {
                 if (!isLargeScreen) {
-                    szuroContainer.style.height = "100vh"; // Teljes képernyő magasság
-                    szuroContainer.style.maxHeight = "100vh"; // Ne lehessen túlcsúszni
-                    szuroContainer.style.overflowY = "hidden"; // Ne görgessen
+                    szuroContainer.style.height = "100vh";
+                    szuroContainer.style.maxHeight = "100vh";
+                    szuroContainer.style.overflowY = "hidden";
                 } else {
-                    // Nagy képernyőn marad az eredeti működés
                     szuroContainer.style.height = "calc(100vh - 80px)";
                     szuroContainer.style.maxHeight = "calc(100vh - 80px)";
                     szuroContainer.style.overflowY = "auto";
@@ -109,10 +105,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Navbar mindig legyen a szűrő felett
     const navbar = document.querySelector(".navbar");
     if (navbar) {
-        navbar.style.zIndex = "1050"; // Magasabb z-index, mint a szűrőé
+        navbar.style.zIndex = "1050";
     }
     szuroContainer.style.zIndex = "1000";
 });
@@ -155,16 +150,13 @@ function setupPagination(totalPages, current) {
         return button;
     }
 
-    // 🔹 Ha csak 1 oldal van, ne jelenítsük meg a lapozót
     if (totalPages <= 1) {
         return;
     }
 
-    // « és < gombok
     leftContainer.appendChild(createPageButton("«", 1, current === 1));
     leftContainer.appendChild(createPageButton("<", current - 1, current === 1));
 
-    // Csúszóablak – max. 5 oldalszám
     const visibleCount = 5;
     let startPage = Math.max(1, current - Math.floor(visibleCount / 2));
     let endPage = startPage + visibleCount - 1;
@@ -178,12 +170,10 @@ function setupPagination(totalPages, current) {
         centerContainer.appendChild(createPageButton(i, i, false, i === current));
     }
 
-    // > és » gombok
     rightContainer.appendChild(createPageButton(">", current + 1, current === totalPages));
     rightContainer.appendChild(createPageButton("»", totalPages, current === totalPages));
 }
 
-// Fő függvények
 function loadProducts(page = 1, sortType = '') {
     const limitPerPage = getItemsPerPage();
     let queryParams = new URLSearchParams();
@@ -199,7 +189,6 @@ function loadProducts(page = 1, sortType = '') {
     queryParams.set("page", page);
     queryParams.set("limit", limitPerPage);
 
-    // **🔹 SZŰRÉSI PARAMÉTEREK HOZZÁADÁSA**
     let kategoriak = Array.from(kivalasztottSzurok.kategoriak);
     let gyartok = Array.from(kivalasztottSzurok.gyartok);
 
@@ -215,7 +204,6 @@ function loadProducts(page = 1, sortType = '') {
     queryParams.set("fromprice", fromPrice);
     queryParams.set("toprice", toPrice);
 
-    // **🔹 Keresési érték betöltése LocalStorage-ból**
     let keresesiErtek = localStorage.getItem("keresesErtek");
     if (keresesiErtek) {
         queryParams.set("kereses", keresesiErtek);
@@ -231,16 +219,14 @@ function loadProducts(page = 1, sortType = '') {
         .catch(error => console.error("Hiba a termékek betöltésekor:", error));
 }
 
-// Automatikusan meghatározza a megjelenítendő elemek számát a képernyőméret szerint
 function getMaxVisibleElements() {
     const screenHeight = window.innerHeight;
-    if (screenHeight > 1200) return 10; // Nagy képernyő
+    if (screenHeight > 1200) return 10;
     if (screenHeight > 1000) return 9;
-    if (screenHeight > 800) return 4; // Közepes képernyő
-    return 8; // Kis képernyő
+    if (screenHeight > 800) return 4;
+    return 8;
 }
 
-// Kategóriák feltöltése
 async function kategoriaFeltolt() {
     try {
         let eredmeny = await fetch("../php/kategoriaLeker.php");
@@ -249,7 +235,6 @@ async function kategoriaFeltolt() {
         let valasz = await eredmeny.json();
         let div = document.getElementById('kategoriak');
 
-        // **🔹 Megőrizzük a bejelölt elemeket**
         document.querySelectorAll('input[name="kategoriak"]:checked').forEach(checkbox => {
             kivalasztottSzurok.kategoriak.add(checkbox.value);
         });
@@ -307,7 +292,6 @@ async function kategoriaFeltolt() {
             div.appendChild(tovabbi);
         }
 
-        // **🔹 Az eltárolt bejelölések DOM-ba állítása**
         document.querySelectorAll('input[name="kategoriak"]').forEach(checkbox => {
             if (kivalasztottSzurok.kategoriak.has(checkbox.value)) {
                 checkbox.checked = true;
@@ -319,14 +303,12 @@ async function kategoriaFeltolt() {
     }
 }
 
-// Rendezés frissítése
 function rendezes(sortType) {
     localStorage.setItem("currentSort", sortType);
-    currentPage = 1; // rendezés mindig az első oldaltól induljon
-    loadProducts(currentPage, sortType); // szerverről újra lekérjük, most már rendezve
+    currentPage = 1;
+    loadProducts(currentPage, sortType);
 }
 
-// Dropdown események a rendezéshez
 document.querySelectorAll('#dropdown-options li').forEach(option => {
     option.addEventListener('click', function () {
         const sortType = this.dataset.sort;
@@ -359,7 +341,6 @@ document.addEventListener('click', function (e) {
     }
 });
 
-// Gyártók feltöltése
 async function gyartoFeltolt() {
     try {
         let eredmeny = await fetch("../php/gyartoLeker.php");
@@ -368,7 +349,6 @@ async function gyartoFeltolt() {
         let valasz = await eredmeny.json();
         let div = document.getElementById('gyartok');
 
-        // **🔹 Megőrizzük a bejelölt elemeket**
         document.querySelectorAll('input[name="gyartok"]:checked').forEach(checkbox => {
             kivalasztottSzurok.gyartok.add(checkbox.value);
         });
@@ -426,7 +406,6 @@ async function gyartoFeltolt() {
             div.appendChild(tovabbi);
         }
 
-        // **🔹 Az eltárolt bejelölések DOM-ba állítása**
         document.querySelectorAll('input[name="gyartok"]').forEach(checkbox => {
             if (kivalasztottSzurok.gyartok.has(checkbox.value)) {
                 checkbox.checked = true;
@@ -558,15 +537,13 @@ function animateToCart(event) {
     setTimeout(() => {
         img.remove();
 
-        // **Ne növeljük a számlálót kézzel, hanem kérjünk frissítést a szerverről!**
         if (typeof updateCartCount === "function") {
-            updateCartCount(); // **A kosar.js frissíti a valódi értéket**
+            updateCartCount();
         }
 
     }, 800);
 }
 
-// Kártyák feltöltése
 function displayProducts(products, totalItems, oldalSzam = 1, osszesOldal = 1) {
     let container = document.getElementById("kartyak");
     container.innerHTML = "";
@@ -617,7 +594,6 @@ function displayProducts(products, totalItems, oldalSzam = 1, osszesOldal = 1) {
         cartButton.innerHTML = `<img src="../img/cart.png" class="cart-icon-img" alt="Kosár"> Kosárba`;
         cartButton.setAttribute("data-id", adat.cikkszam);
 
-        // Ha a termék nincs raktáron
         if (adat.raktar_keszlet === 0) {
             cartButton.disabled = true;
             cartButton.classList.add("disabled");
@@ -640,7 +616,7 @@ function displayProducts(products, totalItems, oldalSzam = 1, osszesOldal = 1) {
     });
 
     frissitTalalatokSzama(totalItems, oldalSzam, osszesOldal);
-    checkCartState(); // Frissíti a darabszámokat és vezérlőket
+    checkCartState();
 }
 
 function adjustSzuroHeight() {
@@ -665,13 +641,12 @@ function adjustSzuroHeight() {
     }
 }
 
-// Frissítés görgetéskor és átméretezéskor
 window.addEventListener("scroll", adjustSzuroHeight);
 window.addEventListener("resize", adjustSzuroHeight);
 document.addEventListener("DOMContentLoaded", () => {
-    setTimeout(adjustSzuroHeight, 50); // Kis késleltetés a teljes betöltésig
+    setTimeout(adjustSzuroHeight, 50);
 });
-window.addEventListener("load", adjustSzuroHeight); // Végső biztosítás a teljes betöltés után
+window.addEventListener("load", adjustSzuroHeight);
 
 function initEventListeners() {
     document.getElementById("szures_button").addEventListener("click", function () {
@@ -679,28 +654,22 @@ function initEventListeners() {
     });
 
     document.getElementById('clear-filters').addEventListener('click', function () {
-        // Az összes checkboxot kikapcsoljuk
-        localStorage.removeItem("keresesErtek"); // 🔹 Töröljük, hogy ne maradjon ott feleslegesen
+        localStorage.removeItem("keresesErtek");
         document.querySelectorAll('input[name="kategoriak"], input[name="gyartok"]').forEach(checkbox => {
             checkbox.checked = false;
         });
 
-        // Kiürítjük a tárolt szűrési beállításokat
         kivalasztottSzurok.kategoriak.clear();
         kivalasztottSzurok.gyartok.clear();
 
-        // Alapértelmezett árértékek visszaállítása
         document.getElementById('fromSlider').value = 0;
         document.getElementById('toSlider').value = 5000000;
         document.getElementById('fromInput').value = 0;
         document.getElementById('toInput').value = 5000000;
         document.getElementById('toSlider').style.background = 'rgb(37, 218, 165)';
 
-        // Visszatöltjük a kategóriákat és a gyártókat, hogy a becsukott részek is frissüljenek
         kategoriaFeltolt();
         gyartoFeltolt();
-
-        // Frissítjük a terméklistát
         loadProducts(1);
     });
 }

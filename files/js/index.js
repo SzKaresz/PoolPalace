@@ -192,9 +192,8 @@ function animateToCart(event) {
   setTimeout(() => {
     img.remove();
 
-    // **Ne növeljük a számlálót kézzel, hanem kérjünk frissítést a szerverről!**
     if (typeof updateCartCount === "function") {
-      updateCartCount(); // **A kosar.js frissíti a valódi értéket**
+      updateCartCount();
     }
 
   }, 800);

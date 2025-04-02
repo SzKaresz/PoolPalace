@@ -1,12 +1,13 @@
 var termekAdatok;
 var torlendo_cikkszam;
 var eredetiAdatok = [];
+
 window.addEventListener("load", async function () {
     try {
         let keres = await fetch("../php/admin_adatleker.php");
         if (keres.ok) {
             let adat = await keres.json();
-            eredetiAdatok = [...adat]; // Eredeti adatok mentése
+            eredetiAdatok = [...adat];
             megjelenitTermekek(adat);
         }
     } catch (error) {
@@ -16,10 +17,10 @@ window.addEventListener("load", async function () {
 
 
 document.getElementById("keresomezo").addEventListener("input", function () {
-    let keresesiErtek = this.value.toLowerCase().trim(); // Levágja a felesleges szóközöket
+    let keresesiErtek = this.value.toLowerCase().trim();
 
     if (keresesiErtek === "") {
-        megjelenitTermekek(eredetiAdatok); // Ha üres, visszaáll az alaphelyzet
+        megjelenitTermekek(eredetiAdatok);
         return;
     }
 
@@ -85,7 +86,6 @@ function megjelenitTermekek(adat) {
             mentesBtn.type = 'submit';
             mentesBtn.classList.add('btn', 'btn-outline-success', 'mentés-gomb');
 
-            // Kép létrehozása és hozzáadása a gombhoz
             let imgm = document.createElement('img');
             imgm.src = '../img/save.png';
             imgm.alt = 'Mentés';
@@ -124,8 +124,6 @@ function megjelenitTermekek(adat) {
                     egysegar: row.querySelector('#egysegar').value,
                     akciosar: row.querySelector('#akciosar').value,
                     leiras: row.querySelector('#leiras').value,
-                    // kategoria: row.querySelector('#kategoria').value,
-                    // gyarto: row.querySelector('#gyarto').value
                 };
                 adatMentes()
 
@@ -150,11 +148,11 @@ function megjelenitTermekek(adat) {
         if (torlendo_cikkszam) {
             let torlesSikeres = await adatTorles(torlendo_cikkszam);
             console.log(torlesSikeres)
-            document.getElementById("torlesModal").querySelector(".btn-close").click(); // Modal bezárása
+            document.getElementById("torlesModal").querySelector(".btn-close").click();
 
             if (torlesSikeres.success) {
                 showToast(torlesSikeres.message, "success");
-                window.location.reload(); // Frissíti az oldalt
+                window.location.reload();
             } else {
                 showToast(torlesSikeres.message, "danger");
             }
@@ -186,7 +184,6 @@ function megjelenitTermekek(adat) {
                         let item = document.createElement("div");
                         item.classList.add("carousel-item", activeClass);
 
-                        // Kép létrehozása
                         let imgElem = document.createElement("img");
                         imgElem.src = kepUrl;
                         imgElem.alt = "Termékkép";
@@ -202,23 +199,21 @@ function megjelenitTermekek(adat) {
                         thumbnail.setAttribute("aria-label", "Dia " + (index + 1));
                         carouselThumbnails.appendChild(thumbnail);
 
-                        // Span és gomb létrehozása
                         let buttonSpan = document.createElement("span");
                         buttonSpan.classList.add("position-absolute", "top-0", "end-0", "m-2", "d-flex", "justify-content-center", "align-items-center");
 
                         let button = document.createElement("button");
                         button.classList.add("btn", "btn-light", "border", "rounded-circle", "p-2", "d-flex", "align-items-center", "justify-content-center");
 
-                        // Remove ikon létrehozása
                         let removeIcon = document.createElement("img");
-                        removeIcon.src = "../img/remove.png";  // A remove.png kép elérési útja
+                        removeIcon.src = "../img/remove.png";
                         removeIcon.alt = "Törlés";
-                        removeIcon.style.width = "20px";  // A kép méretének beállítása
-                        removeIcon.style.height = "20px"; // A kép magasságának beállítása
+                        removeIcon.style.width = "20px";
+                        removeIcon.style.height = "20px";
 
-                        button.appendChild(removeIcon); // A remove.png képet hozzáadjuk a gombhoz
+                        button.appendChild(removeIcon);
                         buttonSpan.appendChild(button);
-                        item.appendChild(buttonSpan); // Gomb hozzáadása a képhez
+                        item.appendChild(buttonSpan);
 
                         carouselImages.appendChild(item)
 
@@ -242,7 +237,7 @@ function megjelenitTermekek(adat) {
                                         thumbnail.remove();
                                     }
 
-                                    const carousel = document.getElementById('productCarousel'); // vagy a carousel ID-ja
+                                    const carousel = document.getElementById('productCarousel');
                                     if (carousel) {
                                         const activeItem = carousel.querySelector('.carousel-item.active');
                                         if (activeItem === torlendoKepElem) {
@@ -354,7 +349,7 @@ function megjelenitTermekek(adat) {
                         }
                     });
 
-                    fileInput.click(); // Kattintásra aktiválja a fájlkezelőt
+                    fileInput.click();
                 });
 
 
@@ -420,11 +415,9 @@ function showToast(message, type = "success") {
 
     toastContainer.appendChild(toast);
 
-    // Bootstrap toast inicializálás
     let toastInstance = new bootstrap.Toast(toast);
     toastInstance.show();
 
-    // Toast automatikus eltüntetése 3 másodperc után
     setTimeout(() => {
         toast.remove();
         if (type == "success") {

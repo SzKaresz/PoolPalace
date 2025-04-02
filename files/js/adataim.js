@@ -1,9 +1,7 @@
-// Elemek bekérése:
 let urlap = document.getElementById('adataim-urlap');
 let error_span = document.getElementsByClassName("error");
 
 
-// Mezők és validációik:
 let mezok = {
     nev: {
         mezo: document.getElementById('nev'),
@@ -68,7 +66,6 @@ let mezok = {
 };
 
 
-// Függvények:
 function hibasAdatok(mezo, helyesAdat) {
     let errorSpan = mezo.nextElementSibling;
 
@@ -139,7 +136,6 @@ function initInputEllenorzes() {
 }
 
 
-// Eseménykezelés:
 urlap.addEventListener('submit', urlapValidalas);
 document.addEventListener('DOMContentLoaded', szamlaloAtiranyitas);
 document.addEventListener('DOMContentLoaded', initInputEllenorzes);

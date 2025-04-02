@@ -1,11 +1,10 @@
 document.getElementById("felvitel_button").addEventListener("click", async function () {
     event.preventDefault();
     const fileInput = document.getElementById("productImages");
-    const files = fileInput.files; // Több fájlt is tartalmazhat
+    const files = fileInput.files;
     
-    let formData = new FormData(); // FormData létrehozása
+    let formData = new FormData();
 
-    // Termék adatok hozzáadása
     formData.append("cikkszam", document.getElementById("cikkszam").value);
     formData.append("nev", document.getElementById("nev").value);
     formData.append("egysegar", document.getElementById("egysegar").value);
@@ -13,15 +12,14 @@ document.getElementById("felvitel_button").addEventListener("click", async funct
     formData.append("gyarto_id", document.getElementById("gyarto_id").value);
     formData.append("kategoria_id", document.getElementById("kategoria_id").value);
 
-    // Fájlok hozzáadása FormData-hoz
     for (const file of files) {
-        formData.append("productImages[]", file); // [] kell a tömb miatt!
+        formData.append("productImages[]", file);
     }
 
     try {
         let response = await fetch("../php/felvitel.php", {
             method: "POST",
-            body: formData // JSON helyett FormData-t küldünk
+            body: formData
         });
 
         let result = await response.json();
@@ -57,11 +55,9 @@ function showToast(message, type = "success") {
 
     toastContainer.appendChild(toast);
 
-    // Bootstrap toast inicializálás
     let toastInstance = new bootstrap.Toast(toast);
     toastInstance.show();
 
-    // Toast automatikus eltüntetése 3 másodperc után
     setTimeout(() => {
         toast.remove();
     }, 3000);
