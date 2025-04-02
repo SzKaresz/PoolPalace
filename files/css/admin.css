@@ -1,16 +1,14 @@
-/* Színek */
 :root {
-  --primary-color: #54BFB2;    /* Türkiz */
-  --secondary-color: #14233C;  /* Sötétkék */
-  --accent-color: #E4C157;     /* Arany */
-  --danger-color: #F24F4B;     /* Piros */
-  --background-color: #E1EACC; /* Világos bézs */
-  --light-background: #F9F9F9; /* Világos háttér */
-  --text-color: #14233C;       /* Sötétszürke */
-  --white-color: #ffffff;      /* Fehér */
+  --primary-color: #54BFB2;
+  --secondary-color: #14233C;
+  --accent-color: #E4C157;
+  --danger-color: #F24F4B;
+  --background-color: #E1EACC;
+  --light-background: #F9F9F9;
+  --text-color: #14233C;
+  --white-color: #ffffff;
 }
 
-/* Alapstílusok */
 body {
   font-family: 'Arial', sans-serif;
   background-color: var(--light-background);
@@ -27,7 +25,7 @@ body {
 #leiras[readonly]:hover {
   background-color: #dde2e6;
 }
-/* NAVBAR */
+
 .navbar {
   background-color: var(--secondary-color);
   padding: 15px;
@@ -50,7 +48,7 @@ body {
 }
 
 .navbar-toggler-icon {
-  filter: invert(1); /* Fehér ikon sötét háttérhez */
+  filter: invert(1);
 }
 
 .navbar-nav {
@@ -69,7 +67,6 @@ body {
   font-weight: bold;
 }
 
-/* Mobil nézetben a menü középre igazítása */
 @media (max-width: 992px) {
   .navbar-collapse {
     background-color: var(--secondary-color);
@@ -86,9 +83,6 @@ body {
   }
 }
 
-
-
-/* Tartalom doboz */
 #tartalom {
   padding: 20px;
   background-color: var(--white-color);
@@ -97,15 +91,13 @@ body {
   margin-top: 20px;
   overflow-x: auto;
 }
-  
-/* Űrlap */
+
 form {
   background-color: var(--white-color);
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Erősebb árnyék */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
-
 
 .form-label {
   font-weight: bold;
@@ -117,7 +109,6 @@ form {
   border: 1px solid var(--primary-color);
 }
 
-/* Táblázat */
 .table {
   width: 100%;
   background-color: var(--white-color);
@@ -140,14 +131,12 @@ form {
   transition: background-color 0.3s ease;
 }
 
-/* Hover effekt a sorokra */
 .table tbody tr:hover {
   background-color: lightgray;
   color: var(--text-color);
   cursor: pointer;
 }
 
-/* Gombok */
 .btn {
   border-radius: 5px;
   margin: 2px;
@@ -279,51 +268,50 @@ form {
   height: 28px;
 }
 
-/* Accordion stílus */
 .accordion-item {
-  background-color: var(--white-color); /* Fehér háttér */
+  background-color: var(--white-color);
   border-radius: 8px;
-  border: 1px solid var(--primary-color); /* Kisebb szegély a blokkoknak */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Enyhe árnyék */
-  margin-bottom: 10px; /* Kis távolság a többi elem között */
+  border: 1px solid var(--primary-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
 }
 
 .accordion-header {
-  background-color: var(--secondary-color); /* Sötétkék háttér */
+  background-color: var(--secondary-color);
   color: var(--white-color);
-  border-radius: 8px 8px 0 0; /* Csak a tetején lekerekítés */
+  border-radius: 8px 8px 0 0;
   font-size: 16px;
 }
 
 .accordion-button {
-  background-color: var(--secondary-color); /* Az alap gomb színe */
+  background-color: var(--secondary-color);
   color: var(--white-color);
   border: none;
   font-weight: bold;
-  transition: background-color 0.3s ease; /* Gomb színváltozás hoverre */
+  transition: background-color 0.3s ease;
 }
 
 .accordion-button.collapsed {
-  background-color: var(--secondary-color); /* Ha össze van csukva */
+  background-color: var(--secondary-color);
 }
 
 .accordion-button:hover {
-  background-color: var(--primary-color); /* Hover állapotban türkiz szín */
+  background-color: var(--primary-color);
 }
 
 .accordion-collapse {
-  background-color: var(--light-background); /* Világos háttér a tartalomhoz */
+  background-color: var(--light-background);
 }
 
 .accordion-body {
   padding: 15px;
-  max-height: none; /* Biztosítja, hogy ne legyen korlátozott magasság */
-  overflow: visible; /* A tartalom egyszerűen elfér */
+  max-height: none;
+  overflow: visible;
   overflow-x: auto;
   font-size: 14px;
   color: var(--text-color);
-  background-color: var(--white-color); /* Fehér háttér */
-  border-radius: 0 0 8px 8px; /* Lekerekített sarkok alul */
+  background-color: var(--white-color);
+  border-radius: 0 0 8px 8px;
 }
 
 #loading-overlay {
@@ -363,39 +351,38 @@ form {
   min-height: 100vh;
 }
 
-/* Alapértelmezett stílus: Nagy képernyőre (768px-től felfelé) */
 .modal-dialog {
   max-width: 70%;
 }
 
-/* Kis képernyőre (767px és lefelé) */
 @media (max-width: 767px) {
   .modal-dialog {
-      max-width: 100%; /* Teljes szélesség */
-      margin: 0;        /* Nincs margó */
+      max-width: 100%;
+      margin: 0;
   }
   .modal-content {
-      height: 100vh; /* Teljes magasság */
-      border: none; /* Nincs keret */
-      border-radius: 0; /* Nincsenek lekerekített sarkok */
+      height: 100vh;
+      border: none;
+      border-radius: 0;
   }
 }
+
 .carousel-item {
-  transition: transform 1s ease-in-out, opacity 0.5s ease-out; /* Lassabb, simább átmenet */
+  transition: transform 1s ease-in-out, opacity 0.5s ease-out;
 }
+
 .product-main-image {
   aspect-ratio: 4 / 3;
   object-fit: contain;
-  max-height: 500px; /* Alapértelmezett max magasság */
+  max-height: 500px;
   max-width: 100%;
   margin: auto;
 }
 
-/* Kis képernyőkre (767px és lefelé) */
 @media (max-width: 767px) {
   .product-main-image {
-      max-height: 70vh; /* Nagyobb max magasság, a képernyő 70%-a */
-      max-width: 100%; /* Teljes szélesség */
+      max-height: 70vh;
+      max-width: 100%;
   }
 }
 .upload {
@@ -403,22 +390,21 @@ form {
   object-fit: contain;
   max-height: 500px;
   margin: auto;
-  display: flex; /* Flexbox elrendezés */
-  justify-content: center; /* Vízszintesen középre */
-  align-items: center; /* Függőlegesen középre */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Carousel Vezérlők (Nyilak) - Sötétebbé tehetjük őket */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-  background-color: rgba(0, 0, 0, 0.5); /* Sötétebb háttér */
+  background-color: rgba(0, 0, 0, 0.5);
   border-radius: 50%;
-  padding: 10px; /* Növelhetjük a kattintható területet */
-  width: 2.5rem; /* Ikon méret */
+  padding: 10px;
+  width: 2.5rem;
   height: 2.5rem;
 }
 .carousel-control-prev, .carousel-control-next {
-  width: 8%; /* Keskenyebb sáv a nyilaknak */
+  width: 8%;
 }
 
 .thumbnail-item {
@@ -441,27 +427,29 @@ form {
       height: 40px;
   }
 }
+
 .thumbnail-item:hover {
-  opacity: 1.0; /* Hoverre is láthatóbb */
+  opacity: 1.0;
 }
+
 .carousel-control-prev,
 .carousel-control-next {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     bottom: auto;
-    width: auto; /* Automatikus szélesség */
-    padding: 0;   /* Nincs padding */
+    width: auto;
+    padding: 0;
     opacity: 0.5;
     transition: opacity 0.15s ease;
 }
 
 .carousel-control-prev {
-    left: 0; /* Bal oldalra igazítva */
+    left: 0;
 }
 
 .carousel-control-next {
-    right: 0; /* Jobb oldalra igazítva */
+    right: 0;
 }
 
 .carousel-control-prev:hover,
@@ -478,7 +466,6 @@ form {
     height: 2rem;
 }
 
-/* Kisebb képernyőkre a nyilak legyenek még kisebbek */
 @media (max-width: 576px) {
     .carousel-control-prev-icon,
     .carousel-control-next-icon {
@@ -487,5 +474,3 @@ form {
         padding: 2px;
     }
 }
-
-

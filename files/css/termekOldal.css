@@ -1,74 +1,70 @@
-/* Alapvető test stílusok, ha kellenek */
 body {
-    background-color: #f8f9fa; /* Világos háttér */
-    padding-top: 70px; /* Navbar magassága miatt (ha fixed-top) - igazítsd a saját navbarodhoz! */
+    background-color: #f8f9fa;
+    padding-top: 70px;
 }
 
-/* Morzsamenü (Breadcrumbs) */
 .breadcrumb {
-    background-color: transparent; /* Ne legyen extra háttere */
+    background-color: transparent;
     padding: 0;
 }
 .breadcrumb-item a {
     text-decoration: none;
-    color: #0d6efd; /* Bootstrap link szín */
+    color: #0d6efd;
 }
 .breadcrumb-item a:hover {
     text-decoration: underline;
 }
 .breadcrumb-item.active {
-    color: #6c757d; /* Bootstrap szürke */
+    color: #6c757d;
 }
 
-/* SIMÁBB ÁTMENET */
 .carousel-item {
-    transition: transform 1s ease-in-out, opacity 0.5s ease-out; /* Lassabb, simább átmenet */
+    transition: transform 1s ease-in-out, opacity 0.5s ease-out;
 }
 
 .product-main-image {
-    aspect-ratio: 4 / 3; /* Képarány tartása, pl. 4:3 */
-    object-fit: contain; /* A kép férjen el a konténerben torzítás nélkül */
-    max-height: 500px; /* Maximális magasság, hogy ne legyen túl nagy */
-    margin: auto; /* Középre igazítás, ha a képarány nem tölti ki */
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+    max-height: 500px;
+    margin: auto;
 }
 
-/* Carousel Vezérlők (Nyilak) - Sötétebbé tehetjük őket */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    background-color: rgba(0, 0, 0, 0.5); /* Sötétebb háttér */
+    background-color: rgba(0, 0, 0, 0.5);
     border-radius: 50%;
-    padding: 10px; /* Növelhetjük a kattintható területet */
-    width: 2.5rem; /* Ikon méret */
+    padding: 10px;
+    width: 2.5rem;
     height: 2.5rem;
 }
 .carousel-control-prev, .carousel-control-next {
-    width: 8%; /* Keskenyebb sáv a nyilaknak */
+    width: 8%;
 }
 
 .thumbnail-item {
     width: 80px;
-    height: 60px; /* Kisebb magasság, hogy több elférjen */
-    object-fit: contain; /* Kép férjen el */
+    height: 60px;
+    object-fit: contain;
     background-color: white;
     padding: 4px;
     cursor: pointer;
-    border: 2px solid #dee2e6; /* Alap keret */
+    border: 2px solid #dee2e6;
     border-radius: 5px;
-    opacity: 0.7; /* Alapból kicsit halványabb */
+    opacity: 0.7;
     transition: border-color 0.3s ease, opacity 0.3s ease;
-    flex-shrink: 0; /* Ne zsugorodjanak */
+    flex-shrink: 0;
 }
 
 .thumbnail-item.active {
-    border-color: black; /* Bootstrap primary szín az aktív kerethez */
-    opacity: 1.0; /* Teljesen látható */
+    border-color: black;
+    opacity: 1.0;
 }
 .thumbnail-item:hover {
-    opacity: 1.0; /* Hoverre is láthatóbb */
+    opacity: 1.0;
 }
 
 .product-title {
-    color: #293144; /* A te sötétkék színed */
+    color: #293144;
     font-weight: 600;
 }
 
@@ -79,13 +75,13 @@ body {
 
 .price-section .original-price {
     text-decoration: line-through;
-    color: #dc3545; /* Bootstrap danger szín */
+    color: #dc3545;
     opacity: 0.8;
 }
 
 .price-section .discounted-price,
 .price-section .current-price {
-    color: #293144; /* Sötétkék ár */
+    color: #293144;
 }
 .price-section .discounted-price {
     color: #22ff26 !important;
@@ -93,7 +89,6 @@ body {
 
 .stock-status {
     font-size: 1rem;
-    /* A színét a PHP adja (text-success vagy text-danger) */
 }
 
 .add-to-cart-section .quantity-label {
@@ -104,11 +99,10 @@ body {
     width: 100%;
 }
 
-/* MENNYISÉG INPUT ÉS GOMBOK */
 .quantity-control-wrapper {
     display: flex;
     align-items: center;
-    gap: 5px; /* Kis rés a gombok és input között */
+    gap: 5px;
 }
 
 .quantity-btn {
@@ -135,11 +129,10 @@ body {
 }
 
 .quantity-input {
-    max-width: 60px; /* Ne legyen túl széles a mennyiség mező */
+    max-width: 60px;
     text-align: center;
-    /* Engedjük, hogy a Bootstrap form-control stílus érvényesüljön */
 }
-/* Eltünteti a number input alapértelmezett nyilait (Webkit/Mozilla) */
+
 .quantity-input::-webkit-outer-spin-button,
 .quantity-input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -163,20 +156,19 @@ body {
     vertical-align: middle;
 }
 
-/* Accordion Stílusok (Opcionális - Bootstrap alap felülírása) */
 .accordion-button {
     font-weight: 600;
-    color: #293144; /* Sötétkék szín a gomb szövegének */
-    background-color: #f8f9fa; /* Világos háttér a gombnak */
+    color: #293144;
+    background-color: #f8f9fa;
 }
 
 .accordion-button:not(.collapsed) {
-    background-color: #e9ecef; /* Kicsit sötétebb háttér nyitott állapotban */
+    background-color: #e9ecef;
     color: #293144;
 }
 
 .accordion-button:focus {
-    box-shadow: 0 0 0 0.25rem rgba(41, 49, 68, 0.25); /* Focus szín a sötétkékhez igazítva */
+    box-shadow: 0 0 0 0.25rem rgba(41, 49, 68, 0.25);
 }
 
 .accordion-body {
@@ -184,69 +176,63 @@ body {
     color: #343a40;
 }
 
-/* Reszponzív Stílusok */
-@media (max-width: 991.98px) { /* Bootstrap LG breakpoint alatt */
+@media (max-width: 991.98px) {
     .product-details {
-        padding-left: 0; /* Nincs extra padding mobilon */
-        margin-top: 20px; /* Térköz a képgaléria és az infók között */
+        padding-left: 0;
+        margin-top: 20px;
     }
      .carousel-thumbnails {
-         justify-content: flex-start; /* Igazítás balra mobilon */
-         overflow-x: auto; /* Vízszintes görgetés a thumbnailseknek, ha nem férnek ki */
-         flex-wrap: nowrap; /* Ne törjenek több sorba */
-         padding-bottom: 10px; /* Kis hely a görgetősávnak */
+         justify-content: flex-start;
+         overflow-x: auto;
+         flex-wrap: nowrap;
+         padding-bottom: 10px;
      }
 }
 
-@media (max-width: 767.98px) { /* Bootstrap MD breakpoint alatt */
+@media (max-width: 767.98px) {
     body {
-        padding-top: 60px; /* Igazítsd a mobilos navbar magasságához */
+        padding-top: 60px;
     }
     .product-main-image {
-        max-height: 400px; /* Kisebb max magasság */
-        aspect-ratio: 1 / 1; /* Négyzetesebb képarány mobilon? Vagy maradhat 4:3 */
+        max-height: 400px;
+        aspect-ratio: 1 / 1;
     }
     .thumbnail-item {
         width: 60px;
         height: 45px;
     }
     .add-to-cart-section button.btn-primary {
-        width: 100%; /* Kosár gomb legyen teljes szélességű az oszlopában */
+        width: 100%;
     }
     .quantity-control-wrapper {
-        flex-wrap: nowrap; /* Biztosítjuk, hogy ne törjön sorba */
+        flex-wrap: nowrap;
     }
 }
 
-/* Lebegő kép az animációhoz (a másik CSS fájlból áthozva/megerősítve) */
 .floating-image {
-    position: fixed; /* Változtatva fixed-re, hogy a viewport-hoz igazodjon */
-    /* width: 50px; */ /* Dinamikusan állítjuk be JS-ben */
-    /* height: 50px; */ /* Dinamikusan állítjuk be JS-ben */
+    position: fixed;
     z-index: 9999;
     pointer-events: none;
     border-radius: 10px;
-    object-fit: contain; /* Jobb, ha contain */
-    /* Az animációt a JS adja hozzá */
+    object-fit: contain;
 }
 
-/* Toast konténer (a másik CSS fájlból áthozva/megerősítve) */
 #toast-container {
     position: fixed;
-    top: 80px; /* Kicsit lejjebb a navbartól */
+    top: 80px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1090; /* Magasabb z-index, mint a navbar (ha az fixed) */
+    z-index: 1090;
     display: flex;
     flex-direction: column;
     align-items: center;
-    pointer-events: none; /* A konténer ne fogja el a kattintást */
-    width: auto; /* Igazodjon a toast tartalmához */
-    min-width: 250px; /* De legyen minimum szélessége */
+    pointer-events: none;
+    width: auto;
+    min-width: 250px;
 }
 
 #toast-container .toast {
-    pointer-events: auto; /* Maguk a toastok legyenek kattinthatóak (pl. bezárás) */
+    pointer-events: auto;
     width: auto;
     max-width: 400px;
     margin-bottom: 10px;

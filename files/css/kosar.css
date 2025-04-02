@@ -25,10 +25,9 @@ h2 {
     white-space: nowrap;
 }
 
-/* Ha a gomb disabled állapotban van */
 .quantity-btn:disabled {
-    background: #aaa !important; /* Szürke háttér */
-    cursor: not-allowed !important; /* Nem kattintható */
+    background: #aaa !important;
+    cursor: not-allowed !important;
 }
 
 .quantity-input {
@@ -58,11 +57,10 @@ h2 {
     text-align: center;
 }
 
-/* Termék kép és név */
 .cart-product {
     display: flex;
     align-items: center;
-    gap: 10px; /* Kép és szöveg közötti távolság */
+    gap: 10px;
     text-align: left;
 }
 
@@ -81,7 +79,6 @@ h2 {
     font-size: 18px;
 }
 
-/* Mennyiség gombok */
 .quantity-btn {
     background: #293144;
     color: white;
@@ -144,7 +141,6 @@ h2 {
     background: #1e2530;
 }
 
-/* Linkek */
 a {
     text-decoration: none;
     color: #293144;
@@ -154,7 +150,6 @@ a:hover {
     color: #1e2530;
 }
 
-/* Reszponzív mód */
 @media (max-width: 768px) {
     .cart-table {
         display: block;
