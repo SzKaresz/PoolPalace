@@ -39,6 +39,12 @@ h2 {
     height: 28px;
 }
 
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .cart-table th {
     background: #293144;
     color: white;
