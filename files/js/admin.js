@@ -79,6 +79,7 @@ function megjelenitTermekek(adat) {
 
             let modositBtn = row.querySelector('.modosit');
             let torlesBtn = row.querySelector('.torles');
+            let kepBtn = row.querySelector(".kepek")
 
             let mentesBtn = document.createElement('button');
             mentesBtn.type = 'submit';
@@ -113,6 +114,7 @@ function megjelenitTermekek(adat) {
                 row.querySelector('td:last-child').innerHTML = '';
                 row.querySelector('td:last-child').appendChild(modositBtn);
                 row.querySelector('td:last-child').appendChild(torlesBtn);
+                row.querySelector('td:last-child').appendChild(kepBtn)
             });
 
             mentesBtn.addEventListener('click', function () {
@@ -171,7 +173,6 @@ function megjelenitTermekek(adat) {
             try {
                 let response = await fetch(`../php/keplekeres.php?cikkszam=${cikkszam}`);
                 let kepek = await response.json();
-
                 let carouselImages = document.getElementById("carouselImages");
                 let carouselThumbnails = document.getElementById("carouselThumbnails");
 
@@ -181,45 +182,93 @@ function megjelenitTermekek(adat) {
                 kepek.forEach((kepUrl, index) => {
                     if (kepUrl && kepUrl.trim() !== "") {
                         let activeClass = index === 0 ? 'active' : 'n';
-                
+
                         let item = document.createElement("div");
                         item.classList.add("carousel-item", activeClass);
-                
+
                         // Kép létrehozása
                         let imgElem = document.createElement("img");
                         imgElem.src = kepUrl;
                         imgElem.alt = "Termékkép";
                         imgElem.classList.add("d-block", "w-50", "product-main-image", "mx-auto");
                         item.appendChild(imgElem);
-                
+
+                        let thumbnail = document.createElement("img");
+                        thumbnail.src = kepUrl;
+                        thumbnail.alt = "Bélyegkép " + (index + 1);
+                        thumbnail.classList.add("img-thumbnail", "thumbnail-item");
+                        thumbnail.setAttribute("data-bs-target", "#productCarousel");
+                        thumbnail.setAttribute("data-bs-slide-to", index);
+                        thumbnail.setAttribute("aria-label", "Dia " + (index + 1));
+                        carouselThumbnails.appendChild(thumbnail);
+
                         // Span és gomb létrehozása
                         let buttonSpan = document.createElement("span");
                         buttonSpan.classList.add("position-absolute", "top-0", "end-0", "m-2", "d-flex", "justify-content-center", "align-items-center");
-                
+
                         let button = document.createElement("button");
                         button.classList.add("btn", "btn-light", "border", "rounded-circle", "p-2", "d-flex", "align-items-center", "justify-content-center");
-                
+
                         // Remove ikon létrehozása
                         let removeIcon = document.createElement("img");
                         removeIcon.src = "../img/remove.png";  // A remove.png kép elérési útja
                         removeIcon.alt = "Törlés";
                         removeIcon.style.width = "20px";  // A kép méretének beállítása
                         removeIcon.style.height = "20px"; // A kép magasságának beállítása
-                
+
                         button.appendChild(removeIcon); // A remove.png képet hozzáadjuk a gombhoz
                         buttonSpan.appendChild(button);
                         item.appendChild(buttonSpan); // Gomb hozzáadása a képhez
-                
-                        carouselImages.appendChild(item);
+
+                        carouselImages.appendChild(item)
+
+                        button.addEventListener("click", async function (event) {
+                            const torlendo = event.target.closest(".carousel-item");
+                            const kepUrl = torlendo.querySelector('img').src;
+                            const filename = kepUrl.substring(kepUrl.lastIndexOf('/') + 1);
+
+                            try {
+                                let keres = await fetch("../php/keptorol.php", ({
+                                    method: "POST",
+                                    headers: {
+                                        "Content-type": "application/json"
+                                    },
+                                    body: JSON.stringify({ fajlnev: filename })
+                                }))
+                                if (keres.ok) {
+                                    torlendo.remove();
+                                    const thumbnail = document.querySelector(`.thumbnail-item[src="${kepUrl}"]`);
+                                    if (thumbnail) {
+                                        thumbnail.remove();
+                                    }
+
+                                    const carousel = document.getElementById('productCarousel'); // vagy a carousel ID-ja
+                                    if (carousel) {
+                                        const activeItem = carousel.querySelector('.carousel-item.active');
+                                        if (activeItem === torlendoKepElem) {
+                                            const nextItem = torlendoKepElem.nextElementSibling;
+                                            const prevItem = torlendoKepElem.previousElementSibling;
+                                            if (nextItem) {
+                                                nextItem.classList.add('active');
+                                            } else if (prevItem) {
+                                                prevItem.classList.add('active');
+                                            }
+                                        }
+                                    }
+                                }
+                            } catch (error) {
+                                console.log(error)
+                            }
+                        })
                     }
                 });
-                
+
 
                 let addItem = document.createElement("div");
                 addItem.classList.add("carousel-item");
 
                 let addButtonContainer = document.createElement("div");
-                addButtonContainer.classList.add("d-flex", "justify-content-center", "align-items-center", "upload");
+                addButtonContainer.classList.add("d-flex", "justify-content-center", "align-items-center");
 
 
                 let addButton = document.createElement("button");
@@ -238,6 +287,7 @@ function megjelenitTermekek(adat) {
                 addButtonContainer.appendChild(addButton);
                 addItem.appendChild(addButtonContainer);
                 carouselImages.appendChild(addItem);
+
 
                 addButton.addEventListener("click", function () {
                     let fileInput = document.createElement("input");

@@ -358,27 +358,54 @@ form {
 
 .modal-dialog {
   display: flex;
-  justify-content: center; /* Vízszintes középre helyezés */
-  align-items: center;     /* Függőleges középre helyezés */
-  min-height: 100vh;       /* A modal mindig a képernyő közepén lesz, függetlenül a képernyő méretétől */
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
+/* Alapértelmezett stílus: Nagy képernyőre (768px-től felfelé) */
+.modal-dialog {
+  max-width: 70%;
+}
+
+/* Kis képernyőre (767px és lefelé) */
+@media (max-width: 767px) {
+  .modal-dialog {
+      max-width: 100%; /* Teljes szélesség */
+      margin: 0;        /* Nincs margó */
+  }
+  .modal-content {
+      height: 100vh; /* Teljes magasság */
+      border: none; /* Nincs keret */
+      border-radius: 0; /* Nincsenek lekerekített sarkok */
+  }
+}
 .carousel-item {
   transition: transform 1s ease-in-out, opacity 0.5s ease-out; /* Lassabb, simább átmenet */
 }
-
-
 .product-main-image {
-  aspect-ratio: 4 / 3; 
-  object-fit: contain; 
-  max-height: 500px; 
-  margin: auto; 
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  max-height: 500px; /* Alapértelmezett max magasság */
+  max-width: 100%;
+  margin: auto;
 }
-.upload{
-  aspect-ratio: 4 / 3; 
-  object-fit: contain; 
-  max-height: 500px; 
-  margin: auto; 
+
+/* Kis képernyőkre (767px és lefelé) */
+@media (max-width: 767px) {
+  .product-main-image {
+      max-height: 70vh; /* Nagyobb max magasság, a képernyő 70%-a */
+      max-width: 100%; /* Teljes szélesség */
+  }
+}
+.upload {
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  max-height: 500px;
+  margin: auto;
+  display: flex; /* Flexbox elrendezés */
+  justify-content: center; /* Vízszintesen középre */
+  align-items: center; /* Függőlegesen középre */
 }
 
 /* Carousel Vezérlők (Nyilak) - Sötétebbé tehetjük őket */
@@ -396,26 +423,69 @@ form {
 
 .thumbnail-item {
   width: 80px;
-  height: 60px; /* Kisebb magasság, hogy több elférjen */
-  object-fit: contain; /* Kép férjen el */
+  height: 60px;
+  object-fit: contain;
   background-color: white;
   padding: 4px;
   cursor: pointer;
-  border: 2px solid #dee2e6; /* Alap keret */
+  border: 2px solid #dee2e6;
   border-radius: 5px;
-  opacity: 0.7; /* Alapból kicsit halványabb */
+  opacity: 0.7;
   transition: border-color 0.3s ease, opacity 0.3s ease;
-  flex-shrink: 0; /* Ne zsugorodjanak */
+  flex-shrink: 0;
 }
 
+@media (max-width: 576px) {
+  .thumbnail-item {
+      width: 60px;
+      height: 40px;
+  }
+}
 .thumbnail-item:hover {
   opacity: 1.0; /* Hoverre is láthatóbb */
 }
-
-.carousel-control-prev, 
+.carousel-control-prev,
 .carousel-control-next {
-  top: 50%; /* Középre igazítás */
-  transform: translateY(-50%); /* Pontos középre igazítás */
-  width: 8%; /* Keskenyebb sáv a nyilaknak */
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    bottom: auto;
+    width: auto; /* Automatikus szélesség */
+    padding: 0;   /* Nincs padding */
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
 }
+
+.carousel-control-prev {
+    left: 0; /* Bal oldalra igazítva */
+}
+
+.carousel-control-next {
+    right: 0; /* Jobb oldalra igazítva */
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    opacity: 0.9;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    padding: 5px;
+    width: 2rem;
+    height: 2rem;
+}
+
+/* Kisebb képernyőkre a nyilak legyenek még kisebbek */
+@media (max-width: 576px) {
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        width: 1rem;
+        height: 1rem;
+        padding: 2px;
+    }
+}
+
 
