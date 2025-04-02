@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Ápr 01. 10:56
+-- Létrehozás ideje: 2025. Ápr 02. 23:30
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -46,9 +46,11 @@ CREATE TABLE IF NOT EXISTS `felhasznalok` (
 --
 
 INSERT INTO `felhasznalok` (`email`, `nev`, `jelszo`, `telefonszam`, `szallitasi_cim_id`, `szamlazasi_cim_id`) VALUES
+('fenyojordan2005@gmail.com', 'Fenyő Jordán', '$2y$10$TQ3vpwZsT8HKth.vFpGUcOxCDHh84uRx5sejcJxiUDflP9dTnSGxG', '06302776811', 5, 5),
 ('info.poolpalace@gmail.com', 'Admin', '$2y$10$GAVPPqKoVgFkV5kMgn/8ROKu2LNiYTCen0PSCcPo3jDf79UyiAdF6', '', 1, 1),
 ('marcifiola66@gmail.com', 'Fiola Marcell Gyula', '$2y$10$CXYg5Bw12VLT0CB1I/ownuxgdVzrilym4tWcDI/f.6.uTHygxTWKi', '+36702070462', 3, 3),
-('szautnerkaroly@gmail.com', 'Szautner Károly', '$2y$10$tFcF/x0yN.1ZPDwcg4kXfeEjZqeP6wuZxyzxQ0aOOTZdgUckHUKy2', '+36305198474', 2, 2);
+('szautnerkaroly@gmail.com', 'Szautner Károly', '$2y$10$tFcF/x0yN.1ZPDwcg4kXfeEjZqeP6wuZxyzxQ0aOOTZdgUckHUKy2', '+36305198474', 2, 2),
+('teszt.ember@gmail.com', 'Teszt Ember', '$2y$10$d4fkOPqwGdAWukU2RIHk/.LKjvSfOH8Uq6JIw1DpcOV1slejTiIJq', '', 4, 4);
 
 --
 -- Eseményindítók `felhasznalok`
@@ -176,7 +178,7 @@ CREATE TABLE IF NOT EXISTS `log` (
   `tabla_nev` varchar(15) NOT NULL,
   `tabla_id` varchar(254) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `log`
@@ -188,7 +190,9 @@ INSERT INTO `log` (`id`, `datum`, `tabla_nev`, `tabla_id`) VALUES
 (3, '2025-03-27 12:47:51', 'megrendeles', '1'),
 (4, '2025-03-27 12:52:51', 'megrendeles', '2'),
 (5, '2025-04-01 10:54:41', 'felhasznalok', 'marcifiola66@gmail.com'),
-(6, '2025-04-01 10:55:29', 'felhasznalok', '3');
+(6, '2025-04-01 10:55:29', 'megrendeles', '3'),
+(7, '2025-04-02 22:43:29', 'felhasznalok', 'teszt.ember@gmail.com'),
+(8, '2025-04-02 23:29:49', 'felhasznalok', 'fenyojordan2005@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -226,7 +230,7 @@ INSERT INTO `megrendeles` (`id`, `email`, `nev`, `telefonszam`, `datum`, `osszeg
 -- Eseményindítók `megrendeles`
 --
 DELIMITER $$
-CREATE TRIGGER `megrendeles` AFTER INSERT ON `megrendeles` FOR EACH ROW INSERT INTO `log`(`tabla_nev`, `tabla_id`) VALUES ('felhasznalok', new.id)
+CREATE TRIGGER `megrendeles` AFTER INSERT ON `megrendeles` FOR EACH ROW INSERT INTO `log`(`tabla_nev`, `tabla_id`) VALUES ('megrendeles', new.id)
 $$
 DELIMITER ;
 
@@ -242,7 +246,7 @@ CREATE TABLE IF NOT EXISTS `szallitasi_cim` (
   `telepules` varchar(58) NOT NULL,
   `utca_hazszam` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `szallitasi_cim`
@@ -251,7 +255,9 @@ CREATE TABLE IF NOT EXISTS `szallitasi_cim` (
 INSERT INTO `szallitasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`) VALUES
 (1, '', '', ''),
 (2, '8200', 'Veszprém', 'Muskátli utca 18/C'),
-(3, '8200', 'Veszprém', 'Ádám Iván utca 24.');
+(3, '8200', 'Veszprém', 'Ádám Iván utca 24.'),
+(4, '', '', ''),
+(5, '8105', 'Pétfürdő', 'Kazinczy utca 27.');
 
 -- --------------------------------------------------------
 
@@ -265,7 +271,7 @@ CREATE TABLE IF NOT EXISTS `szamlazasi_cim` (
   `telepules` varchar(58) NOT NULL,
   `utca_hazszam` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `szamlazasi_cim`
@@ -274,7 +280,9 @@ CREATE TABLE IF NOT EXISTS `szamlazasi_cim` (
 INSERT INTO `szamlazasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`) VALUES
 (1, '', '', ''),
 (2, '8200', 'Veszprém', 'Muskátli utca 18/C'),
-(3, '8200', 'Veszprém', 'Ádám Iván utca 24.');
+(3, '8200', 'Veszprém', 'Ádám Iván utca 24.'),
+(4, '', '', ''),
+(5, '8105', 'Pétfürdő', 'Kazinczy utca 27.');
 
 -- --------------------------------------------------------
 
