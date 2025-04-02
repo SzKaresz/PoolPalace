@@ -62,9 +62,12 @@ function megjelenitTermekek(adat) {
                         <button class="btn btn-outline-secondary modositas-gomb modosit">
                                 <img src="../img/pencil.png" alt="Módosítás" width="30">
                         </button>
-                        <button class="btn btn-outline-danger torles-gomb torles" data-id="${item.email}">
+                        <button class="btn btn-outline-danger torles-gomb torles">
                                 <img src="../img/delete.png" alt="Törlés" width="30">
-                            </button>
+                        </button>
+                        <button class="btn btn-outline-info kep-gomb kepek">
+                                <img src="../img/gallery.png" alt="Képek" width="30">
+                        </button>
                     </td>
                 </tr>`;
     }
@@ -144,6 +147,7 @@ function megjelenitTermekek(adat) {
     document.getElementById("megerositesTorles").addEventListener("click", async function () {
         if (torlendo_cikkszam) {
             let torlesSikeres = await adatTorles(torlendo_cikkszam);
+            console.log(torlesSikeres)
             document.getElementById("torlesModal").querySelector(".btn-close").click(); // Modal bezárása
 
             if (torlesSikeres.success) {
@@ -155,7 +159,164 @@ function megjelenitTermekek(adat) {
             torlendo_cikkszam = null;
         }
     });
+
+    document.querySelectorAll(".kep-gomb").forEach(button => {
+        button.addEventListener("click", async function (event) {
+            let row = event.target.closest('tr');
+            let cikkszam = row.querySelector('#cikkszam').value;
+
+            let modal = new bootstrap.Modal(document.getElementById('kepModal'));
+            modal.show();
+
+            try {
+                let response = await fetch(`../php/keplekeres.php?cikkszam=${cikkszam}`);
+                let kepek = await response.json();
+
+                let carouselImages = document.getElementById("carouselImages");
+                let carouselThumbnails = document.getElementById("carouselThumbnails");
+
+                carouselImages.innerHTML = "";
+                carouselThumbnails.innerHTML = "";
+
+                kepek.forEach((kepUrl, index) => {
+                    if (kepUrl && kepUrl.trim() !== "") {
+                        let activeClass = index === 0 ? 'active' : 'n';
+                
+                        let item = document.createElement("div");
+                        item.classList.add("carousel-item", activeClass);
+                
+                        // Kép létrehozása
+                        let imgElem = document.createElement("img");
+                        imgElem.src = kepUrl;
+                        imgElem.alt = "Termékkép";
+                        imgElem.classList.add("d-block", "w-50", "product-main-image", "mx-auto");
+                        item.appendChild(imgElem);
+                
+                        // Span és gomb létrehozása
+                        let buttonSpan = document.createElement("span");
+                        buttonSpan.classList.add("position-absolute", "top-0", "end-0", "m-2", "d-flex", "justify-content-center", "align-items-center");
+                
+                        let button = document.createElement("button");
+                        button.classList.add("btn", "btn-light", "border", "rounded-circle", "p-2", "d-flex", "align-items-center", "justify-content-center");
+                
+                        // Remove ikon létrehozása
+                        let removeIcon = document.createElement("img");
+                        removeIcon.src = "../img/remove.png";  // A remove.png kép elérési útja
+                        removeIcon.alt = "Törlés";
+                        removeIcon.style.width = "20px";  // A kép méretének beállítása
+                        removeIcon.style.height = "20px"; // A kép magasságának beállítása
+                
+                        button.appendChild(removeIcon); // A remove.png képet hozzáadjuk a gombhoz
+                        buttonSpan.appendChild(button);
+                        item.appendChild(buttonSpan); // Gomb hozzáadása a képhez
+                
+                        carouselImages.appendChild(item);
+                    }
+                });
+                
+
+                let addItem = document.createElement("div");
+                addItem.classList.add("carousel-item");
+
+                let addButtonContainer = document.createElement("div");
+                addButtonContainer.classList.add("d-flex", "justify-content-center", "align-items-center", "upload");
+
+
+                let addButton = document.createElement("button");
+                addButton.classList.add("btn", "btn-light", "border", "rounded-circle", "d-flex", "align-items-center", "justify-content-center");
+                addButton.style.width = "100px";
+                addButton.style.height = "100px";
+                addButton.id = "kepfeltolt"
+
+                let addIcon = document.createElement("img");
+                addIcon.src = "../img/upload.png";
+                addIcon.alt = "Feltöltés";
+                addIcon.style.width = "60px";
+                addIcon.style.height = "60px";
+
+                addButton.appendChild(addIcon);
+                addButtonContainer.appendChild(addButton);
+                addItem.appendChild(addButtonContainer);
+                carouselImages.appendChild(addItem);
+
+                addButton.addEventListener("click", function () {
+                    let fileInput = document.createElement("input");
+                    fileInput.type = "file";
+                    fileInput.accept = "image/*";
+                    fileInput.multiple = true;
+
+                    fileInput.addEventListener("change", async function (event) {
+                        let files = event.target.files;
+                        if (files.length > 0) {
+                            let formData = new FormData();
+
+
+                            for (let file of files) {
+                                formData.append("kepek[]", file);
+                            }
+
+                            try {
+                                let response = await fetch("../php/kepfeltolt.php", {
+                                    method: "POST",
+                                    body: formData
+                                });
+
+                                if (response.ok) {
+                                    console.log("Fájlok sikeresen feltöltve");
+                                    let cikkszam = row.querySelector('#cikkszam').value;
+                                    let updatedResponse = await fetch(`../php/keplekeres.php?cikkszam=${cikkszam}`);
+                                    let updatedKepek = await updatedResponse.json();
+
+
+                                    carouselImages.innerHTML = "";
+                                    carouselThumbnails.innerHTML = "";
+
+                                    updatedKepek.forEach((kepUrl, index) => {
+                                        if (kepUrl && kepUrl.trim() !== "") {
+                                            let activeClass = index === 0 ? 'active' : 'n';
+
+                                            let item = document.createElement("div");
+                                            item.classList.add("carousel-item", activeClass);
+
+                                            let imgElem = document.createElement("img");
+                                            imgElem.src = kepUrl;
+                                            imgElem.alt = "Termékkép";
+                                            imgElem.classList.add("d-block", "w-50", "product-main-image", "mx-auto");
+                                            item.appendChild(imgElem);
+                                            carouselImages.appendChild(item);
+
+                                            let thumbnail = document.createElement("img");
+                                            thumbnail.src = kepUrl;
+                                            thumbnail.alt = "Bélyegkép " + (index + 1);
+                                            thumbnail.classList.add("img-thumbnail", "thumbnail-item");
+                                            thumbnail.setAttribute("data-bs-target", "#productCarousel");
+                                            thumbnail.setAttribute("data-bs-slide-to", index);
+                                            thumbnail.setAttribute("aria-label", "Dia " + (index + 1));
+                                            carouselThumbnails.appendChild(thumbnail);
+                                        }
+                                    });
+                                } else {
+                                    console.log("Hiba történt a fájlok feltöltésekor");
+                                }
+                            } catch (error) {
+                                console.error("Hiba történt a fájlok feltöltésekor:", error);
+                            }
+                        }
+                    });
+
+                    fileInput.click(); // Kattintásra aktiválja a fájlkezelőt
+                });
+
+
+
+            } catch (error) {
+                console.error("Hiba történt a képek betöltésekor:", error);
+            }
+        });
+    });
 }
+
+
 
 async function adatMentes() {
     let keres = await fetch("../php/admin_modositas_mentes.php", ({
@@ -175,6 +336,7 @@ async function adatMentes() {
 }
 
 async function adatTorles(torlendo_cikkszam) {
+    console.log(torlendo_cikkszam)
     let keres = await fetch("../php/admin_torles.php", ({
         method: "DELETE",
         headers: {
@@ -187,6 +349,7 @@ async function adatTorles(torlendo_cikkszam) {
     showToast(valasz.message, szin)
 
 }
+
 
 
 function showToast(message, type = "success") {

@@ -346,3 +346,67 @@ form {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.modal-dialog {
+  display: flex;
+  justify-content: center; /* Vízszintes középre helyezés */
+  align-items: center;     /* Függőleges középre helyezés */
+  min-height: 100vh;       /* A modal mindig a képernyő közepén lesz, függetlenül a képernyő méretétől */
+}
+
+.carousel-item {
+  transition: transform 1s ease-in-out, opacity 0.5s ease-out; /* Lassabb, simább átmenet */
+}
+
+
+.product-main-image {
+  aspect-ratio: 4 / 3; 
+  object-fit: contain; 
+  max-height: 500px; 
+  margin: auto; 
+}
+.upload{
+  aspect-ratio: 4 / 3; 
+  object-fit: contain; 
+  max-height: 500px; 
+  margin: auto; 
+}
+
+/* Carousel Vezérlők (Nyilak) - Sötétebbé tehetjük őket */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: rgba(0, 0, 0, 0.5); /* Sötétebb háttér */
+  border-radius: 50%;
+  padding: 10px; /* Növelhetjük a kattintható területet */
+  width: 2.5rem; /* Ikon méret */
+  height: 2.5rem;
+}
+.carousel-control-prev, .carousel-control-next {
+  width: 8%; /* Keskenyebb sáv a nyilaknak */
+}
+
+.thumbnail-item {
+  width: 80px;
+  height: 60px; /* Kisebb magasság, hogy több elférjen */
+  object-fit: contain; /* Kép férjen el */
+  background-color: white;
+  padding: 4px;
+  cursor: pointer;
+  border: 2px solid #dee2e6; /* Alap keret */
+  border-radius: 5px;
+  opacity: 0.7; /* Alapból kicsit halványabb */
+  transition: border-color 0.3s ease, opacity 0.3s ease;
+  flex-shrink: 0; /* Ne zsugorodjanak */
+}
+
+.thumbnail-item:hover {
+  opacity: 1.0; /* Hoverre is láthatóbb */
+}
+
+.carousel-control-prev, 
+.carousel-control-next {
+  top: 50%; /* Középre igazítás */
+  transform: translateY(-50%); /* Pontos középre igazítás */
+  width: 8%; /* Keskenyebb sáv a nyilaknak */
+}
+

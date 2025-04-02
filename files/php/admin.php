@@ -45,7 +45,50 @@
     </div>
 
     <div id="tartalom" class="m-4"></div>
+
+
+    <div class="modal fade" id="kepModal" tabindex="-1" aria-labelledby="kepModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" style="max-width: 70%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="kepModalLabel">Termék képei</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Carousel container -->
+                    <div id="productCarousel" class="carousel slide mb-3 mx-auto" data-bs-ride="false" data-bs-interval="false" style="max-width: 70%">
+                        <div class="carousel-inner bg-light rounded border" id="carouselImages">
+                            <!-- Itt töltődnek be a képek dinamikusan -->
+                        </div>
+
+                        <!-- Ha több kép van, akkor a vezérlők megjelennek -->
+                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Előző</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Következő</span>
+                        </button>
+
+                        <!-- Bélyegképek -->
+                        <div class="carousel-thumbnails d-flex flex-wrap justify-content-center gap-2" id="carouselThumbnails">
+                            <!-- Bélyegképek ide kerülnek -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
     <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;"></div>
+
     <div class="modal fade" id="torlesModal" tabindex="-1" aria-labelledby="torlesModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
