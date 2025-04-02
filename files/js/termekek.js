@@ -222,8 +222,6 @@ function loadProducts(page = 1, sortType = '') {
 
     }
 
-    console.log(queryParams.toString());
-
     fetch(`./termekek_api.php?${queryParams.toString()}`)
         .then(response => response.json())
         .then(data => {
@@ -231,12 +229,6 @@ function loadProducts(page = 1, sortType = '') {
             setupPagination(data.total_pages, page);
         })
         .catch(error => console.error("Hiba a termékek betöltésekor:", error));
-}
-
-function frissitSzuroMagassag() {
-    const szuroContainer = document.getElementById("szuro-container");
-    szuroContainer.style.height = "calc(100vh - 80px)"; // Biztosítja, hogy mindig megfelelő legyen a méret
-    szuroContainer.style.overflowY = "auto"; // Görgethető legyen, ha szükséges
 }
 
 // Automatikusan meghatározza a megjelenítendő elemek számát a képernyőméret szerint
@@ -325,111 +317,6 @@ async function kategoriaFeltolt() {
     } catch (error) {
         console.log(error);
     }
-}
-
-async function szuresKuldes() {
-    await delay(0)
-    let currentUrl = window.location.href;
-    let params = new URLSearchParams(window.location.search);
-    let kategoria = params.get('kategoria');
-    let gyarto = params.get('gyarto');
-
-    //Adatok összeállítása
-    let data = { url: currentUrl };
-    if (kategoria) data.kategoria = kategoria;
-    if (gyarto) data.gyarto = gyarto;
-
-    $.ajax({
-        url: "../php/adatokLekerese.php",
-        method: "POST",
-        data: data,
-        success: function (response) {
-            valasz = JSON.parse(response);
-            displayProducts(valasz);
-        }
-    });
-}
-
-async function adatbazisbolLekeres() {
-    try {
-        let eredmeny = await fetch("../php/adatokLekerese.php");
-        if (eredmeny.ok) {
-            let valasz = await eredmeny.json();
-            displayProducts(valasz, valasz.length); // 🚀 **Az új verziót használjuk**
-        }
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-function Szures() {
-    kartyak.innerHTML = "";
-
-    let fromprice = document.getElementById('fromSlider').value;
-    let toprice = document.getElementById('toSlider').value;
-
-    // 🔹 Beállítjuk a rejtett checkboxok értékeit is
-    document.querySelectorAll('input[name="kategoriak"]:checked').forEach(checkbox => {
-        kivalasztottSzurok.kategoriak.add(checkbox.value);
-    });
-
-    document.querySelectorAll('input[name="gyartok"]:checked').forEach(checkbox => {
-        kivalasztottSzurok.gyartok.add(checkbox.value);
-    });
-
-    let kivalasztottKategoriak = Array.from(kivalasztottSzurok.kategoriak);
-    let kivalasztottGyartok = Array.from(kivalasztottSzurok.gyartok);
-
-    let szurtKartyak = valasz.filter(adat => {
-        const egysegar = parseFloat(adat.egysegar.replace(/\s/g, ''));
-        const akcios_ar = parseFloat(adat.akcios_ar.replace(/\s/g, ''));
-        const hasznaltAr = (akcios_ar > -1 && akcios_ar < egysegar) ? akcios_ar : egysegar;
-
-        return (
-            toprice >= hasznaltAr && fromprice <= hasznaltAr &&
-            (kivalasztottKategoriak.length === 0 || kivalasztottKategoriak.includes(adat.kategoria_nev)) &&
-            (kivalasztottGyartok.length === 0 || kivalasztottGyartok.includes(adat.gyarto_nev))
-        );
-    });
-
-    displayProducts(szurtKartyak, szurtKartyak.length);
-}
-
-// A magyar ABC helyes sorrendje
-const magyarABC = [
-    "a", "á", "b", "c", "cs", "d", "dz", "dzs", "e", "é", "f", "g", "gy", "h",
-    "i", "í", "j", "k", "l", "m", "n", "ny", "o", "ó", "ö", "ő", "p", "q", "r",
-    "s", "sz", "t", "ty", "u", "ú", "ü", "ű", "v", "w", "x", "y", "z", "zs"
-];
-
-// Magyar ABC szerinti összehasonlítás
-function compareHungarian(a, b) {
-    a = a.toLowerCase();
-    b = b.toLowerCase();
-
-    let minLength = Math.min(a.length, b.length);
-    let i = 0;
-
-    while (i < minLength) {
-        let charA = a[i];
-        let charB = b[i];
-
-        if (charA === charB) {
-            i++;
-            continue;
-        }
-
-        let indexA = magyarABC.indexOf(charA);
-        let indexB = magyarABC.indexOf(charB);
-
-        if (indexA === -1 || indexB === -1) {
-            return charA.localeCompare(charB, "hu", { sensitivity: "base" });
-        }
-
-        return indexA - indexB;
-    }
-
-    return a.length - b.length;
 }
 
 // Rendezés frissítése
@@ -589,202 +476,6 @@ function updateCartCount() {
         .catch(error => console.error("Hiba a kosár frissítésében:", error));
 }
 
-function updateCartItem(termekId, change) {
-    const productCard = document.querySelector(`.add-to-cart[data-id="${termekId}"]`)?.closest(".card");
-    if (!productCard) return;
-
-    const quantityInput = productCard.querySelector(".quantity-input");
-    const minusButton = productCard.querySelector(".quantity-btn.minus");
-    const plusButton = productCard.querySelector(".quantity-btn.plus");
-    const cartButton = productCard.querySelector(".add-to-cart");
-    const quantityControl = productCard.querySelector(".quantity-control");
-
-    let current = parseInt(quantityInput?.value) || 1;
-    let uj = current + change;
-
-    if (uj <= 0) {
-        // 🔹 Kosárból törlés backend
-        fetch("../php/kosarMuvelet.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "remove", termek_id: termekId })
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    updateCartCount();
-
-                    if (change < 0) {
-                        animateFromCart(productCard); // visszarepülő animáció
-                    }
-
-                    // 🔹 Visszaállítjuk az alapállapotot
-                    quantityControl.style.display = "none";
-                    cartButton.style.display = "inline-block";
-                }
-            });
-        return;
-    }
-
-    // 🔹 Lekérjük a raktárkészletet
-    fetch("../php/kosarMuvelet.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "getStock", termek_id: termekId })
-    })
-        .then(res => res.json())
-        .then(stockData => {
-            if (!stockData.success) {
-                showToast("Nem sikerült lekérni a készletet.");
-                return;
-            }
-
-            const maxStock = stockData.raktar_keszlet;
-            if (uj > maxStock) uj = maxStock;
-
-            quantityInput.setAttribute("max", maxStock);
-            quantityInput.setAttribute("min", 1);
-
-            // 🔹 Kosár backend frissítés
-            fetch("../php/kosarMuvelet.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "update", termek_id: termekId, mennyiseg: uj })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        updateCartCount();
-                        quantityInput.value = uj;
-                        quantityInput.dataset.currentValue = uj;
-                        plusButton.disabled = (uj >= maxStock);
-                        minusButton.disabled = (uj <= 1);
-
-                        if (change > 0) {
-                            animateToCart({ target: productCard });
-                        } else if (change < 0 && uj > 0) {
-                            animateFromCart(productCard);
-                        }
-                    } else {
-                        showToast(data.error);
-                    }
-                });
-        });
-}
-
-function disableCartButtons() {
-    document.querySelectorAll(".cart-table tbody tr").forEach(row => {
-        let termekId = row.dataset.id.padStart(6, '0');
-        let quantityElement = row.querySelector(".quantity");
-        let plusButton = row.querySelector(".quantity-btn.plus");
-        let minusButton = row.querySelector(".quantity-btn.minus");
-
-        if (!quantityElement || !plusButton || !minusButton) return;
-
-        let currentQuantity = parseInt(quantityElement.textContent, 10);
-
-        // 🔹 Lekérjük a raktárkészletet minden termékre
-        fetch('../php/kosarMuvelet.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'getStock',
-                termek_id: termekId
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.success) return;
-
-                let maxStock = data.raktar_keszlet;
-
-                // 🔹 Ha elérte a maximumot, a `+` gomb inaktiválása
-                plusButton.disabled = (currentQuantity >= maxStock);
-
-                // 🔹 Ha már 1 a mennyiség, a `-` gomb inaktiválása
-                minusButton.disabled = (currentQuantity <= 1);
-            });
-    });
-}
-
-function updateQuantity(termekId, change) {
-    termekId = termekId.toString().padStart(6, '0');
-    const quantityElement = document.querySelector(`tr[data-id='${termekId}'] .quantity`);
-
-    if (!quantityElement) {
-        console.error("A quantity elem nem található a DOM-ban.");
-        return;
-    }
-
-    let currentQuantity = parseInt(quantityElement.textContent, 10);
-    let newQuantity = currentQuantity + change;
-
-    // 🔹 Lekérjük a termék raktárkészletét az adatbázisból
-    fetch('../php/kosarMuvelet.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            action: 'getStock',
-            termek_id: termekId
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.success) {
-                console.error("Hiba történt a készlet lekérdezésekor:", data.error);
-                return;
-            }
-
-            let maxStock = data.raktar_keszlet;
-
-            // 🔹 Nem engedjük a mínusz gombot 1 alá menni
-            if (newQuantity < 1) {
-                newQuantity = 1;
-            }
-
-            // 🔹 Nem engedjük a plusz gombot a készlet fölé menni
-            if (newQuantity > maxStock) {
-                newQuantity = maxStock;
-            }
-
-            // 🔹 Frissítsük az adatbázist
-            fetch('../php/kosarMuvelet.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'update',
-                    termek_id: termekId,
-                    mennyiseg: newQuantity
-                })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        quantityElement.textContent = newQuantity;
-                        const row = quantityElement.closest('tr');
-                        updateRowTotal(row, newQuantity);
-                        updateCartTotal();
-                        updateCartCount();
-
-                        // 🔹 + és - gombok frissítése
-                        const plusButton = row.querySelector(".quantity-btn.plus");
-                        const minusButton = row.querySelector(".quantity-btn.minus");
-
-                        if (plusButton) {
-                            plusButton.disabled = (newQuantity >= maxStock);
-                        }
-
-                        if (minusButton) {
-                            minusButton.disabled = (newQuantity <= 1);
-                        }
-                    } else {
-                        console.error("Hiba történt a mennyiség frissítésekor:", data.error);
-                    }
-                });
-        })
-        .catch(error => console.error("Hiba:", error));
-}
-
 function checkCartState() {
     fetch("../php/kosarMuvelet.php", {
         method: "POST",
@@ -797,28 +488,6 @@ function checkCartState() {
                 console.error("Hiba: a kosár adat nem megfelelő formátumú vagy nincs meghatározva.", data);
                 return;
             }
-
-            data.kosar.forEach(item => {
-                let addToCartButton = document.querySelector(`.add-to-cart[data-id="${item.termek_id}"]`);
-                if (!addToCartButton) return;
-
-                let productCard = addToCartButton.closest(".card");
-                if (!productCard) return;
-
-                let quantityControl = productCard.querySelector(".quantity-control");
-                let quantityInput = productCard.querySelector(".quantity-input");
-                let minusButton = productCard.querySelector(".quantity-btn.minus");
-                let plusButton = productCard.querySelector(".quantity-btn.plus");
-
-                if (!quantityControl || !quantityInput) return;
-
-                quantityInput.value = item.darabszam;
-                quantityInput.dataset.currentValue = item.darabszam;
-                quantityControl.style.display = "flex";
-
-                minusButton.disabled = (item.darabszam <= 1);
-                plusButton.disabled = (item.darabszam >= item.raktar_keszlet);
-            });
         })
         .catch(error => console.error("Hiba a kosárállapot betöltésénél:", error));
 }
@@ -897,49 +566,6 @@ function animateToCart(event) {
     }, 800);
 }
 
-function animateFromCart(productCard) {
-    const cartIcon = document.querySelector(".cart-icon img");
-    const productImage = productCard.querySelector("img");
-    if (!productImage || !cartIcon) return;
-
-    // Lemásoljuk a termékképet
-    const img = document.createElement("img");
-    img.src = productImage.src;
-    img.classList.add("floating-image");
-    img.style.position = "fixed";
-
-    const productRect = productImage.getBoundingClientRect();
-    const cartRect = cartIcon.getBoundingClientRect();
-
-    // A kiinduló helyzet: a termék képe
-    img.style.left = `${productRect.left}px`;
-    img.style.top = `${productRect.top}px`;
-    img.style.width = `${productRect.width}px`;
-    img.style.height = `${productRect.height}px`;
-    img.style.zIndex = "9999";
-    img.style.pointerEvents = "none";
-
-    document.body.appendChild(img);
-
-    // Számoljuk a mozgás irányát: kosárból vissza a termékképhez
-    const deltaX = productRect.left - (cartRect.left + cartRect.width / 2 - productRect.width / 2);
-    const deltaY = productRect.top - (cartRect.top + cartRect.height / 2 - productRect.height / 2);
-
-    // Animáció visszafelé a kosárból a termékhez
-    img.animate([
-        { transform: `translate(${-deltaX}px, ${-deltaY}px) scale(0.2)`, opacity: 0.6 },
-        { transform: "translate(0, 0) scale(1)", opacity: 1 }
-    ], {
-        duration: 800,
-        easing: "ease-in-out",
-        fill: "forwards"
-    });
-
-    setTimeout(() => {
-        img.remove();
-    }, 800);
-}
-
 // Kártyák feltöltése
 function displayProducts(products, totalItems, oldalSzam = 1, osszesOldal = 1) {
     let container = document.getElementById("kartyak");
@@ -1003,45 +629,7 @@ function displayProducts(products, totalItems, oldalSzam = 1, osszesOldal = 1) {
             };
         }
 
-        // 🔹 Mennyiség kezelő (Kosár gomb mellett)
-        let quantityControl = document.createElement("div");
-        quantityControl.classList.add("quantity-control");
-        quantityControl.style.display = "none"; // Alapból rejtett
-
-        let minusButton = document.createElement("button");
-        minusButton.classList.add("quantity-btn", "minus");
-        minusButton.textContent = "-";
-        minusButton.onclick = function (event) {
-            event.stopPropagation();
-            updateCartItem(adat.cikkszam, -1);
-        };
-
-        let quantityInput = document.createElement("input");
-        quantityInput.classList.add("quantity-input");
-        quantityInput.type = "number";
-        quantityInput.value = 1;
-        quantityInput.setAttribute("min", "1");
-        quantityInput.onchange = function (event) {
-            const currentVal = parseInt(quantityInput.dataset.currentValue, 10);
-            const newVal = parseInt(event.target.value, 10);
-            updateCartItem(adat.cikkszam, newVal - currentVal);
-        };
-        quantityInput.dataset.currentValue = 1;
-
-        let plusButton = document.createElement("button");
-        plusButton.classList.add("quantity-btn", "plus");
-        plusButton.textContent = "+";
-        plusButton.onclick = function (event) {
-            event.stopPropagation();
-            updateCartItem(adat.cikkszam, 1); // 🔹 frissíti a backendet is
-        };
-
-        quantityControl.appendChild(minusButton);
-        quantityControl.appendChild(quantityInput);
-        quantityControl.appendChild(plusButton);
-
         cartButtonContainer.appendChild(cartButton);
-        cartButtonContainer.appendChild(quantityControl);
 
         cardBody.appendChild(cardTitle);
         cardBody.appendChild(cardPrice);
@@ -1055,11 +643,11 @@ function displayProducts(products, totalItems, oldalSzam = 1, osszesOldal = 1) {
     checkCartState(); // Frissíti a darabszámokat és vezérlőket
 }
 
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 function adjustSzuroHeight() {
+    if (window.innerWidth < 1200) {
+        return;
+    }
+
     let szuroContainer = document.getElementById("szuro-container");
     let footer = document.querySelector("footer");
 
@@ -1067,7 +655,7 @@ function adjustSzuroHeight() {
 
     let windowHeight = window.innerHeight;
     let footerTop = footer.getBoundingClientRect().top;
-    let navbarHeight = 80; // Navbar fix magassága
+    let navbarHeight = 80;
 
     if (footerTop > windowHeight) {
         szuroContainer.style.height = `calc(100vh - ${navbarHeight}px)`;
@@ -1114,11 +702,6 @@ function initEventListeners() {
 
         // Frissítjük a terméklistát
         loadProducts(1);
-    });
-
-    window.addEventListener("resize", () => {
-        itemsPerPage = getItemsPerPage();
-        loadProducts(currentPage);
     });
 }
 
@@ -1169,5 +752,4 @@ document.addEventListener("DOMContentLoaded", function () {
     gyartoFeltolt();
     initEventListeners();
     checkCartState();
-    disableCartButtons();
 });

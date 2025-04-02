@@ -158,6 +158,10 @@ input.quantity-input::-webkit-outer-spin-button {
         padding: 0 15px;
         box-sizing: border-box;
     }
+
+    #kontener{
+        padding: 0;
+    }
 }
 
 /* Ha a szűrő látható, a kártyák figyelembe veszik a szélességét */
