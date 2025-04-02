@@ -18,6 +18,15 @@ body {
   margin: 0;
   padding: 0;
 }
+
+#leiras[readonly] {
+  cursor: pointer;
+  background-color: #e9ecef;
+}
+
+#leiras[readonly]:hover {
+  background-color: #dde2e6;
+}
 /* NAVBAR */
 .navbar {
   background-color: var(--secondary-color);

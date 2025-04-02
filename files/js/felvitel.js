@@ -66,3 +66,31 @@ function showToast(message, type = "success") {
         toast.remove();
     }, 3000);
 }
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const mainTextarea = document.getElementById('leiras');
+    const modalTextarea = document.getElementById('modalLeirasTextarea');
+    const descriptionModalElement = document.getElementById('editDescriptionModal');
+    const descriptionModal = new bootstrap.Modal(descriptionModalElement);
+
+    const saveModalBtn = document.getElementById('saveModalButton');
+    const clearModalBtn = document.getElementById('clearModalButton');
+
+    mainTextarea.addEventListener('click', () => {
+        if (mainTextarea.readOnly) {
+            modalTextarea.value = mainTextarea.value;
+            descriptionModal.show();
+        }
+    });
+
+    saveModalBtn.addEventListener('click', () => {
+        mainTextarea.value = modalTextarea.value;
+        descriptionModal.hide();
+    });
+
+    clearModalBtn.addEventListener('click', () => {
+        modalTextarea.value = '';
+        mainTextarea.value = '';
+        descriptionModal.hide();
+    });
+});
