@@ -48,7 +48,7 @@
 
 
     <div class="modal fade" id="kepModal" tabindex="-1" aria-labelledby="kepModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen-sm-down">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="kepModalLabel">Termék képei</h5>
@@ -78,9 +78,25 @@
             </div>
         </div>
     </div>
-
-
-
+    <div class="modal fade" id="leirasModal" tabindex="-1" aria-labelledby="leirasModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="leirasModalLabel">Leírás Szerkesztése</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="leirasTextarea" class="form-control" rows="15"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="leirasMegseBtn" data-bs-dismiss="modal">Mégse</button>
+                    <button type="button" class="btn btn-warning" id="leirasTartalomTorlesBtn">Törlés</button>
+                    <button type="button" class="btn btn-primary" id="leirasMenteseBtn">Mentés</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 
     <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;"></div>
 
@@ -105,4 +121,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>

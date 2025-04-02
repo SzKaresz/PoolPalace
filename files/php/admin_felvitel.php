@@ -115,7 +115,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <textarea class="form-control" id="modalLeirasTextarea" rows="10"></textarea>
+                        <textarea class="form-control" id="modalLeirasTextarea" rows="15"></textarea>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelModalButton">Mégse</button>

@@ -26,6 +26,23 @@ body {
   background-color: #dde2e6;
 }
 
+input.leiras-input[readonly][data-clickable="true"] {
+  cursor: pointer;
+  background-color: #e9ecef;
+}
+
+input.leiras-input[readonly][data-clickable="true"]:hover {
+  background-color: #dde2e6;
+}
+
+.btn img {
+  pointer-events: none;
+}
+
+#leirasTextarea {
+  min-height: 200px;
+}
+
 .navbar {
   background-color: var(--secondary-color);
   padding: 15px;

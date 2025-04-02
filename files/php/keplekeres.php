@@ -1,27 +1,38 @@
 <?php
+header('Content-Type: application/json');
 $cikkszam = isset($_GET['cikkszam']) ? $_GET['cikkszam'] : null;
+$files = [];
 
-if ($cikkszam) {
+if ($cikkszam && preg_match('/^[a-zA-Z0-9_-]+$/', $cikkszam)) {
     $dir = '../img/termekek/';
-    $files = array();
+    $webDir = '../img/termekek/';
 
-    $i = 0;
+    $baseFilename = $cikkszam . '.webp';
+    $baseFilepath = $dir . $baseFilename;
+    if (file_exists($baseFilepath)) {
+        $files[] = $webDir . $baseFilename;
+    }
+
+    $i = 2;
     while (true) {
-        if ($i == 0) {
-            $filename = $dir . $cikkszam . '.webp';
+        $indexedFilenameBase = $cikkszam . '_' . $i . '.webp';
+        $indexedFilepath = $dir . $indexedFilenameBase;
+
+        if (file_exists($indexedFilepath)) {
+            $files[] = $webDir . $indexedFilenameBase;
             $i++;
-        } else {
-            $filename = $dir . $cikkszam . '_' . $i . '.webp';
-        }
-        if (file_exists($filename)) {
-            $files[] = $filename;
         } else {
             break;
         }
-        $i++;
+
+        if ($i > 100) {
+            error_log("Túl sok képindex a termékhez (keplekeres): " . $cikkszam);
+            break;
+        }
     }
-    echo json_encode($files);
 } else {
-    echo json_encode(array());
+     error_log("Érvénytelen vagy hiányzó cikkszám a képlekéréshez: " . print_r($cikkszam, true));
 }
+
+echo json_encode($files);
 ?>

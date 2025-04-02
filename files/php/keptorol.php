@@ -6,9 +6,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode($input, true);
 
     if (isset($data['fajlnev'])) {
-        $fajlnev = $data['fajlnev'];
+        $fajlnev = basename($data['fajlnev']);
         $fajl_utvonal = "../img/termekek/" . $fajlnev;
-        var_dump($fajl_utvonal);
 
         if (file_exists($fajl_utvonal)) {
             if (unlink($fajl_utvonal)) {
