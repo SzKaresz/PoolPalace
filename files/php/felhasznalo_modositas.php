@@ -20,7 +20,7 @@ if ($email === null || $nev === null || $telefonszam === null) {
     exit;
 }
 
-$muvelet="UPDATE felhasznalok 
+$muvelet = "UPDATE felhasznalok 
 INNER JOIN szamlazasi_cim ON szamlazasi_cim.id = felhasznalok.szamlazasi_cim_id
 INNER JOIN szallitasi_cim ON szallitasi_cim.id = felhasznalok.szallitasi_cim_id
 SET 

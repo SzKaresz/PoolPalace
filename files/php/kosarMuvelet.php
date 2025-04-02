@@ -31,7 +31,6 @@ if ($action === 'getStock') {
     exit;
 }
 
-// Kosár mennyiség lekérdezése
 function getUserCartCount($db, $user_email)
 {
     $stmt = $db->prepare("SELECT COALESCE(SUM(darabszam), 0) AS total FROM kosar WHERE felhasznalo_id = ?");
@@ -61,14 +60,13 @@ if (isset($_SESSION['user_email'])) {
             $kosar = [];
 
             while ($row = $result->fetch_assoc()) {
-                // 🔹 Lekérjük a raktárkészletet
                 $stmt2 = $db->prepare("SELECT darabszam as raktar_keszlet FROM termekek WHERE cikkszam = ?");
                 $stmt2->bind_param("s", $row['termek_id']);
                 $stmt2->execute();
                 $result2 = $stmt2->get_result();
                 $termek = $result2->fetch_assoc();
 
-                $row['raktar_keszlet'] = $termek['raktar_keszlet'] ?? 0; // Ha nincs adat, akkor 0
+                $row['raktar_keszlet'] = $termek['raktar_keszlet'] ?? 0;
                 $kosar[] = $row;
             }
 
@@ -76,7 +74,6 @@ if (isset($_SESSION['user_email'])) {
             exit;
 
         case 'add':
-            // Lekérjük az aktuális raktárkészletet a termékek táblából (!!! HIBAJAVÍTÁS: darabszam oszlopot használunk !!!)
             $stmt = $db->prepare("SELECT darabszam FROM termekek WHERE cikkszam = ?");
             $stmt->bind_param("s", $termek_id);
             $stmt->execute();
@@ -88,9 +85,8 @@ if (isset($_SESSION['user_email'])) {
                 exit;
             }
 
-            $raktar_keszlet = intval($termek['darabszam']); // 🔹 A raktárkészlet most a darabszam oszlopból jön
+            $raktar_keszlet = intval($termek['darabszam']);
 
-            // Lekérjük a kosárban lévő mennyiséget
             $stmt = $db->prepare("SELECT darabszam FROM kosar WHERE termek_id = ? AND felhasznalo_id = ?");
             $stmt->bind_param("ss", $termek_id, $user_email);
             $stmt->execute();
@@ -100,7 +96,6 @@ if (isset($_SESSION['user_email'])) {
             $uj_mennyiseg = $kosar_mennyiseg + $mennyiseg;
             $termek_id = $_POST["termek_id"] ?? json_decode(file_get_contents("php://input"), true)["termek_id"];
 
-            // Ellenőrizzük, hogy ne lépjük túl a készletet
             if ($uj_mennyiseg > $raktar_keszlet) {
                 echo json_encode([
                     "success" => false,
@@ -109,7 +104,6 @@ if (isset($_SESSION['user_email'])) {
                 exit;
             }
 
-            // Ha a termék már a kosárban van, frissítjük a mennyiséget
             if ($kosar_mennyiseg > 0) {
                 $stmt = $db->prepare("UPDATE kosar SET darabszam = ? WHERE termek_id = ? AND felhasznalo_id = ?");
                 $stmt->bind_param("iss", $uj_mennyiseg, $termek_id, $user_email);
@@ -163,7 +157,6 @@ if (isset($_SESSION['user_email'])) {
 
             $kosar = [];
             foreach ($_SESSION['kosar'] as $termek_id => $darabszam) {
-                // 🔹 Lekérjük a raktárkészletet
                 $stmt = $db->prepare("SELECT darabszam as raktar_keszlet FROM termekek WHERE cikkszam = ?");
                 $stmt->bind_param("s", $termek_id);
                 $stmt->execute();
@@ -181,7 +174,6 @@ if (isset($_SESSION['user_email'])) {
             exit;
 
         case 'add':
-            // Lekérjük az aktuális raktárkészletet a termékek táblából
             $stmt = $db->prepare("SELECT darabszam FROM termekek WHERE cikkszam = ?");
             $stmt->bind_param("s", $termek_id);
             $stmt->execute();
@@ -193,14 +185,12 @@ if (isset($_SESSION['user_email'])) {
                 exit;
             }
 
-            $raktar_keszlet = intval($termek['darabszam']); // 🔹 A raktárkészlet most a darabszam oszlopból jön
+            $raktar_keszlet = intval($termek['darabszam']);
 
-            // Kosárban lévő aktuális mennyiség lekérése (ha van)
             $kosar_mennyiseg = $_SESSION['kosar'][$termek_id] ?? 0;
             $uj_mennyiseg = $kosar_mennyiseg + $mennyiseg;
             $termek_id = $_POST["termek_id"] ?? json_decode(file_get_contents("php://input"), true)["termek_id"];
 
-            // Ellenőrizzük, hogy ne lépjük túl a készletet
             if ($uj_mennyiseg > $raktar_keszlet) {
                 echo json_encode([
                     "success" => false,
@@ -209,7 +199,6 @@ if (isset($_SESSION['user_email'])) {
                 exit;
             }
 
-            // Ha minden rendben van, frissítjük a session kosarat
             $_SESSION['kosar'][$termek_id] = $uj_mennyiseg;
             break;
 
@@ -221,7 +210,7 @@ if (isset($_SESSION['user_email'])) {
             unset($_SESSION['kosar'][$termek_id]);
             break;
 
-        case 'removeAll': // **Kosár teljes kiürítése vendégeknél**
+        case 'removeAll':
             $_SESSION['kosar'] = [];
             break;
     }

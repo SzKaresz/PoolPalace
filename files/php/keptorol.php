@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($data['fajlnev'])) {
         $fajlnev = $data['fajlnev'];
         $fajl_utvonal = "../img/termekek/" . $fajlnev;
-        var_dump($fajl_utvonal); // **FONTOS:** Ellenőrizd és állítsd be a helyes útvonalat!
+        var_dump($fajl_utvonal);
 
         if (file_exists($fajl_utvonal)) {
             if (unlink($fajl_utvonal)) {

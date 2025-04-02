@@ -23,7 +23,7 @@
     <?php include './navbar.php'; ?>
     <div class="container my-5">
         <h1 class="display-4 text-center mb-4">Medence karbantartás – Tippek és trükkök otthoni medencékhez</h1>
-        
+
         <p>Az otthoni medence karbantartása kulcsfontosságú ahhoz, hogy tiszta, biztonságos és élvezetes legyen a vízben való pihenés. A rendszeres karbantartás nemcsak a víz tisztaságát garantálja, hanem hosszú távon hozzájárul a medence élettartamának meghosszabbításához is. Az alábbiakban összegyűjtöttük a legfontosabb karbantartási feladatokat, amelyekkel otthon is könnyedén elvégezhetjük a medence ápolását.</p>
 
         <div class="row my-5">

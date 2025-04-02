@@ -7,7 +7,7 @@ $input = json_decode(file_get_contents("php://input"), true);
 $id = $input['cikkszam'] ?? null;
 $nev = $input['nev'] ?? null;
 $ar = $input['egysegar'] ?? null;
-$akciosar = ($input['akciosar']=="")?-1:$input["akciosar"] ?? null;
+$akciosar = ($input['akciosar'] == "") ? -1 : $input["akciosar"] ?? null;
 $leiras = $input['leiras'] ?? null;
 
 if ($id === null || $nev === null || $ar === null) {

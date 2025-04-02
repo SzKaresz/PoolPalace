@@ -133,20 +133,17 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                     $verify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret={$recaptcha_secret}&response={$recaptcha_response}");
                     $response_data = json_decode($verify);
 
-                    // ReCAPTCHA ellenőrzés
                     if (!$response_data->success) {
                         $_SESSION["hiba"] = "reCAPTCHA ellenőrzés sikertelen! Kérlek, próbáld újra.";
                         header("Location: " . $_SERVER['PHP_SELF']);
                         exit;
                     }
 
-                    // Form adatok fogadása
                     $nev = $_POST['nev'];
                     $email = $_POST['email'];
                     $email_targya = $_POST['email_targya'] ?? "Nincs tárgy";
                     $email_szovege = $_POST['email_szovege'] ?? "Nincs üzenet";
 
-                    // E-mail küldése
                     $hiba = "";
                     if (rolunkEmail($nev, $email, $email_targya, $email_szovege, $hiba)) {
                         $_SESSION["uzenet"] = "Az üzenet sikeresen elküldve.";
@@ -169,5 +166,4 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
     <?php include './back-to-top.php'; ?>
     <?php include "./footer.php"; ?>
 </body>
-
 </html>

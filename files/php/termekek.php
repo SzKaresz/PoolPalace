@@ -22,7 +22,6 @@ ob_start();
     <?php include './navbar.php'; ?>
     <div id="kontener" class="container-fluid">
         <div id="termekek-container">
-            <!-- Szűrőpanel -->
             <div id="szuro-container">
                 <div class="szurofejlec">
                     <div class="fejlec_szoveg">
@@ -69,7 +68,6 @@ ob_start();
                 </div>
             </div>
 
-            <!-- Termékkártyák -->
             <div id="kartyak-container">
                 <div id="fejlec-container">
                     <div id="talalatok"></div>
@@ -96,7 +94,8 @@ ob_start();
                 <div class="pagination-container">
                     <div class="pagination-side pagination-left">
                         <button>«</button>
-                        <button><</button>
+                        <button>
+                            << /button>
                     </div>
 
                     <div class="pagination-center"></div>
@@ -116,5 +115,4 @@ ob_start();
     ob_end_flush();
     ?>
 </body>
-
 </html>

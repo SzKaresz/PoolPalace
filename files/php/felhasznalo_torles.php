@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 $input = json_decode(file_get_contents("php://input"), true);
 $email = $input['email'] ?? null;
 
-if ($email === null ) {
+if ($email === null) {
     echo json_encode(["status" => "error", "message" => "Hiányzó adatok!"]);
     exit;
 }

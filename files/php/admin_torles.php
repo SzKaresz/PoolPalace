@@ -7,7 +7,7 @@ $input = json_decode(file_get_contents("php://input"), true);
 $id = $input['cikkszam'] ?? null;
 
 
-if ($id === null ) {
+if ($id === null) {
     echo json_encode(["status" => "error", "message" => "Hiányzó adatok!"]);
     exit;
 }

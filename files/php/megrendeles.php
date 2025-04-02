@@ -27,7 +27,6 @@ if (!$is_guest) {
     $user_data = $result->fetch_assoc();
 }
 
-// Kosár inicializálása
 $cart_items = [];
 $total = 0;
 
@@ -97,7 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Ellenőrizzük, hogy az e-mail már létezik-e
         $stmt = $db->prepare("SELECT email FROM felhasznalok WHERE email = ?");
         $stmt->bind_param("s", $data['email']);
         $stmt->execute();
@@ -108,10 +106,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Jelszó hashelése
         $password_hash = password_hash($data['password'], PASSWORD_DEFAULT);
 
-        // Szállítási cím mentése
         $stmt = $db->prepare("INSERT INTO szallitasi_cim (iranyitoszam, telepules, utca_hazszam) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $data['shipping_postal_code'], $data['shipping_city'], $data['shipping_address']);
         if (!$stmt->execute()) {
@@ -120,7 +116,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $szallitasi_cim_id = $stmt->insert_id;
 
-        // Számlázási cím mentése
         $stmt = $db->prepare("INSERT INTO szamlazasi_cim (iranyitoszam, telepules, utca_hazszam) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $data['billing_postal_code'], $data['billing_city'], $data['billing_address']);
         if (!$stmt->execute()) {
@@ -129,7 +124,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $szamlazasi_cim_id = $stmt->insert_id;
 
-        // Felhasználó beszúrása
         $stmt = $db->prepare("INSERT INTO felhasznalok (email, nev, telefonszam, jelszo, szallitasi_cim_id, szamlazasi_cim_id) 
                               VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssii", $data['email'], $data['name'], $data['phone'], $password_hash, $szallitasi_cim_id, $szamlazasi_cim_id);
@@ -140,7 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Rendelés mentése (számlázási címmel együtt!)
     $stmt = $db->prepare("INSERT INTO megrendeles (
         email, nev, telefonszam, osszeg, 
         szallit_irsz, szallit_telep, szallit_cim, 
@@ -218,7 +211,6 @@ ob_end_flush();
     <?php endif; ?>
 
     <div id="megrendeles-container">
-        <!-- Bal oldal: Kosár tartalma -->
         <div id="kosar-container">
             <h2>Kosár tartalma</h2>
             <ul class="list-group" id="cart-items">
@@ -250,7 +242,6 @@ ob_end_flush();
             <h4 class="text-end">Összesen: <span id="total-price"><?= number_format($total, 0, ',', ' ') ?></span> Ft</h4>
         </div>
 
-        <!-- Jobb oldal: Megrendelési űrlap -->
         <div id="megrendeles-form-container">
             <h2>Megrendelés adatai</h2>
             <form id="order-form">
@@ -267,7 +258,6 @@ ob_end_flush();
                     <input type="text" class="form-control" id="phone" name="phone" value="<?= htmlspecialchars($user_data['telefonszam'] ?? '') ?>">
                 </div>
 
-                <!-- Accordion Szállítási cím -->
                 <div class="accordion mb-3" id="shippingAccordion">
                     <div class="accordion-item">
                         <h2 class="accordion-header">
@@ -300,7 +290,6 @@ ob_end_flush();
                     </label>
                 </div>
 
-                <!-- Accordion Számlázási cím -->
                 <div class="accordion" id="billingAccordion">
                     <div class="accordion-item">
                         <h2 class="accordion-header">
@@ -352,12 +341,10 @@ ob_end_flush();
         <p>Kérjük várjon...</p>
     </div>
 
-    <!-- Hidden elements to pass data to JavaScript -->
     <div id="cart-items-data" style="display: none;"><?= htmlspecialchars(json_encode($cart_items)) ?></div>
     <div id="total-price-data" style="display: none;"><?= htmlspecialchars($total) ?></div>
     <div id="is-guest-data" style="display: none;"><?= htmlspecialchars(json_encode($is_guest)) ?></div>
 
-    <!-- Modal a vendégvásárlóknak -->
     <div class="modal fade" id="guestModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -367,9 +354,7 @@ ob_end_flush();
                 </div>
                 <div class="modal-body">
                     <p>Szeretné elmenteni adatait a későbbi vásárlásokhoz?</p>
-                    <!-- Alert container inside modal for password errors -->
                     <div id="password-alert"></div>
-                    <!-- Two password fields added -->
                     <div class="mb-2">
                         <label for="modal-password">Jelszó</label>
                         <input type="password" class="form-control" id="modal-password" placeholder="Jelszó">
@@ -393,7 +378,6 @@ ob_end_flush();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/megrendeles.js"></script>
 
-    <!-- Rendelés visszaigazolás modal -->
     <div class="modal fade" id="orderSuccessModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -416,5 +400,4 @@ ob_end_flush();
     ob_end_flush();
     ?>
 </body>
-
 </html>

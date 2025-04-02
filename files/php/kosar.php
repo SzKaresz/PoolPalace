@@ -3,7 +3,6 @@ include './session.php';
 include 'db.php';
 ob_start();
 
-// Függvény a bejelentkezett felhasználó kosarának darabszámának lekérésére
 function getUserCartCount($db, $user_email)
 {
     $stmt = $db->prepare("SELECT SUM(darabszam) AS total FROM kosar 
@@ -129,14 +128,14 @@ if (isset($_SESSION['user_email'])) {
                             </td>
                             <td id="mennyiseg">
                                 <div class="quantity-control">
-                                <button class="quantity-btn minus" onclick="updateQuantity('<?= str_pad($termek['cikkszam'], 6, '0', STR_PAD_LEFT) ?>', -1)">-</button>
+                                    <button class="quantity-btn minus" onclick="updateQuantity('<?= str_pad($termek['cikkszam'], 6, '0', STR_PAD_LEFT) ?>', -1)">-</button>
                                     <input type="number"
                                         class="quantity-input"
                                         min="1"
                                         max="<?= $termek['raktar_keszlet'] ?>"
                                         value="<?= $termek['darabszam'] ?>"
                                         data-current-value="<?= $termek['darabszam'] ?>">
-                                        <button class="quantity-btn plus" onclick="updateQuantity('<?= str_pad($termek['cikkszam'], 6, '0', STR_PAD_LEFT) ?>', 1)">+</button>
+                                    <button class="quantity-btn plus" onclick="updateQuantity('<?= str_pad($termek['cikkszam'], 6, '0', STR_PAD_LEFT) ?>', 1)">+</button>
                                 </div>
                             </td>
                             <td><?= number_format($termek['darabszam'] * $termek['ar'], 0, ',', ' ') ?> Ft</td>
@@ -166,7 +165,6 @@ if (isset($_SESSION['user_email'])) {
     <?php include './navbar.php'; ?>
     <?php include './footer.php'; ?>
 
-    <!-- Kosár kiürítése megerősítő modal -->
     <div class="modal fade" id="clearCartModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -188,5 +186,4 @@ if (isset($_SESSION['user_email'])) {
     ob_end_flush();
     ?>
 </body>
-
 </html>

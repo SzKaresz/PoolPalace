@@ -1,13 +1,11 @@
 <?php
 include './sql_fuggvenyek.php';
 
-// Az adatokat JSON formátumban kapjuk
 $inputJSON = file_get_contents('php://input');
 $input = json_decode($inputJSON, true);
 
-$response = ["success" => false, "messages" => []]; // Kezdetben false, hogy ha nincs sikeres művelet, ne változzon
+$response = ["success" => false, "messages" => []];
 
-// Termékek frissítése és darabszám módosítása
 if (!empty($input['items']) && is_array($input['items'])) {
     foreach ($input['items'] as $termek) {
         if (isset($termek['cikkszam'], $termek['megrendelesId'], $termek['newQuantity'])) {
@@ -27,7 +25,6 @@ if (!empty($input['items']) && is_array($input['items'])) {
     }
 }
 
-// Rendelés státuszának frissítése
 if (!empty($input['megrendelesId']) && isset($input['newStatus'])) {
     $megrendelesId = intval($input['megrendelesId']);
     $status = $input['newStatus'];
@@ -44,17 +41,15 @@ if (!empty($input['megrendelesId']) && isset($input['newStatus'])) {
         } else {
             $response["success"] = true;
             include './email_kuldes.php';
-            if($status == "Törölve"){
+            if ($status == "Törölve") {
                 kuldRendelesTorles($ered[0]["email"], $ered[0]["nev"], $megrendelesId);
-            }
-            else{
+            } else {
                 kuldRendelesStatuszValtozas($ered[0]["email"], $ered[0]["nev"], $megrendelesId, $status);
             }
         }
     }
 }
 
-// Szállítási és számlázási címek frissítése
 if (isset($input["details"]["szallitas"]) && isset($input["details"]["szamlazas"])) {
     $irsz = $input["details"]["szallitas"]["irsz"];
     $telepules = $input["details"]["szallitas"]["telepules"];
@@ -76,7 +71,6 @@ if (isset($input["details"]["szallitas"]) && isset($input["details"]["szamlazas"
     }
 }
 
-// Ha egyetlen művelet sem volt sikeres, adjunk vissza hibaüzenetet
 if (!$response["success"]) {
     $response["messages"][] = "Nem történt változtatás!";
 } else {

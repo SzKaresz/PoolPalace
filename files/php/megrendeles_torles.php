@@ -26,8 +26,8 @@ BEGIN
     END IF;
 END;";
 
-    adatokValtoztatasa($dropTrigger);  
-    adatokValtoztatasa($createTrigger);  
+    adatokValtoztatasa($dropTrigger);
+    adatokValtoztatasa($createTrigger);
 
     $eredmeny = adatokValtoztatasa($sql_leker);
     if ($eredmeny === "Sikeres művelet!") {

@@ -1,6 +1,4 @@
 <?php
-
-//SQL function lekérdezésekhez:
 function adatokLekerdezese($muvelet) {
     $db = new mysqli ('localhost', 'root', '', 'poolpalace');
     if ($db->connect_errno == 0 ) {
@@ -20,8 +18,6 @@ function adatokLekerdezese($muvelet) {
     }
 }
 
-
-//SQL function módosításhoz:
 function adatokValtoztatasa($muvelet) {
     $db = new mysqli ('localhost', 'root', '', 'poolpalace');
     if ($db->connect_errno == 0 ) {
@@ -43,6 +39,4 @@ function adatokValtoztatasa($muvelet) {
         return $db->connect_error;
     }
 }
-
-
 ?>

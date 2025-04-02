@@ -1,24 +1,22 @@
 <?php
 ob_start();
-include './session.php'; // Munkamenet kezelés (ha kell)
-include 'db.php';      // Adatbázis kapcsolat
+include './session.php';
+include 'db.php';
 
 // Cikkszám lekérése az URL-ből
 if (!isset($_GET['cikkszam'])) {
-    header('Location: termekek.php'); // Visszairányítás, ha nincs cikkszám
+    header('Location: termekek.php');
     exit();
 }
 $cikkszam = htmlspecialchars($_GET['cikkszam']);
 
-// Termékadatok lekérdezése
-// MOST MÁR BIZTOSAN KELL A 'darabszam' (vagy a tényleges készlet oszlop neve)
 $query = "SELECT
-            t.nev, t.leiras, t.egysegar, t.akcios_ar, t.darabszam AS keszlet, -- Itt a keszlet oszlop aliassal
+            t.nev, t.leiras, t.egysegar, t.akcios_ar, t.darabszam AS keszlet,
             gy.nev AS gyarto_nev,
-            kat.nev AS kategoria_nev -- Feltételezett 'kategoria_nev' a JOIN-ból
+            kat.nev AS kategoria_nev
           FROM termekek t
           LEFT JOIN gyarto gy ON gy.id = t.gyarto_id
-          LEFT JOIN kategoria kat ON kat.id = t.kategoria_id -- Feltételezett JOIN kategóriára
+          LEFT JOIN kategoria kat ON kat.id = t.kategoria_id
           WHERE t.cikkszam = ?";
 
 $stmt = $db->prepare($query);
@@ -27,20 +25,16 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
-    // Ide egy szebb hibaoldal vagy üzenet kellene
     echo "A termék nem található.";
-    // include './footer.php'; // esetleg footer itt is?
     exit();
 }
 $termek = $result->fetch_assoc();
-$max_keszlet = (int)($termek['keszlet'] ?? 0); // Maximális rendelhető mennyiség
+$max_keszlet = (int)($termek['keszlet'] ?? 0);
 
-// Készletlogika
 $raktaron = $max_keszlet > 0;
 $keszlet_szoveg = $raktaron ? "Raktáron" : "Nincs készleten";
 $keszlet_class = $raktaron ? "text-success" : "text-danger";
 
-// Képek keresése (marad a régi logika)
 $kepek = [];
 $alap_kep_fajlnev = $cikkszam . ".webp";
 $kep_teljes_ut = "../img/termekek/$alap_kep_fajlnev";
@@ -54,22 +48,16 @@ for ($i = 1; $i <= 5; $i++) {
         $kepek[] = $kep_fajlnev;
     }
 }
-// Ha egyáltalán nincs kép, tegyünk be egy placeholder-t
+
 if (empty($kepek)) {
     $placeholder_kep = 'placeholder.webp';
     $placeholder_ut = "../img/termekek/$placeholder_kep";
     if (file_exists($placeholder_ut) && is_readable($placeholder_ut)) {
         $kepek[] = $placeholder_kep;
-    } else {
-        // Végső esetben ne legyen kép, vagy írjunk ki hibát
-        // $kepek[] = 'ures.png'; // Valami nagyon alap kép
     }
 }
 
-// Kategória linkek
 $kategoria_nev = $termek['kategoria_nev'] ?? "Termékek";
-// Jó lenne, ha a kategóriának lenne egy 'slug'-ja vagy ID-ja az URL-hez
-// Példa ID-val: $kategoria_link = "termekek.php?kategoria_id=" . ($termek['kategoria_id'] ?? 0);
 $kategoria_link = "termekek.php?kategoria=" . urlencode($kategoria_nev);
 
 ?>
@@ -89,7 +77,7 @@ $kategoria_link = "termekek.php?kategoria=" . urlencode($kategoria_nev);
 
 <body>
 
-    <?php include './navbar.php'; // Navbar betöltése 
+    <?php include './navbar.php';
     ?>
 
     <div class="container mt-4 mb-5">
@@ -116,7 +104,7 @@ $kategoria_link = "termekek.php?kategoria=" . urlencode($kategoria_nev);
                             <?php endforeach; ?>
                         </div>
 
-                        <?php if (count($kepek) > 1): // Csak akkor kellenek a vezérlők, ha több kép van 
+                        <?php if (count($kepek) > 1):
                         ?>
                             <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -129,7 +117,7 @@ $kategoria_link = "termekek.php?kategoria=" . urlencode($kategoria_nev);
                         <?php endif; ?>
                     </div>
 
-                    <?php if (count($kepek) > 1): // Bélyegképek, ha több kép van 
+                    <?php if (count($kepek) > 1):
                     ?>
                         <div class="carousel-thumbnails d-flex flex-wrap justify-content-center gap-2">
                             <?php foreach ($kepek as $index => $kep): ?>
@@ -178,7 +166,7 @@ $kategoria_link = "termekek.php?kategoria=" . urlencode($kategoria_nev);
                         <?= $keszlet_szoveg ?> <?= $raktaron ? "($max_keszlet db)" : "" ?>
                     </div>
 
-                    <?php if ($raktaron): // Csak akkor jelenítjük meg a kosár részt, ha van készleten 
+                    <?php if ($raktaron):
                     ?>
                         <div class="add-to-cart-section bg-light p-3 rounded border mb-4"
                             id="product-<?= $cikkszam ?>"
@@ -223,7 +211,7 @@ $kategoria_link = "termekek.php?kategoria=" . urlencode($kategoria_nev);
                             </h2>
                             <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#descriptionAccordion">
                                 <div class="accordion-body">
-                                    <?php echo nl2br(htmlspecialchars($termek['leiras'])); // nl2br megtartja a sortöréseket 
+                                    <?php echo nl2br(htmlspecialchars($termek['leiras']));
                                     ?>
                                     <?php if (empty($termek['leiras'])) {
                                         echo "Nincs elérhető leírás ehhez a termékhez.";
@@ -238,11 +226,10 @@ $kategoria_link = "termekek.php?kategoria=" . urlencode($kategoria_nev);
     </div>
     <div id="toast-container"></div>
 
-    <?php include './footer.php'; // Footer betöltése 
+    <?php include './footer.php';
     ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <?php ob_end_flush(); ?>
 </body>
-
 </html>

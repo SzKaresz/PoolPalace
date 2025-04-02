@@ -66,21 +66,18 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
             $uj_jelszo = $_POST['jelszo'];
             $uj_jelszo_megerositett = $_POST['jelszo-ujra'];
 
-            // Ellenőrizzük, hogy minden mező ki van-e töltve
             if (empty($uj_jelszo) || empty($uj_jelszo_megerositett) || empty($email)) {
                 $_SESSION['hiba'] = "Minden mezőt ki kell tölteni!";
                 header('Location: ' . $_SERVER['PHP_SELF'] . '?email=' . urlencode($email));
                 exit;
             }
 
-            // Ellenőrizzük, hogy az új jelszavak megegyeznek-e
             if ($uj_jelszo !== $uj_jelszo_megerositett) {
                 $_SESSION['hiba'] = "Az új jelszavak nem egyeznek meg!";
                 header('Location: ' . $_SERVER['PHP_SELF'] . '?email=' . urlencode($email));
                 exit;
             }
 
-            // Ellenőrizzük, hogy az új jelszó nem egyezik az aktuális jelszóval
             $jelenlegi_stmt = $db->prepare("SELECT jelszo FROM felhasznalok WHERE email = ?");
             if (!$jelenlegi_stmt) {
                 $_SESSION['hiba'] = "Adatbázis hiba: " . $db->error;
@@ -101,7 +98,6 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                 exit;
             }
 
-            // Ha minden rendben, akkor frissítjük a jelszót
             $uj_jelszo_hash = password_hash($uj_jelszo, PASSWORD_DEFAULT);
             $update_stmt = $db->prepare("UPDATE felhasznalok SET jelszo = ? WHERE email = ?");
             if (!$update_stmt) {

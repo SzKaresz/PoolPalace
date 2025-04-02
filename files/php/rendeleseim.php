@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_email'])) {
 
 $user_email = $_SESSION['user_email'];
 
-// Rendelések lekérése
 $stmt = $db->prepare("SELECT id, datum, osszeg, szallit_irsz, szallit_telep, szallit_cim, statusz FROM megrendeles WHERE email = ? ORDER BY datum DESC");
 $stmt->bind_param("s", $user_email);
 $stmt->execute();

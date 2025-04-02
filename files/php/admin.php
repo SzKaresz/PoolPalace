@@ -48,36 +48,36 @@
 
 
     <div class="modal fade" id="kepModal" tabindex="-1" aria-labelledby="kepModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen-sm-down" >
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="kepModalLabel">Termék képei</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
-            </div>
-            <div class="modal-body">
-                <div id="productCarousel" class="carousel slide mb-3 mx-auto" data-bs-ride="false" data-bs-interval="false">
-                    <div class="carousel-inner bg-light rounded border" id="carouselImages">
-                        </div>
-
-                    <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Előző</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Következő</span>
-                    </button>
-
-                    <div class="carousel-thumbnails d-flex flex-wrap justify-content-center gap-2" id="carouselThumbnails">
-                        </div>
+        <div class="modal-dialog modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="kepModalLabel">Termék képei</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
+                <div class="modal-body">
+                    <div id="productCarousel" class="carousel slide mb-3 mx-auto" data-bs-ride="false" data-bs-interval="false">
+                        <div class="carousel-inner bg-light rounded border" id="carouselImages">
+                        </div>
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Előző</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Következő</span>
+                        </button>
+
+                        <div class="carousel-thumbnails d-flex flex-wrap justify-content-center gap-2" id="carouselThumbnails">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
 
@@ -102,9 +102,7 @@
         </div>
     </div>
 
-    <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
-
 </html>

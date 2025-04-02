@@ -1,7 +1,5 @@
 <?php
 include './db.php';
-
-// JSON válasz beállítása
 header('Content-Type: application/json');
 
 function formatPrice($price)
@@ -9,21 +7,17 @@ function formatPrice($price)
     return number_format($price, 0, ',', ' ') . ' Ft';
 }
 
-// JSON kérés feldolgozása
 $input = json_decode(file_get_contents('php://input'), true);
 
-// Aktuális oldal és limit
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $items_per_page = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
 
 $offset = ($page - 1) * $items_per_page;
 
-// **Szűrési paraméterek kezelése**
 $whereClauses = [];
 $params = [];
 $types = "";
 
-// Kategóriák szűrése
 if (!empty($_GET['kategoriak'])) {
     $kategoriak = explode(",", $_GET['kategoriak']);
     $placeholders = implode(",", array_fill(0, count($kategoriak), "?"));
@@ -32,7 +26,6 @@ if (!empty($_GET['kategoriak'])) {
     $types .= str_repeat("s", count($kategoriak));
 }
 
-// Gyártók szűrése
 if (!empty($_GET['gyartok'])) {
     $gyartok = explode(",", $_GET['gyartok']);
     $placeholders = implode(",", array_fill(0, count($gyartok), "?"));
@@ -41,7 +34,6 @@ if (!empty($_GET['gyartok'])) {
     $types .= str_repeat("s", count($gyartok));
 }
 
-// Ár szűrése
 if (isset($_GET['fromprice']) && isset($_GET['toprice'])) {
     $whereClauses[] = "egysegar BETWEEN ? AND ?";
     $params[] = (float)$_GET['fromprice'];
@@ -49,8 +41,6 @@ if (isset($_GET['fromprice']) && isset($_GET['toprice'])) {
     $types .= "dd";
 }
 
-
-// Keresés szűrése
 if (!empty($_GET['kereses'])) {
     $whereClauses[] = "(t.nev LIKE ? or t.cikkszam LIKE ?)";
     $keresesParam = '%' . $_GET['kereses'] . '%';
@@ -60,10 +50,8 @@ if (!empty($_GET['kereses'])) {
 }
 
 
-// **SQL WHERE feltételek összeállítása**
 $whereSQL = !empty($whereClauses) ? "WHERE " . implode(" AND ", $whereClauses) : "";
 
-// **Összes termék számának lekérdezése a szűrés figyelembevételével**
 $total_query = $db->prepare("SELECT COUNT(*) AS total FROM termekek t $whereSQL");
 if (!empty($params)) {
     $total_query->bind_param($types, ...$params);
@@ -72,7 +60,6 @@ $total_query->execute();
 $total_result = $total_query->get_result();
 $total_items = $total_result->fetch_assoc()['total'] ?? 0;
 
-// **Rendezési beállítások**
 $sort = isset($_GET['sort']) ? $_GET['sort'] : '';
 $orderSQL = "";
 
@@ -93,7 +80,6 @@ if ($sort === "kiemelt") {
     $orderSQL = "ORDER BY (t.akcios_ar > -1 AND t.akcios_ar < t.egysegar) DESC, CASE WHEN t.akcios_ar > -1 THEN t.akcios_ar ELSE t.egysegar END ASC";
 }
 
-// **Frissített SQL lekérdezés**
 $sql = "SELECT 
     t.cikkszam, t.nev, t.egysegar, t.akcios_ar, t.leiras, 
     k.nev AS kategoria_nev, g.nev AS gyarto_nev, t.darabszam,

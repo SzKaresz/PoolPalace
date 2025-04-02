@@ -3,7 +3,6 @@
 ob_start();
 include './session.php';
 
-// Kosárban lévő termékek számának lekérése
 $termekekSzama = 0;
 
 if (isset($_SESSION['user_email'])) {
@@ -30,13 +29,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <img src="../img/logo.png" alt="PoolPalace">
         </a>
 
-        <!-- Hamburger gomb kis képernyőn -->
         <button class="navbar-toggler d-xl-none" type="button"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Navigáció: Bootstrap collapse, automatikusan nyitva desktopon -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item <?php echo ($current_page === 'index.php') ? 'active' : ''; ?>">
@@ -51,7 +48,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </ul>
         </div>
 
-        <!-- Egyetlen kereső űrlap: mindenhol jelen van, de a CSS vezérli a láthatóságát -->
         <form id="searchForm" onsubmit="redirectToProducts(event)" method="GET" class="search-container">
             <input type="text" name="query" id="keresomezo" placeholder="Keresés..." class="form-control" />
             <button type="submit" class="btn search-btn" id="kereses_button">
@@ -65,17 +61,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 let ertek = document.getElementById("keresomezo").value.trim();
 
                 if (ertek !== "") {
-                    localStorage.setItem("keresesErtek", ertek); // 🔹 MENTÉS LocalStorage-ba
+                    localStorage.setItem("keresesErtek", ertek);
                 } else {
-                    localStorage.removeItem("keresesErtek"); // 🔹 Ha üres, töröljük
+                    localStorage.removeItem("keresesErtek");
                 }
 
-                window.location.href = "./termekek.php"; // 🔹 Átirányítás a termékoldalra
+                window.location.href = "./termekek.php";
             }
         </script>
-        <!-- Jobb oldali ikonok -->
+
         <div class="ms-auto d-flex align-items-center">
-            <!-- Mobil kereső ikon: most itt, kosár előtt -->
             <div class="d-flex d-xl-none search-icon" onclick="toggleSearch()">
                 <img src="../img/search.png" alt="Keresés">
             </div>
@@ -140,14 +135,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
 
         toggleButton.addEventListener("click", function() {
             if (navbarMenu.classList.contains("show")) {
-                navbarMenu.style.height = "0px"; // Összecsukás
+                navbarMenu.style.height = "0px";
                 setTimeout(() => {
                     navbarMenu.classList.remove("show");
                     navbarMenu.style.opacity = "0";
-                }, 300); // Várunk az animáció végéig
+                }, 300);
             } else {
                 navbarMenu.classList.add("show");
-                navbarMenu.style.height = navbarMenu.scrollHeight + "px"; // Dinamikus nyitás
+                navbarMenu.style.height = navbarMenu.scrollHeight + "px";
                 navbarMenu.style.opacity = "1";
             }
         });
@@ -180,12 +175,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
         const searchForm = document.getElementById('searchForm');
 
         if (searchForm.classList.contains('active')) {
-            searchForm.style.height = "0px"; // Összecsukás animálva
+            searchForm.style.height = "0px";
             searchForm.style.opacity = "0";
-            setTimeout(() => searchForm.classList.remove('active'), 300); // 300ms után eltávolítjuk az active osztályt
+            setTimeout(() => searchForm.classList.remove('active'), 300);
         } else {
             searchForm.classList.add('active');
-            searchForm.style.height = "50px"; // Lenyitás animálva
+            searchForm.style.height = "50px";
             searchForm.style.opacity = "1";
         }
     }

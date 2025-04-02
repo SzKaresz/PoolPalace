@@ -11,7 +11,6 @@ $gyarto = $_POST["gyarto_id"];
 $kategoria = $_POST["kategoria_id"];
 
 
-// Ellenőrzés, hogy minden adat megvan-e
 if (!empty($nev) && !empty($cikkszam) && !empty($leiras) && !empty($ar) && !empty($gyarto) && !empty($kategoria)) {
 
     $idellen = "SELECT * FROM `termekek` WHERE cikkszam=$cikkszam";
@@ -29,11 +28,11 @@ if (!empty($nev) && !empty($cikkszam) && !empty($leiras) && !empty($ar) && !empt
             $uploadDir = '../img/termekek/';
             if (!empty($_FILES['productImages']['name'][0])) {
                 foreach ($_FILES['productImages']['tmp_name'] as $key => $tmpName) {
-                    $fileName = basename($_FILES['productImages']['name'][$key]); // Egyedi fájlnév
+                    $fileName = basename($_FILES['productImages']['name'][$key]);
                     $targetFilePath = $uploadDir . $fileName;
 
                     if (move_uploaded_file($tmpName, $targetFilePath)) {
-                        $kepek[] = $fileName; // Sikeres feltöltés esetén mentjük a fájlnevet
+                        $kepek[] = $fileName;
                     }
                 }
             }
