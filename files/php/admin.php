@@ -90,7 +90,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="leirasMegseBtn" data-bs-dismiss="modal">Mégse</button>
-                    <button type="button" class="btn btn-warning" id="leirasTartalomTorlesBtn">Törlés</button>
+                    <button type="button" class="btn btn-danger" id="leirasTartalomTorlesBtn">Törlés</button>
                     <button type="button" class="btn btn-primary" id="leirasMenteseBtn">Mentés</button>
                 </div>
             </div>
