@@ -182,6 +182,7 @@ function loadProducts(page = 1, sortType = '') {
     const kategoriaParam = urlParams.get("kategoria");
     if (kategoriaParam && kategoriaParam !== "") {
         queryParams.set("kategoriak", kategoriaParam);
+        kivalasztottSzurok.kategoriak = new Set([kategoriaParam]);
     }
 
     if (sortType) {
@@ -661,6 +662,7 @@ function initEventListeners() {
 
     document.getElementById('clear-filters').addEventListener('click', function () {
         localStorage.removeItem("keresesErtek");
+
         document.querySelectorAll('input[name="kategoriak"], input[name="gyartok"]').forEach(checkbox => {
             checkbox.checked = false;
         });
@@ -676,6 +678,11 @@ function initEventListeners() {
 
         kategoriaFeltolt();
         gyartoFeltolt();
+
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete('kategoria');
+        history.replaceState({}, '', newUrl);
+
         loadProducts(1);
     });
 }

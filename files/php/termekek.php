@@ -32,7 +32,7 @@ ob_start();
                     </div>
                 </div>
                 <div class="szuroContent">
-                    <a href="javascript:void(0)" id="clear-filters" class="clear-filters-link">Paraméterek és keresés törlése</a>
+                    <a href="javascript:void(0)" id="clear-filters" class="clear-filters-link">Paraméterek törlése</a>
                     <form id="szures_form" method="post">
                         <div class="szuroSector kategoriak">
                             <div id="kategoriak"></div>
