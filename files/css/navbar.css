@@ -42,6 +42,10 @@
     justify-content: center;
 }
 
+.form-control:focus {
+    box-shadow: none !important;
+}
+
 .nav-icons {
     display: flex;
     align-items: center;
