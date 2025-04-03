@@ -42,14 +42,14 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                 <h4>Új jelszó</h4>
                 <div class="mb-3">
                     <div class="input-group">
-                        <span class="input-group-text"><img src="../img/jelszo.png" class="jelszo-logo" alt="Jelszó"></span>
-                        <input type="password" class="form-control" id="uj-jelszo" name="jelszo" placeholder="Új jelszó *">
+                        <span class="input-group-text required-icon"><img src="../img/jelszo.png" class="jelszo-logo" alt="Jelszó"></span>
+                        <input type="password" class="form-control" id="uj-jelszo" name="jelszo" placeholder="Új jelszó">
                     </div>
                 </div>
                 <div class="mb-3">
                     <div class="input-group">
-                        <span class="input-group-text"><img src="../img/jelszo_ujra.png" class="jelszo-ujra-logo" alt="Jelszó megerősítése"></span>
-                        <input type="password" class="form-control" id="uj-jelszo-ismet" name="jelszo-ujra" placeholder="Új jelszó megerősítése *">
+                        <span class="input-group-text required-icon"><img src="../img/jelszo_ujra.png" class="jelszo-ujra-logo" alt="Jelszó megerősítése"></span>
+                        <input type="password" class="form-control" id="uj-jelszo-ismet" name="jelszo-ujra" placeholder="Új jelszó megerősítése">
                     </div>
                 </div>
                 <button type="submit" class="mt-3 btn btn-primary">Módosítás</button>
