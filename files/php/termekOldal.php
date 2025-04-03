@@ -98,7 +98,7 @@ $kategoria_link = "termekek.php?kategoria=" . urlencode($kategoria_nev);
                             <?php foreach ($kepek as $index => $kep): ?>
                                 <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
                                     <img src="../img/termekek/<?php echo $kep; ?>"
-                                        class="d-block w-100 product-main-image"
+                                        class="d-block w-100 product-main-image zoomable-image"
                                         alt="<?php echo htmlspecialchars($termek['nev']) . ' - kép ' . ($index + 1); ?>">
                                 </div>
                             <?php endforeach; ?>
@@ -226,7 +226,19 @@ $kategoria_link = "termekek.php?kategoria=" . urlencode($kategoria_nev);
         </div>
     </div>
     <div id="toast-container"></div>
-
+    <div class="modal fade" id="imageZoomModal" tabindex="-1" aria-labelledby="imageZoomModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageZoomModalLabel">Termékkép</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+                </div>
+                <div class="modal-body d-flex justify-content-center align-items-center">
+                    <img id="zoomedImage" src="" alt="Nagyított termékkép">
+                </div>
+            </div>
+        </div>
+    </div>
     <?php include './footer.php';
     ?>
 

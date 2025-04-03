@@ -88,36 +88,36 @@ document.addEventListener('DOMContentLoaded', function () {
                     mennyiseg: quantityToAdd
                 })
             })
-            .then(res => {
-                 if (!res.ok) { throw new Error(`HTTP error! status: ${res.status}`); }
-                 return res.json();
-            })
-            .then(data => {
-                if (data && data.success) {
-                    updateCartCount();
-                    if (typeof animateToCart === 'function') animateToCart(event);
+                .then(res => {
+                    if (!res.ok) { throw new Error(`HTTP error! status: ${res.status}`); }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data && data.success) {
+                        updateCartCount();
+                        if (typeof animateToCart === 'function') animateToCart(event);
 
-                    quantityInput.value = 1;
-                    updateQuantityButtons();
+                        quantityInput.value = 1;
+                        updateQuantityButtons();
 
-                    if (typeof data.uj_kosar_mennyiseg_termek !== "undefined") {
-                        productContainer.dataset.inCartQuantity = data.uj_kosar_mennyiseg_termek;
+                        if (typeof data.uj_kosar_mennyiseg_termek !== "undefined") {
+                            productContainer.dataset.inCartQuantity = data.uj_kosar_mennyiseg_termek;
+                        } else {
+                            productContainer.dataset.inCartQuantity = quantityInCart + quantityToAdd;
+                        }
+
                     } else {
-                        productContainer.dataset.inCartQuantity = quantityInCart + quantityToAdd;
+                        showToast(data?.error || "Nem sikerült a terméket kosárba tenni.", "danger");
                     }
-
-                } else {
-                    showToast(data?.error || "Nem sikerült a terméket kosárba tenni.", "danger");
-                }
-            })
-            .catch(error => {
-                console.error("Hiba a kosárba helyezéskor:", error);
-                showToast("Hálózati hiba vagy szerverhiba történt a kosárba helyezéskor.", "danger");
-            })
-            .finally(() => {
-                addToCartBtn.disabled = false;
-                addToCartBtn.innerHTML = `<img src="../img/cart.png" class="cart-icon-img" alt="Kosár"> Kosárba`;
-            });
+                })
+                .catch(error => {
+                    console.error("Hiba a kosárba helyezéskor:", error);
+                    showToast("Hálózati hiba vagy szerverhiba történt a kosárba helyezéskor.", "danger");
+                })
+                .finally(() => {
+                    addToCartBtn.disabled = false;
+                    addToCartBtn.innerHTML = `<img src="../img/cart.png" class="cart-icon-img" alt="Kosár"> Kosárba`;
+                });
         }
 
         plusBtn.addEventListener('click', () => handleCounterChange(1));
@@ -139,34 +139,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { "Content-Type": "application/json", "Accept": "application/json" },
                 body: JSON.stringify({ action: "getCart" })
             })
-            .then(res => {
-                 if (!res.ok) { throw new Error(`HTTP error! status: ${res.status}`); }
-                 return res.json();
-            })
-            .then(data => {
-                let actualInCart = 0;
-                if (data.success && Array.isArray(data.kosar)) {
-                    const foundItem = data.kosar.find(item => item.termek_id === cikkszam);
-                    if (foundItem) {
-                        actualInCart = parseInt(foundItem.darabszam || '0');
+                .then(res => {
+                    if (!res.ok) { throw new Error(`HTTP error! status: ${res.status}`); }
+                    return res.json();
+                })
+                .then(data => {
+                    let actualInCart = 0;
+                    if (data.success && Array.isArray(data.kosar)) {
+                        const foundItem = data.kosar.find(item => item.termek_id === cikkszam);
+                        if (foundItem) {
+                            actualInCart = parseInt(foundItem.darabszam || '0');
+                        }
+                    } else if (data.success === false) {
+                        console.log("Kosár lekérése sikertelen (pl. nincs bejelentkezve?), inicializálás 0-val.");
+                        actualInCart = 0;
+                    } else {
+                        console.warn("Váratlan válasz a kosár lekérésekor, inicializálás 0-val.");
+                        actualInCart = 0;
                     }
-                } else if (data.success === false) {
-                      console.log("Kosár lekérése sikertelen (pl. nincs bejelentkezve?), inicializálás 0-val.");
-                      actualInCart = 0;
-                 } else {
-                      console.warn("Váratlan válasz a kosár lekérésekor, inicializálás 0-val.");
-                      actualInCart = 0;
-                 }
-                productContainer.dataset.inCartQuantity = actualInCart;
+                    productContainer.dataset.inCartQuantity = actualInCart;
 
-                quantityInput.value = 1;
-                updateQuantityButtons();
-            })
-            .catch(error => {
-                 console.error("Hiba a kosár tartalmának kezdeti lekérésekor:", error);
-                 quantityInput.value = 1;
-                 updateQuantityButtons();
-            });
+                    quantityInput.value = 1;
+                    updateQuantityButtons();
+                })
+                .catch(error => {
+                    console.error("Hiba a kosár tartalmának kezdeti lekérésekor:", error);
+                    quantityInput.value = 1;
+                    updateQuantityButtons();
+                });
         }
 
         initializeQuantity();
@@ -197,29 +197,131 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     setupCarousel();
 
-     function updateCartCountOnLoad() {
+    function updateCartCountOnLoad() {
         if (typeof updateCartCount === 'function') {
             updateCartCount();
         }
-     }
-     updateCartCountOnLoad();
+    }
+    updateCartCountOnLoad();
+
+    const imageZoomModalElement = document.getElementById('imageZoomModal');
+    const zoomedImage = document.getElementById('zoomedImage');
+    const productCarouselElement = document.getElementById('productCarousel');
+    const modalBody = imageZoomModalElement ? imageZoomModalElement.querySelector('.modal-body') : null;
+
+    let imageZoomModalInstance = null;
+    if (imageZoomModalElement) {
+        imageZoomModalInstance = new bootstrap.Modal(imageZoomModalElement);
+    }
+
+    let isDragging = false;
+    let startX, startY;
+    let initialImageX = 0;
+    let initialImageY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    if (productCarouselElement && zoomedImage && imageZoomModalInstance) {
+        productCarouselElement.addEventListener('click', function (event) {
+            const activeItem = productCarouselElement.querySelector('.carousel-item.active');
+            if (!activeItem) return;
+
+            const clickedImage = event.target.closest('.zoomable-image');
+
+            if (clickedImage && activeItem.contains(clickedImage)) {
+                event.preventDefault();
+                zoomedImage.style.transform = 'translate(0px, 0px)';
+                initialImageX = 0;
+                initialImageY = 0;
+                currentX = 0;
+                currentY = 0;
+                zoomedImage.src = clickedImage.src;
+                imageZoomModalInstance.show();
+            }
+        });
+    }
+
+    if (modalBody && zoomedImage) {
+        modalBody.addEventListener('mousedown', (e) => {
+            if (zoomedImage.offsetWidth > modalBody.clientWidth || zoomedImage.offsetHeight > modalBody.clientHeight) {
+                isDragging = true;
+                startX = e.pageX;
+                startY = e.pageY;
+                initialImageX = currentX;
+                initialImageY = currentY;
+                modalBody.classList.add('zoomed-image-dragging');
+                e.preventDefault();
+            }
+        });
+
+        modalBody.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const dx = e.pageX - startX;
+            const dy = e.pageY - startY;
+
+            currentX = initialImageX + dx;
+            currentY = initialImageY + dy;
+
+            const imageWidth = zoomedImage.offsetWidth;
+            const imageHeight = zoomedImage.offsetHeight;
+            const bodyWidth = modalBody.clientWidth;
+            const bodyHeight = modalBody.clientHeight;
+
+            const maxX = imageWidth > bodyWidth ? (imageWidth - bodyWidth) / 2 : 0;
+            const minX = imageWidth > bodyWidth ? -(imageWidth - bodyWidth) / 2 : 0;
+            const maxY = imageHeight > bodyHeight ? (imageHeight - bodyHeight) / 2 : 0;
+            const minY = imageHeight > bodyHeight ? -(imageHeight - bodyHeight) / 2 : 0;
+
+            currentX = Math.max(minX, Math.min(maxX, currentX));
+            currentY = Math.max(minY, Math.min(maxY, currentY));
+
+            zoomedImage.style.transform = `translate(${currentX}px, ${currentY}px)`;
+        });
+
+        modalBody.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                modalBody.classList.remove('zoomed-image-dragging');
+            }
+        });
+
+        modalBody.addEventListener('mouseleave', () => {
+            if (isDragging) {
+                isDragging = false;
+                modalBody.classList.remove('zoomed-image-dragging');
+            }
+        });
+    }
+
+    if (imageZoomModalElement) {
+        imageZoomModalElement.addEventListener('hidden.bs.modal', () => {
+            isDragging = false;
+            if (modalBody) modalBody.classList.remove('zoomed-image-dragging');
+            if (zoomedImage) zoomedImage.style.transform = 'translate(0px, 0px)';
+            initialImageX = 0;
+            initialImageY = 0;
+            currentX = 0;
+            currentY = 0;
+        });
+    }
 
 });
 
 function getProductImageForAnimation() {
-       const firstThumbnail = document.querySelector(".carousel-thumbnails .thumbnail-item");
-       if (firstThumbnail) {
-           return firstThumbnail;
-       }
+    const firstThumbnail = document.querySelector(".carousel-thumbnails .thumbnail-item");
+    if (firstThumbnail) {
+        return firstThumbnail;
+    }
 
-       const firstCarouselImage = document.querySelector("#productCarousel .carousel-item img");
-       if (firstCarouselImage) {
-           return firstCarouselImage;
-       }
+    const firstCarouselImage = document.querySelector("#productCarousel .carousel-item img");
+    if (firstCarouselImage) {
+        return firstCarouselImage;
+    }
 
-       console.warn("Nem található kép az animációhoz.");
-       return null;
- }
+    console.warn("Nem található kép az animációhoz.");
+    return null;
+}
 
 function showToast(message, type = "danger") {
     let toastContainer = document.getElementById("toast-container");
@@ -296,48 +398,48 @@ function animateToCart(event) {
 }
 
 function updateCartCount() {
-     fetch("../php/kosarMuvelet.php", {
-         method: "POST",
-         headers: { "Content-Type": "application/json", "Accept": "application/json" },
-         body: JSON.stringify({ action: "getCount" })
-     })
-     .then(res => {
-         if (!res.ok) { console.error(`HTTP error! status: ${res.status}`); return null; }
-         return res.json();
-     })
-     .then(data => {
-         if (data && data.success) {
-             let cartCountElement = document.getElementById("cart-count");
-             const count = data.uj_mennyiseg || 0;
+    fetch("../php/kosarMuvelet.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ action: "getCount" })
+    })
+        .then(res => {
+            if (!res.ok) { console.error(`HTTP error! status: ${res.status}`); return null; }
+            return res.json();
+        })
+        .then(data => {
+            if (data && data.success) {
+                let cartCountElement = document.getElementById("cart-count");
+                const count = data.uj_mennyiseg || 0;
 
-             if (count > 0) {
-                 if (!cartCountElement) {
-                     const cartIcon = document.querySelector(".cart-icon");
-                     if (!cartIcon) { return; }
-                     cartCountElement = document.createElement("span");
-                     cartCountElement.id = "cart-count";
-                     cartCountElement.className = "badge rounded-pill bg-danger";
-                     cartCountElement.style.position = 'absolute';
-                     cartCountElement.style.top = '-5px';
-                     cartCountElement.style.right = '-10px';
-                     cartIcon.style.position = 'relative';
-                     cartIcon.appendChild(cartCountElement);
-                 }
-                 cartCountElement.textContent = count;
-                 cartCountElement.style.display = "inline-block";
-             } else {
-                 if (cartCountElement) {
-                     cartCountElement.style.display = "none";
-                 }
-             }
-         } else if (data && data.success === false) {
-              let cartCountElement = document.getElementById("cart-count");
-              if (cartCountElement) {
-                      cartCountElement.style.display = "none";
-              }
-         } else {
-              console.error("Érvénytelen válasz a kosárszám lekérésekor:", data);
-         }
-     })
-     .catch(error => console.error("Hiba a kosár darabszám frissítésekor:", error));
+                if (count > 0) {
+                    if (!cartCountElement) {
+                        const cartIcon = document.querySelector(".cart-icon");
+                        if (!cartIcon) { return; }
+                        cartCountElement = document.createElement("span");
+                        cartCountElement.id = "cart-count";
+                        cartCountElement.className = "badge rounded-pill bg-danger";
+                        cartCountElement.style.position = 'absolute';
+                        cartCountElement.style.top = '-5px';
+                        cartCountElement.style.right = '-10px';
+                        cartIcon.style.position = 'relative';
+                        cartIcon.appendChild(cartCountElement);
+                    }
+                    cartCountElement.textContent = count;
+                    cartCountElement.style.display = "inline-block";
+                } else {
+                    if (cartCountElement) {
+                        cartCountElement.style.display = "none";
+                    }
+                }
+            } else if (data && data.success === false) {
+                let cartCountElement = document.getElementById("cart-count");
+                if (cartCountElement) {
+                    cartCountElement.style.display = "none";
+                }
+            } else {
+                console.error("Érvénytelen válasz a kosárszám lekérésekor:", data);
+            }
+        })
+        .catch(error => console.error("Hiba a kosár darabszám frissítésekor:", error));
 }

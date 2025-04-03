@@ -176,6 +176,44 @@ body {
     color: #343a40;
 }
 
+.zoomable-image {
+    cursor: zoom-in;
+}
+
+#imageZoomModal .modal-dialog {
+   max-width: 90%;
+}
+
+#imageZoomModal .modal-content {
+    height: 90vh;
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+#imageZoomModal .modal-body {
+    overflow: hidden;
+    cursor: grab;
+    height: 100%;
+    padding: 5px;
+}
+
+#zoomedImage {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 150%;
+    max-height: 150%;
+    margin: auto;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-drag: none;
+    transition: transform 0.1s ease-out;
+}
+
+.zoomed-image-dragging,
+#imageZoomModal .modal-body.zoomed-image-dragging #zoomedImage {
+    cursor: grabbing !important;
+}
+
 @media (max-width: 991.98px) {
     .product-details {
         padding-left: 0;
