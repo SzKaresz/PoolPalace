@@ -1,0 +1,11 @@
+.original-price {
+    text-decoration: line-through;
+    color: red;
+}
+
+.discounted-price {
+    color: #22ff26;
+    font-weight: bold;
+    margin-left: 5px;
+    margin-right: 5px;
+}
