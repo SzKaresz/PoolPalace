@@ -121,11 +121,6 @@ h2 {
     text-align: left;
 }
 
-.row.d-flex.align-items-end.justify-content-between {
-    margin-top: 25px;
-    margin-bottom: 25px;
-}
-
 .checkout-btn, .delete-btn {
     background: #293144;
     color: white;

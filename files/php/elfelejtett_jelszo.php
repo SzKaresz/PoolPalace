@@ -51,7 +51,7 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
         <form id="urlap" method="POST">
             <div class="mb-3">
                 <div class="input-group">
-                    <span class="input-group-text">
+                    <span class="input-group-text required-icon">
                         <img src="../img/felhasznalo.png" alt="E-mail cím">
                     </span>
                     <input type="email" class="form-control" id="email" name="email" placeholder="E-mail cím" value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">

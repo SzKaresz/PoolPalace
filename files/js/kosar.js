@@ -215,16 +215,19 @@ function updateCartTotal() {
     const summary = document.querySelector(".cart-summary");
     const deletebtn = document.querySelector(".cart-delete");
     const emptyMessage = document.querySelector(".empty-cart-message");
+    const cartButtons = document.querySelector(".cart-btns");
 
     if (total === 0 || rows.length === 0) {
         if (table) table.style.display = "none";
         if (summary) summary.style.display = "none";
         if (deletebtn) deletebtn.style.display = "none";
+        if (cartButtons) cartButtons.style.display = "none";
         if (emptyMessage) emptyMessage.style.display = "block";
     } else {
         if (table) table.style.display = "table";
         if (summary) summary.style.display = "block";
         if (deletebtn) deletebtn.style.display = "block";
+        if (cartButtons) cartButtons.style.display = "flex";
         if (emptyMessage) emptyMessage.style.display = "none";
         totalElement.textContent = "Összesen: " + total.toLocaleString() + " Ft";
     }
