@@ -225,7 +225,6 @@ function handleMegseClick(row, cikkszam, megseButton) {
         delete row.dataset.originalButtons;
     }
 }
-
 async function handleMentesClick(row, cikkszam, mentesButton) {
     const buttonCell = row.querySelector('td:last-child');
 
@@ -244,7 +243,7 @@ async function handleMentesClick(row, cikkszam, mentesButton) {
 
     mentesButton.disabled = false;
 
-    if (mentesEredmeny.success) {
+    if (mentesEredmeny.status=="success") {
         row.querySelectorAll('input').forEach(input => {
             input.readOnly = true;
         });
@@ -254,6 +253,7 @@ async function handleMentesClick(row, cikkszam, mentesButton) {
             delete leirasInput.dataset.clickable;
         }
 
+        // Az eredeti gombok visszaállítása
         if (row.dataset.originalButtons) {
             buttonCell.innerHTML = row.dataset.originalButtons;
             delete row.dataset.originalButtons;
@@ -267,6 +267,7 @@ async function handleMentesClick(row, cikkszam, mentesButton) {
         mentesButton.innerHTML = '<img src="../img/save.png" alt="Mentés" width="20">';
     }
 }
+
 
 async function handleKepekClick(cikkszam) {
     const kepModalElement = document.getElementById('kepModal');
@@ -575,7 +576,8 @@ async function adatMentes(adatok) {
             body: JSON.stringify(adatok)
         }));
         let valasz = await keres.json();
-        let szin = (valasz.success) ? "success" : "danger";
+        console.log(valasz)
+        let szin = (valasz.status =="success") ? "success" : "danger";
         showToast(valasz.message || (valasz.success ? "Sikeres mentés!" : "Mentés sikertelen!"), szin);
         return valasz;
     } catch (error) {
