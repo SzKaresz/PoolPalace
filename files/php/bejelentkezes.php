@@ -81,7 +81,7 @@ ob_end_flush();
 
         <form id="urlap" method="POST">
             <div class="mb-3">
-                <div class="input-group">
+                <div class="inputMezo input-group">
                     <span class="input-group-text required-icon">
                         <img src="../img/felhasznalo.png" alt="E-mail cím">
                     </span>
@@ -90,7 +90,7 @@ ob_end_flush();
             </div>
 
             <div class="mb-3">
-                <div class="input-group">
+                <div class="inputMezo input-group">
                     <span class="input-group-text required-icon">
                         <img src="../img/jelszo.png" alt="Jelszó">
                     </span>

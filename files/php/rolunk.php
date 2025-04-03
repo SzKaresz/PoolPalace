@@ -73,7 +73,7 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
             </div>
             <form method="POST" style="width: 100%;" id="uzenetKuldes-urlap">
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text required-icon">
                             <img src="../img/felhasznalo.png" alt="Név">
                         </span>
@@ -82,7 +82,7 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text required-icon">
                             <img src="../img/email.png" alt="E-mail cím">
                         </span>
@@ -91,7 +91,7 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text">
                             <img src="../img/email_targy.png" alt="E-mail tárgya">
                         </span>
@@ -99,7 +99,7 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text">
                             <img src="../img/email_szoveg.png" alt="E-mail szövege">
                         </span>

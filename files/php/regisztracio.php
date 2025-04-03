@@ -44,28 +44,28 @@
             <div class="col-md-4">
                 <h4>Személyes adatok</h4>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text required-icon"><img src="../img/felhasznalo.png" class="felhasznalo-logo" alt="Név ikon"></span>
                         <input type="text" class="form-control" id="nev" name="nev" placeholder="Név">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text required-icon"><img src="../img/email.png" class="email-logo" alt="E-mail cím"></span>
                         <input type="email" class="form-control" id="email" name="email" placeholder="E-mail cím">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text required-icon"><img src="../img/jelszo.png" class="jelszo-logo" alt="Jelszó"></span>
                         <input type="password" class="form-control" id="jelszo" name="jelszo" placeholder="Jelszó">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text required-icon"><img src="../img/jelszo_ujra.png" class="jelszo-ujra-logo" alt="Jelszó megerősítése"></span>
                         <input type="password" class="form-control" id="jelszo-ujra" name="jelszo-ujra" placeholder="Jelszó megerősítése">
                         <span class="error"></span>
@@ -76,28 +76,28 @@
             <div class="col-md-4">
                 <h4>Szállítási adatok</h4>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/telefon.png" class="telefon-logo" alt="Telefon"></span>
                         <input type="tel" class="form-control" id="szall-telefon" name="szall-telefon" placeholder="Telefonszám">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/iranyitoszam.png" class="irszam-logo" alt="Irányítószám"></span>
                         <input type="text" class="form-control" id="szall-irszam" name="szall-irszam" placeholder="Irányítószám">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/telepules.png" class="telepules-logo" alt="Település"></span>
                         <input type="text" class="form-control" id="szall-telepules" name="szall-telepules" placeholder="Település">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/hazszam.png" class="hazszam-logo" alt="Utca és házszám"></span>
                         <input type="text" class="form-control" id="szall-cim" name="szall-cim" placeholder="Utca és házszám">
                         <span class="error"></span>
@@ -108,28 +108,28 @@
             <div class="col-md-4">
                 <h4>Számlázási adatok</h4>
                 <div id="szamlazas-checkbox-helye" class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/telefon.png" class="telefon-logo" alt="Telefon"></span>
                         <input type="tel" class="form-control" id="szam-telefon" name="szam-telefon" placeholder="Telefonszám">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/iranyitoszam.png" class="irszam-logo" alt="Irányítószám"></span>
                         <input type="text" class="form-control" id="szam-irszam" name="szam-irszam" placeholder="Irányítószám">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/telepules.png" class="telepules-logo" alt="Település"></span>
                         <input type="text" class="form-control" id="szam-telepules" name="szam-telepules" placeholder="Település">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/hazszam.png" class="hazszam-logo" alt="Utca és házszám"></span>
                         <input type="text" class="form-control" id="szam-cim" name="szam-cim" placeholder="Utca és házszám">
                         <span class="error"></span>
