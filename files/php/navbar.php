@@ -49,10 +49,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </div>
 
         <form id="searchForm" onsubmit="redirectToProducts(event)" method="GET" class="search-container">
-            <input type="text" name="query" id="keresomezo" placeholder="Keresés..." class="form-control" />
-            <button type="submit" class="btn search-btn" id="kereses_button">
-                <img src="../img/search.png" alt="Keresés">
-            </button>
+            <div class="input-group">
+                <input type="text" name="query" id="keresomezo" placeholder="Keresés..." class="form-control" />
+                <button id="remove" type="button" class="btn" onclick="document.getElementById('keresomezo').value = '';">
+                    X
+                </button>
+                <button type="submit" class="btn search-btn" id="kereses_button">
+                    <img src="../img/search.png" alt="Keresés">
+                </button>
+            </div>
         </form>
 
         <script>

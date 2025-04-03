@@ -212,6 +212,7 @@ function loadProducts(page = 1, sortType = '') {
     queryParams.set("toprice", toPrice);
 
     let keresesiErtek = localStorage.getItem("keresesErtek");
+    document.getElementById("keresomezo").value=keresesiErtek
     if (keresesiErtek) {
         queryParams.set("kereses", keresesiErtek);
 
@@ -661,7 +662,6 @@ function initEventListeners() {
     });
 
     document.getElementById('clear-filters').addEventListener('click', function () {
-        localStorage.removeItem("keresesErtek");
 
         document.querySelectorAll('input[name="kategoriak"], input[name="gyartok"]').forEach(checkbox => {
             checkbox.checked = false;
@@ -735,3 +735,8 @@ document.addEventListener("DOMContentLoaded", function () {
     initEventListeners();
     checkCartState();
 });
+
+document.getElementById("remove").addEventListener("click", function(){
+    localStorage.removeItem("keresesErtek");
+    loadProducts()
+})
