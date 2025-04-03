@@ -60,6 +60,20 @@ body{
     flex-basis: 100%;
 }
 
+.required-icon {
+    position: relative;
+}
+
+.required-icon::after {
+    content: "*";
+    color: red;
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: large;
+    font-weight: bold;
+}
+
 .input-group {
     margin-bottom: 15px;
 }
