@@ -214,6 +214,7 @@ document.addEventListener('DOMContentLoaded', function () {
         imageZoomModalInstance = new bootstrap.Modal(imageZoomModalElement);
     }
 
+    // Pan változók
     let isDragging = false;
     let startX, startY;
     let initialImageX = 0;
@@ -221,29 +222,76 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentX = 0;
     let currentY = 0;
 
+    // Zoom változók
+    let currentScale = 1;
+    const minScale = 1;     // Minimális nagyítás (eredeti méret)
+    const maxScale = 4;     // Maximális nagyítási szint (pl. 4x)
+    const zoomFactor = 1.1; // Nagyítás/kicsinyítés mértéke görgetésenként
+
+    // Eseménykezelő a carousel képekre kattintáshoz (változatlan)
     if (productCarouselElement && zoomedImage && imageZoomModalInstance) {
-        productCarouselElement.addEventListener('click', function (event) {
+        productCarouselElement.addEventListener('click', function(event) {
             const activeItem = productCarouselElement.querySelector('.carousel-item.active');
             if (!activeItem) return;
-
             const clickedImage = event.target.closest('.zoomable-image');
-
             if (clickedImage && activeItem.contains(clickedImage)) {
                 event.preventDefault();
-                zoomedImage.style.transform = 'translate(0px, 0px)';
-                initialImageX = 0;
-                initialImageY = 0;
+                // Reset zoom and pan on open
+                currentScale = 1;
                 currentX = 0;
                 currentY = 0;
+                initialImageX = 0;
+                initialImageY = 0;
+                zoomedImage.style.transformOrigin = 'center center'; // Alapértelmezett origó
+                zoomedImage.style.transform = 'translate(0px, 0px) scale(1)';
                 zoomedImage.src = clickedImage.src;
                 imageZoomModalInstance.show();
             }
         });
     }
 
+    // Egérgörgő eseménykezelő a zoomhoz (modal body-n)
     if (modalBody && zoomedImage) {
+        modalBody.addEventListener('wheel', (e) => {
+            e.preventDefault();
+
+            const rect = zoomedImage.getBoundingClientRect();
+
+            let newScale;
+            if (e.deltaY < 0) {
+                newScale = currentScale * zoomFactor;
+            } else {
+                newScale = currentScale / zoomFactor;
+            }
+
+            newScale = Math.max(minScale, Math.min(maxScale, newScale));
+
+            if (newScale === currentScale) {
+                return;
+            }
+
+            zoomedImage.style.transformOrigin = 'center center';
+
+            const oldScale = currentScale;
+            currentScale = newScale;
+
+            if (currentScale <= minScale) {
+                 currentX = 0;
+                 currentY = 0;
+            } else {
+                 currentX *= (currentScale / oldScale);
+                 currentY *= (currentScale / oldScale);
+                 const bounds = getPanBoundaries(zoomedImage, modalBody, currentScale);
+                 currentX = Math.max(bounds.minX, Math.min(bounds.maxX, currentX));
+                 currentY = Math.max(bounds.minY, Math.min(bounds.maxY, currentY));
+            }
+
+            zoomedImage.style.transform = `translate(${currentX}px, ${currentY}px) scale(${currentScale})`;
+
+        }, { passive: false });
+
         modalBody.addEventListener('mousedown', (e) => {
-            if (zoomedImage.offsetWidth > modalBody.clientWidth || zoomedImage.offsetHeight > modalBody.clientHeight) {
+            if (currentScale > minScale) {
                 isDragging = true;
                 startX = e.pageX;
                 startY = e.pageY;
@@ -263,20 +311,12 @@ document.addEventListener('DOMContentLoaded', function () {
             currentX = initialImageX + dx;
             currentY = initialImageY + dy;
 
-            const imageWidth = zoomedImage.offsetWidth;
-            const imageHeight = zoomedImage.offsetHeight;
-            const bodyWidth = modalBody.clientWidth;
-            const bodyHeight = modalBody.clientHeight;
+            const bounds = getPanBoundaries(zoomedImage, modalBody, currentScale);
 
-            const maxX = imageWidth > bodyWidth ? (imageWidth - bodyWidth) / 2 : 0;
-            const minX = imageWidth > bodyWidth ? -(imageWidth - bodyWidth) / 2 : 0;
-            const maxY = imageHeight > bodyHeight ? (imageHeight - bodyHeight) / 2 : 0;
-            const minY = imageHeight > bodyHeight ? -(imageHeight - bodyHeight) / 2 : 0;
+            currentX = Math.max(bounds.minX, Math.min(bounds.maxX, currentX));
+            currentY = Math.max(bounds.minY, Math.min(bounds.maxY, currentY));
 
-            currentX = Math.max(minX, Math.min(maxX, currentX));
-            currentY = Math.max(minY, Math.min(maxY, currentY));
-
-            zoomedImage.style.transform = `translate(${currentX}px, ${currentY}px)`;
+            zoomedImage.style.transform = `translate(${currentX}px, ${currentY}px) scale(${currentScale})`;
         });
 
         modalBody.addEventListener('mouseup', () => {
@@ -294,18 +334,40 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+     function getPanBoundaries(imageElement, containerElement, scale) {
+         const imageRect = imageElement.getBoundingClientRect();
+         const containerRect = containerElement.getBoundingClientRect();
+
+         const scaledWidth = imageRect.width;
+         const scaledHeight = imageRect.height;
+
+         const overflowX = scaledWidth - containerRect.width;
+         const overflowY = scaledHeight - containerRect.height;
+
+         const maxX = overflowX > 0 ? overflowX / 2 : 0;
+         const minX = overflowX > 0 ? -overflowX / 2 : 0;
+         const maxY = overflowY > 0 ? overflowY / 2 : 0;
+         const minY = overflowY > 0 ? -overflowY / 2 : 0;
+
+         return { minX, maxX, minY, maxY };
+     }
+
     if (imageZoomModalElement) {
         imageZoomModalElement.addEventListener('hidden.bs.modal', () => {
             isDragging = false;
-            if (modalBody) modalBody.classList.remove('zoomed-image-dragging');
-            if (zoomedImage) zoomedImage.style.transform = 'translate(0px, 0px)';
-            initialImageX = 0;
-            initialImageY = 0;
+            currentScale = 1;
             currentX = 0;
             currentY = 0;
+            initialImageX = 0;
+            initialImageY = 0;
+            if(modalBody) modalBody.classList.remove('zoomed-image-dragging');
+            if(zoomedImage) {
+                 zoomedImage.style.transformOrigin = 'center center';
+                 zoomedImage.style.transform = 'translate(0px, 0px) scale(1)';
+                 zoomedImage.src = "";
+            }
         });
     }
-
 });
 
 function getProductImageForAnimation() {
