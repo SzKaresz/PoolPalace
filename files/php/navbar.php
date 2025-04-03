@@ -52,7 +52,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <div class="input-group">
                 <input type="text" name="query" id="keresomezo" placeholder="Keresés..." class="form-control" />
                 <button id="remove" type="button" class="btn" onclick="document.getElementById('keresomezo').value = '';">
-                    X
+                    x
                 </button>
                 <button type="submit" class="btn search-btn" id="kereses_button">
                     <img src="../img/search.png" alt="Keresés">

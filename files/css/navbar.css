@@ -515,8 +515,14 @@
 #remove {
     background-color: white;
     border-color: lightgray;
+    font-size:larger;
     border-left: none;
     border-radius: 0px 5px 5px 0px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    padding: 0 10px;
 }
 
 #keresomezo:focus {
