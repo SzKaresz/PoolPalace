@@ -47,37 +47,6 @@
     <div id="tartalom" class="m-4"></div>
 
 
-    <div class="modal fade" id="kepModal" tabindex="-1" aria-labelledby="kepModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="kepModalLabel">Termék képei</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="productCarousel" class="carousel slide mb-3 mx-auto" data-bs-ride="false" data-bs-interval="false">
-                        <div class="carousel-inner bg-light rounded border" id="carouselImages">
-                        </div>
-
-                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Előző</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Következő</span>
-                        </button>
-
-                        <div class="carousel-thumbnails d-flex flex-wrap justify-content-center gap-2" id="carouselThumbnails">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="modal fade" id="leirasModal" tabindex="-1" aria-labelledby="leirasModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -92,24 +61,51 @@
                      <button type="button" class="btn btn-secondary" id="leirasMegseBtn" data-bs-dismiss="modal">Mégse</button>
                      <button type="button" class="btn btn-info" id="leirasSzerkesztesBtn">Szerkesztés</button>
                      <button type="button" class="btn btn-danger d-none" id="leirasTartalomTorlesBtn">Tartalom törlése</button>
-                     <button type="button" class="btn btn-primary d-none" id="leirasMenteseBtn">Mentés</button>
+                     <button type="button" class="btn btn-primary d-none" id="leirasMenteseBtn">Mentés és bezárás</button>
                 </div>
             </div>
         </div>
     </div>
-    
 
-    <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;"></div>
+    <div class="modal fade" id="kepModal" tabindex="-1" aria-labelledby="kepModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="kepModalLabel">Termékképek Kezelése</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="productCarousel" class="carousel slide" data-bs-interval="false">
+                        <div class="carousel-inner" id="carouselImages">
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Előző</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Következő</span>
+                        </button>
+                    </div>
+                    <div class="d-flex justify-content-center flex-wrap gap-2 mt-3" id="carouselThumbnails">
+                    </div>
+                </div>
+                 <div class="modal-footer">
+                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
+                 </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="torlesModal" tabindex="-1" aria-labelledby="torlesModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="torlesModalLabel">Megerősítés</h5>
+                    <h5 class="modal-title" id="torlesModalLabel">Termék Törlés Megerősítése</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
                 </div>
                 <div class="modal-body">
-                    Biztosan törölni szeretnéd ezt a terméket?
+                    Biztosan törölni szeretné ezt a terméket?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
@@ -118,6 +114,27 @@
             </div>
         </div>
     </div>
+
+     <div class="modal fade" id="kepTorlesModal" tabindex="-1" aria-labelledby="kepTorlesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="kepTorlesModalLabel">Kép Törlés Megerősítése</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+                </div>
+                <div class="modal-body">
+                    Biztosan törölni szeretné ezt a képet?
+                    <p><strong id="kepTorlesFajlnev"></strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                    <button type="button" class="btn btn-danger" id="megerositesKepTorles">Törlés</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 

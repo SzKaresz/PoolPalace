@@ -2,12 +2,17 @@ var termekAdatok;
 var torlendo_cikkszam;
 var eredetiAdatok = [];
 let leirasModalInstance = null;
+let kepModalInstance = null;
 let targetLeirasInput = null;
 let leirasTextarea = null;
 let leirasSzerkesztesBtn = null;
 let leirasMenteseBtn = null;
 let leirasTartalomTorlesBtn = null;
 let leirasMegseBtn = null;
+
+let kepTorlesModalInstance = null;
+let kepTorlendoAdatok = null;
+let kepTorlesMegseClicked = false;
 
 document.addEventListener('DOMContentLoaded', async function () {
     const leirasModalElement = document.getElementById('leirasModal');
@@ -35,32 +40,90 @@ document.addEventListener('DOMContentLoaded', async function () {
             resetLeirasModalToReadOnly();
             targetLeirasInput = null;
             const orphanedFileInput = document.querySelector(`#${leirasModalElement.id} input[type="file"]`);
-             if (orphanedFileInput) {
-                 orphanedFileInput.remove();
-             }
-             const carouselElement = document.getElementById('productCarousel');
-             if (carouselElement) {
-                 const existingCarouselInstance = bootstrap.Carousel.getInstance(carouselElement);
-                 if (existingCarouselInstance) {
-                     existingCarouselInstance.dispose();
-                 }
-             }
-
+            if (orphanedFileInput) {
+                orphanedFileInput.remove();
+            }
         });
 
         leirasModalElement.addEventListener('show.bs.modal', function () {
-            resetLeirasModalToReadOnly();
-            if (targetLeirasInput && leirasTextarea) {
-                leirasTextarea.value = targetLeirasInput.value;
-            }
+             if (targetLeirasInput && leirasTextarea) {
+                  leirasTextarea.value = targetLeirasInput.value;
+             }
+             const row = targetLeirasInput ? targetLeirasInput.closest('tr') : null;
+             if (row && isRowInEditMode(row)) {
+                  setLeirasModalToEditState();
+             } else {
+                  resetLeirasModalToReadOnly();
+             }
         });
     }
+
+    const kepModalElement = document.getElementById('kepModal');
+    if (kepModalElement) {
+        kepModalInstance = new bootstrap.Modal(kepModalElement);
+        kepModalElement.addEventListener('hidden.bs.modal', function () {
+            const carouselElement = document.getElementById('productCarousel');
+            if (carouselElement) {
+                const existingCarouselInstance = bootstrap.Carousel.getInstance(carouselElement);
+                if (existingCarouselInstance) {
+                    existingCarouselInstance.dispose();
+                }
+            }
+             const fileInput = kepModalElement.querySelector('input[type="file"]');
+             if (fileInput) {
+                 fileInput.remove();
+             }
+        });
+    }
+
+    const kepTorlesModalElement = document.getElementById('kepTorlesModal');
+    if (kepTorlesModalElement) {
+        kepTorlesModalInstance = new bootstrap.Modal(kepTorlesModalElement);
+        const megerositesKepTorlesBtn = document.getElementById('megerositesKepTorles');
+        const megseKepTorlesBtn = kepTorlesModalElement.querySelector('.btn-secondary[data-bs-dismiss="modal"]');
+
+        if (megerositesKepTorlesBtn) {
+            megerositesKepTorlesBtn.addEventListener('click', async () => {
+                kepTorlesMegseClicked = false;
+                if (kepTorlendoAdatok && kepTorlesModalInstance) {
+                    kepTorlesModalInstance.hide();
+                    await performKepTorles(
+                        kepTorlendoAdatok.cikkszam,
+                        kepTorlendoAdatok.kepUrl,
+                        kepTorlendoAdatok.carouselItemElem,
+                        kepTorlendoAdatok.thumbnailElem
+                    );
+                    kepTorlendoAdatok = null;
+                }
+            });
+        }
+
+        if (megseKepTorlesBtn) {
+             megseKepTorlesBtn.addEventListener('click', () => {
+                 kepTorlesMegseClicked = true;
+             });
+         }
+
+
+        kepTorlesModalElement.addEventListener('hidden.bs.modal', () => {
+             if (kepTorlesMegseClicked) {
+                 if (kepModalInstance) {
+                     kepModalInstance.show();
+                 }
+                 kepTorlesMegseClicked = false;
+             }
+             kepTorlendoAdatok = null;
+             const fajlnevElem = document.getElementById('kepTorlesFajlnev');
+             if (fajlnevElem) fajlnevElem.textContent = '';
+        });
+    }
+
 
     try {
         let keres = await fetch("../php/admin_adatleker.php");
         if (keres.ok) {
             let adat = await keres.json();
-            eredetiAdatok = [...adat];
+            eredetiAdatok = JSON.parse(JSON.stringify(adat));
             megjelenitTermekek(adat);
         } else {
             console.error("Hiba az adatok lekérésekor:", keres.status);
@@ -73,7 +136,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (keresomezo) {
         keresomezo.addEventListener("input", function () {
              let keresesiErtek = this.value.toLowerCase().trim();
-             let szurtAdatok = eredetiAdatok.filter(item =>
+             let szurtAdatok = JSON.parse(JSON.stringify(eredetiAdatok)).filter(item =>
                  keresesiErtek === "" ||
                  item.cikkszam.toString().toLowerCase().includes(keresesiErtek) ||
                  item.nev.toLowerCase().includes(keresesiErtek) ||
@@ -83,15 +146,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     }
 
-    const megerositesTorlesBtn = document.getElementById("megerositesTorles");
-    if (megerositesTorlesBtn) {
+     const megerositesTorlesBtn = document.getElementById("megerositesTorles");
+     if (megerositesTorlesBtn) {
          megerositesTorlesBtn.addEventListener("click", async function () {
              if (torlendo_cikkszam) {
                  let torlesEredmeny = await adatTorles(torlendo_cikkszam);
                  const torlesModalElement = document.getElementById("torlesModal");
                  if (torlesModalElement) {
-                     const torlesModalInstance = bootstrap.Modal.getInstance(torlesModalElement);
-                     if (torlesModalInstance) torlesModalInstance.hide();
+                     const torlesModalInstanceBs = bootstrap.Modal.getInstance(torlesModalElement);
+                     if (torlesModalInstanceBs) torlesModalInstanceBs.hide();
                  }
 
                  if (torlesEredmeny.success) {
@@ -105,10 +168,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                  torlendo_cikkszam = null;
              }
          });
-    }
+     }
 });
 
-function handleLeirasSzerkesztes() {
+function isRowInEditMode(row) {
+    if (!row) return false;
+    const buttonCell = row.querySelector('td:last-child');
+    return buttonCell && buttonCell.querySelector('.mentés-gomb') !== null;
+}
+
+function setLeirasModalToEditState() {
     if (leirasTextarea) leirasTextarea.readOnly = false;
     if (leirasSzerkesztesBtn) leirasSzerkesztesBtn.classList.add('d-none');
     if (leirasMenteseBtn) leirasMenteseBtn.classList.remove('d-none');
@@ -116,18 +185,58 @@ function handleLeirasSzerkesztes() {
     if (leirasTextarea) leirasTextarea.focus();
 }
 
-function handleLeirasMentes() {
-    if (targetLeirasInput && leirasTextarea) {
-        targetLeirasInput.value = leirasTextarea.value;
-    }
-    if (leirasModalInstance) leirasModalInstance.hide();
-}
-
 function resetLeirasModalToReadOnly() {
     if (leirasTextarea) leirasTextarea.readOnly = true;
     if (leirasSzerkesztesBtn) leirasSzerkesztesBtn.classList.remove('d-none');
     if (leirasMenteseBtn) leirasMenteseBtn.classList.add('d-none');
     if (leirasTartalomTorlesBtn) leirasTartalomTorlesBtn.classList.add('d-none');
+}
+
+function handleLeirasSzerkesztes() {
+   setLeirasModalToEditState();
+}
+
+function handleLeirasMentes() {
+    if (targetLeirasInput && leirasTextarea) {
+        targetLeirasInput.value = leirasTextarea.value;
+
+        const row = targetLeirasInput.closest('tr');
+        if (row) {
+            const cikkszam = row.id.split('-')[1];
+            setRowToEditState(cikkszam);
+        }
+    }
+    if (leirasModalInstance) leirasModalInstance.hide();
+}
+
+function setRowToEditState(cikkszam) {
+    const row = document.getElementById(`row-${cikkszam}`);
+    if (!row) return;
+    const buttonCell = row.querySelector('td:last-child');
+    if (!buttonCell) return;
+
+    if (!row.dataset.originalButtons) {
+        row.dataset.originalButtons = buttonCell.innerHTML;
+    }
+
+    row.querySelectorAll('input').forEach(input => {
+        if (input.id !== `cikkszam-${cikkszam}`) {
+             input.readOnly = false;
+        }
+    });
+
+    buttonCell.innerHTML = `
+        <button type="button" class="btn btn-sm btn-outline-success mentés-gomb" title="Mentés">
+            <img src="../img/save.png" alt="Mentés" width="20">
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary vissza-gomb" title="Mégse">
+            <img src="../img/back.png" alt="Vissza" width="20">
+        </button>
+    `;
+}
+
+function handleModositasClick(row, cikkszam, modositButton) {
+    setRowToEditState(cikkszam);
 }
 
 function megjelenitTermekek(adat) {
@@ -194,7 +303,7 @@ function megjelenitTermekek(adat) {
             </tr>`;
     }
 
-    tablebody.addEventListener('click', function (event) {
+     tablebody.addEventListener('click', function (event) {
         const target = event.target;
         const button = target.closest('button');
         const input = target.closest('input.leiras-input');
@@ -207,9 +316,9 @@ function megjelenitTermekek(adat) {
             handleModositasClick(row, cikkszam, button);
         } else if (button && button.classList.contains('torles')) {
             torlendo_cikkszam = { cikkszam: cikkszam };
-            const torlesModal = document.getElementById("torlesModal");
-            if (torlesModal) {
-                const modal = new bootstrap.Modal(torlesModal);
+            const torlesModalElement = document.getElementById("torlesModal");
+            if (torlesModalElement) {
+                const modal = new bootstrap.Modal(torlesModalElement);
                 modal.show();
             }
         } else if (button && button.classList.contains('kepek')) {
@@ -217,7 +326,15 @@ function megjelenitTermekek(adat) {
         }
         else if (input && input.classList.contains('leiras-input')) {
             targetLeirasInput = input;
-            if (leirasModalInstance) leirasModalInstance.show();
+            if (leirasModalInstance) {
+                if (isRowInEditMode(row)) {
+                    setLeirasModalToEditState();
+                } else {
+                    resetLeirasModalToReadOnly();
+                }
+                 leirasTextarea.value = targetLeirasInput.value;
+                leirasModalInstance.show();
+            }
         }
         else if (button && button.classList.contains('mentés-gomb')) {
              handleMentesClick(row, cikkszam, button);
@@ -227,29 +344,7 @@ function megjelenitTermekek(adat) {
     });
 }
 
-function handleModositasClick(row, cikkszam, modositButton) {
-    const buttonCell = row.querySelector('td:last-child');
-    const eredetiGombokHTML = buttonCell.innerHTML;
-
-    row.querySelectorAll('input').forEach(input => {
-        if (input.id !== `cikkszam-${cikkszam}` && input.id !== `leiras-${cikkszam}`) {
-             input.readOnly = false;
-        }
-    });
-
-    buttonCell.innerHTML = `
-        <button type="button" class="btn btn-sm btn-outline-success mentés-gomb" title="Mentés">
-            <img src="../img/save.png" alt="Mentés" width="20">
-        </button>
-        <button type="button" class="btn btn-sm btn-outline-secondary vissza-gomb" title="Mégse">
-            <img src="../img/back.png" alt="Vissza" width="20">
-        </button>
-    `;
-
-    row.dataset.originalButtons = eredetiGombokHTML;
-}
-
-function handleMegseClick(row, cikkszam, megseButton) {
+function handleMegseClick(row, cikkszam, sourceButton) {
     const buttonCell = row.querySelector('td:last-child');
     const originalData = eredetiAdatok.find(item => item.cikkszam.toString() === cikkszam.toString());
 
@@ -261,9 +356,13 @@ function handleMegseClick(row, cikkszam, megseButton) {
              if (key === 'akciosar') {
                  originalValue = (originalData.akcios_ar == -1 || originalData.akcios_ar == null) ? '' : originalData.akcios_ar;
              } else if (key === 'leiras') {
-                originalValue = originalData.leiras || '';
+                 originalValue = originalData.leiras || '';
              } else if (originalData.hasOwnProperty(key)) {
                  originalValue = originalData[key];
+             } else if (key === 'nev'){
+                 originalValue = originalData.nev;
+             } else if (key === 'egysegar'){
+                 originalValue = originalData.egysegar;
              }
              input.value = originalValue;
         }
@@ -272,59 +371,86 @@ function handleMegseClick(row, cikkszam, megseButton) {
     if (row.dataset.originalButtons) {
         buttonCell.innerHTML = row.dataset.originalButtons;
         delete row.dataset.originalButtons;
+    } else {
+         buttonCell.innerHTML = `
+              <button class="btn btn-sm btn-outline-secondary modositas-gomb modosit" title="Módosítás">
+                  <img src="../img/pencil.png" alt="Módosítás" width="20">
+              </button>
+              <button class="btn btn-sm btn-outline-danger torles-gomb torles" title="Törlés">
+                  <img src="../img/delete.png" alt="Törlés" width="20">
+              </button>
+              <button class="btn btn-sm btn-outline-info kep-gomb kepek" title="Képek">
+                   <img src="../img/gallery.png" alt="Képek" width="20">
+               </button>
+         `;
     }
 }
 
 async function handleMentesClick(row, cikkszam, mentesButton) {
     const buttonCell = row.querySelector('td:last-child');
 
-    termekAdatok = {
+    const currentData = {
         cikkszam: row.querySelector(`#cikkszam-${cikkszam}`).value,
         nev: row.querySelector(`#nev-${cikkszam}`).value,
         egysegar: row.querySelector(`#egysegar-${cikkszam}`).value,
-        akciosar: row.querySelector(`#akciosar-${cikkszam}`).value || -1,
+        akciosar: row.querySelector(`#akciosar-${cikkszam}`).value.trim() === '' ? -1 : row.querySelector(`#akciosar-${cikkszam}`).value,
         leiras: row.querySelector(`#leiras-${cikkszam}`).value,
     };
+
+    const originalData = eredetiAdatok.find(item => item.cikkszam.toString() === cikkszam.toString());
+    let changed = false;
+    if (originalData) {
+        if (currentData.nev !== originalData.nev ||
+             currentData.egysegar.toString() !== originalData.egysegar.toString() ||
+             currentData.akciosar.toString() !== (originalData.akcios_ar == null ? '-1' : originalData.akcios_ar.toString()) ||
+             (currentData.leiras || '') !== (originalData.leiras || '')
+            ) {
+            changed = true;
+        }
+    } else {
+        changed = true;
+    }
+
+
+    if (!changed) {
+        showToast("Nem történt változás.", "info");
+        handleMegseClick(row, cikkszam, mentesButton);
+        return;
+    }
 
     mentesButton.disabled = true;
     mentesButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
-    const mentesEredmeny = await adatMentes(termekAdatok);
+    const mentesEredmeny = await adatMentes(currentData);
 
     mentesButton.disabled = false;
 
     if (mentesEredmeny.status=="success") {
-        row.querySelectorAll('input').forEach(input => {
-            input.readOnly = true;
-        });
-
-        if (row.dataset.originalButtons) {
-            buttonCell.innerHTML = row.dataset.originalButtons;
-            delete row.dataset.originalButtons;
-        }
-
         const index = eredetiAdatok.findIndex(item => item.cikkszam.toString() === cikkszam.toString());
         if (index > -1) {
-            eredetiAdatok[index] = { ...eredetiAdatok[index], ...termekAdatok, akcios_ar: termekAdatok.akciosar };
+            eredetiAdatok[index].nev = currentData.nev;
+            eredetiAdatok[index].egysegar = currentData.egysegar;
+            eredetiAdatok[index].akcios_ar = currentData.akciosar;
+            eredetiAdatok[index].leiras = currentData.leiras;
         }
+        handleMegseClick(row, cikkszam, mentesButton);
     } else {
         mentesButton.innerHTML = '<img src="../img/save.png" alt="Mentés" width="20">';
     }
 }
 
 async function handleKepekClick(cikkszam) {
-    const kepModalElement = document.getElementById('kepModal');
-    if (!kepModalElement) {
-        console.error("Kép modal elem (#kepModal) nem található!");
+    const modalBody = kepModalInstance ? kepModalInstance._element.querySelector('.modal-body') : null;
+    if (!modalBody) {
+        console.error("Kép modal body nem található!");
         return;
     }
-    const kepModalInstance = bootstrap.Modal.getOrCreateInstance(kepModalElement);
+
     const carouselImages = document.getElementById("carouselImages");
     const carouselThumbnails = document.getElementById("carouselThumbnails");
-    const modalBody = kepModalElement.querySelector('.modal-body');
 
-    if (!carouselImages || !carouselThumbnails || !modalBody) {
-        console.error("Carousel belső elemek (#carouselImages, #carouselThumbnails) vagy modal body nem találhatóak!");
+    if (!carouselImages || !carouselThumbnails) {
+        console.error("Carousel belső elemek (#carouselImages, #carouselThumbnails) nem találhatóak!");
         return;
     }
 
@@ -336,7 +462,7 @@ async function handleKepekClick(cikkszam) {
     carouselImages.innerHTML = '<div class="carousel-item active d-flex justify-content-center align-items-center" style="min-height: 200px;"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Töltés...</span></div></div>';
     carouselThumbnails.innerHTML = '';
 
-    if (!kepModalInstance._isShown) {
+    if (kepModalInstance && !kepModalInstance._isShown) {
         kepModalInstance.show();
     }
 
@@ -347,7 +473,6 @@ async function handleKepekClick(cikkszam) {
 
         carouselImages.innerHTML = "";
         carouselThumbnails.innerHTML = "";
-
         let kepIndex = 0;
 
         if (kepek && Array.isArray(kepek) && kepek.length > 0) {
@@ -355,19 +480,17 @@ async function handleKepekClick(cikkszam) {
                 if (kepUrl && typeof kepUrl === 'string' && kepUrl.trim() !== "") {
                     let item = document.createElement("div");
                     item.classList.add("carousel-item");
-                    if (kepIndex === 0) {
-                        item.classList.add('active');
-                    }
+                    if (kepIndex === 0) item.classList.add('active');
                     item.dataset.imageUrl = kepUrl;
                     item.dataset.slideIndex = kepIndex;
 
                     let imgContainer = document.createElement("div");
-                    imgContainer.classList.add("position-relative");
+                    imgContainer.classList.add("position-relative", "d-flex", "justify-content-center", "align-items-center");
 
                     let imgElem = document.createElement("img");
                     imgElem.src = kepUrl;
                     imgElem.alt = "Termékkép";
-                    imgElem.classList.add("d-block", "product-main-image", "mx-auto");
+                    imgElem.classList.add("d-block", "product-main-image");
                     imgContainer.appendChild(imgElem);
 
                     let deleteButton = document.createElement("button");
@@ -375,8 +498,8 @@ async function handleKepekClick(cikkszam) {
                     deleteButton.innerHTML = '<i class="fas fa-times"></i>';
                     deleteButton.title = "Kép törlése";
                     deleteButton.type = "button";
-
                     imgContainer.appendChild(deleteButton);
+
                     item.appendChild(imgContainer);
                     carouselImages.appendChild(item);
 
@@ -384,17 +507,55 @@ async function handleKepekClick(cikkszam) {
                     thumbnail.src = kepUrl;
                     thumbnail.alt = "Bélyegkép " + (kepIndex + 1);
                     thumbnail.classList.add("thumbnail-item");
-                    if (kepIndex === 0) {
-                        thumbnail.classList.add("active");
-                    }
+                    if (kepIndex === 0) thumbnail.classList.add("active");
                     thumbnail.setAttribute("data-bs-target", "#productCarousel");
                     thumbnail.setAttribute("data-bs-slide-to", kepIndex);
                     thumbnail.setAttribute("aria-label", "Dia " + (kepIndex + 1));
                     carouselThumbnails.appendChild(thumbnail);
 
-                    deleteButton.addEventListener("click", async function () {
-                        await handleKepTorles(cikkszam, kepUrl, item, thumbnail);
-                    });
+                     deleteButton.addEventListener("click", function () {
+                         kepTorlendoAdatok = {
+                             cikkszam: cikkszam,
+                             kepUrl: kepUrl,
+                             carouselItemElem: item,
+                             thumbnailElem: thumbnail,
+                         };
+                         const fajlnevElem = document.getElementById('kepTorlesFajlnev');
+                         if (fajlnevElem) {
+                              const filename = kepUrl.substring(kepUrl.lastIndexOf('/') + 1);
+                              fajlnevElem.textContent = filename;
+                         }
+
+                         const kepModalElement = document.getElementById('kepModal');
+
+                         const onKepModalHidden = () => {
+                             if (kepTorlesModalInstance) {
+                                 kepTorlesModalInstance.show();
+                             } else {
+                                  console.error("Kép törlés modal nincs inicializálva!");
+                                 if (confirm(`Biztosan törölni szeretnéd ezt a képet: ${kepUrl.substring(kepUrl.lastIndexOf('/') + 1)}?`)) {
+                                      performKepTorles(cikkszam, kepUrl, item, thumbnail);
+                                 } else {
+                                      if (kepModalInstance) {
+                                          kepModalInstance.show();
+                                      }
+                                 }
+                             }
+                             kepModalElement.removeEventListener('hidden.bs.modal', onKepModalHidden);
+                         };
+
+                         kepModalElement.addEventListener('hidden.bs.modal', onKepModalHidden);
+
+                         if (kepModalInstance) {
+                             kepModalInstance.hide();
+                         } else {
+                              console.error("Kep modal instance not found for hiding.");
+                              if (kepTorlesModalInstance) {
+                                  kepTorlesModalInstance.show();
+                              }
+                         }
+                     });
+
 
                     kepIndex++;
                 }
@@ -402,7 +563,7 @@ async function handleKepekClick(cikkszam) {
         }
 
         if (kepIndex === 0) {
-            carouselImages.innerHTML = '<div class="carousel-item active text-center p-5">Nincsenek képek ehhez a termékhez.</div>';
+           carouselImages.innerHTML = '<div class="carousel-item active text-center p-5">Nincsenek képek ehhez a termékhez.</div>';
         }
 
         let uploadThumbnailContainer = document.createElement("div");
@@ -418,18 +579,23 @@ async function handleKepekClick(cikkszam) {
         fileInput.id = `fileInput-${cikkszam}`;
 
         uploadThumbnailContainer.addEventListener('click', () => {
-            fileInput.click();
+           fileInput.click();
         });
 
         fileInput.addEventListener("change", async function (event) {
-            await handleKepFeltoltes(cikkszam, event.target.files);
+           await handleKepFeltoltes(cikkszam, event.target.files);
         });
 
         let addIcon = document.createElement("i");
         addIcon.classList.add("fas", "fa-plus", "fa-lg");
         uploadThumbnailContainer.appendChild(addIcon);
         carouselThumbnails.appendChild(uploadThumbnailContainer);
-        modalBody.appendChild(fileInput);
+
+         const kepModalBody = document.getElementById('kepModal').querySelector('.modal-body');
+         if (kepModalBody && !kepModalBody.querySelector(`#${fileInput.id}`)) {
+            kepModalBody.appendChild(fileInput);
+         }
+
 
         frissitCarouselState(cikkszam);
 
@@ -440,6 +606,7 @@ async function handleKepekClick(cikkszam) {
     }
 }
 
+
 function frissitCarouselState(cikkszam, startIndex = 0) {
     const carouselElement = document.getElementById('productCarousel');
     const carouselImages = document.getElementById("carouselImages");
@@ -449,18 +616,18 @@ function frissitCarouselState(cikkszam, startIndex = 0) {
 
     const meglévőKépek = carouselImages.querySelectorAll('.carousel-item');
     const meglévőThumbnailek = carouselThumbnails.querySelectorAll('.thumbnail-item:not(.upload-thumbnail)');
-
     const meglévőKépekSzáma = meglévőKépek.length;
-    const prevIcon = carouselElement.querySelector('.carousel-control-prev');
-    const nextIcon = carouselElement.querySelector('.carousel-control-next');
 
-     if (meglévőKépekSzáma <= 1) {
-         if(prevIcon) prevIcon.style.display = 'none';
-         if(nextIcon) nextIcon.style.display = 'none';
-     } else {
-         if(prevIcon) prevIcon.style.display = '';
-         if(nextIcon) nextIcon.style.display = '';
-     }
+    const prevControl = carouselElement.querySelector('.carousel-control-prev');
+    const nextControl = carouselElement.querySelector('.carousel-control-next');
+
+    if (meglévőKépekSzáma <= 1) {
+        if(prevControl) prevControl.style.display = 'none';
+        if(nextControl) nextControl.style.display = 'none';
+    } else {
+        if(prevControl) prevControl.style.display = '';
+        if(nextControl) nextControl.style.display = '';
+    }
 
     const existingCarouselInstance = bootstrap.Carousel.getInstance(carouselElement);
     if (existingCarouselInstance) {
@@ -471,27 +638,30 @@ function frissitCarouselState(cikkszam, startIndex = 0) {
          meglévőKépek.forEach(item => item.classList.remove('active'));
          meglévőThumbnailek.forEach(thumb => thumb.classList.remove('active'));
 
-         let activeIndex = Math.max(0, Math.min(startIndex, meglévőKépekSzáma - 1));
+        let activeIndex = Math.max(0, Math.min(startIndex, meglévőKépekSzáma - 1));
 
          if (meglévőKépek[activeIndex]) meglévőKépek[activeIndex].classList.add('active');
          if (meglévőThumbnailek[activeIndex]) meglévőThumbnailek[activeIndex].classList.add('active');
 
          const newCarouselInstance = new bootstrap.Carousel(carouselElement, {
-             interval: false,
-             ride: false
-         });
-         newCarouselInstance.to(activeIndex);
+            interval: false,
+            ride: false,
+            wrap: meglévőKépekSzáma > 1
+        });
 
-         carouselElement.removeEventListener('slid.bs.carousel', handleCarouselSlide);
-         if (meglévőKépekSzáma > 1) {
+        carouselElement.removeEventListener('slid.bs.carousel', handleCarouselSlide);
+        if (meglévőKépekSzáma > 1) {
              carouselElement.addEventListener('slid.bs.carousel', handleCarouselSlide);
-         }
+        }
+
     } else {
         carouselImages.innerHTML = '<div class="carousel-item active text-center p-5">Nincsenek képek ehhez a termékhez.</div>';
     }
+
      const fileInput = document.getElementById(`fileInput-${cikkszam}`);
      if (fileInput) fileInput.value = "";
 }
+
 
 function handleCarouselSlide(event) {
     const activeIndex = event.to;
@@ -500,7 +670,7 @@ function handleCarouselSlide(event) {
          thumb.classList.remove('active');
     });
     if (targetThumbnail) {
-        targetThumbnail.classList.add('active');
+         targetThumbnail.classList.add('active');
     }
 }
 
@@ -525,6 +695,8 @@ async function handleKepFeltoltes(cikkszam, files) {
     }
 
     showToast("Képek feltöltése folyamatban...", "info");
+    let message = "Ismeretlen hiba történt a feltöltés során.";
+    let messageType = "danger";
 
     try {
         let response = await fetch("../php/kepfeltolt.php", {
@@ -534,90 +706,28 @@ async function handleKepFeltoltes(cikkszam, files) {
         let result = await response.json();
 
         if (response.ok && result.success) {
-            showToast(result.message || "Képek sikeresen feltöltve!", "success");
-
-            if (result.newImageUrls && Array.isArray(result.newImageUrls)) {
-                 const carouselImages = document.getElementById("carouselImages");
-                 const carouselThumbnails = document.getElementById("carouselThumbnails");
-                 const uploadThumbnail = carouselThumbnails.querySelector('.upload-thumbnail');
-                 const modalBody = document.querySelector('#kepModal .modal-body');
-                 const noImageDiv = carouselImages.querySelector('.carousel-item.active.text-center');
-
-
-                 if(noImageDiv) {
-                    carouselImages.innerHTML = '';
-                 }
-
-                 let firstNewImageIndex = carouselImages.querySelectorAll('.carousel-item').length;
-
-                 result.newImageUrls.forEach((kepUrl) => {
-                     let kepIndex = carouselImages.querySelectorAll('.carousel-item').length;
-
-                     let item = document.createElement("div");
-                     item.classList.add("carousel-item");
-                     item.dataset.imageUrl = kepUrl;
-                     item.dataset.slideIndex = kepIndex;
-
-                     let imgContainer = document.createElement("div");
-                     imgContainer.classList.add("position-relative");
-
-                     let imgElem = document.createElement("img");
-                     imgElem.src = kepUrl;
-                     imgElem.alt = "Termékkép";
-                     imgElem.classList.add("d-block", "product-main-image", "mx-auto");
-                     imgContainer.appendChild(imgElem);
-
-                     let deleteButton = document.createElement("button");
-                     deleteButton.classList.add("btn", "btn-danger", "btn-sm", "position-absolute", "top-0", "end-0", "m-2");
-                     deleteButton.innerHTML = '<i class="fas fa-times"></i>';
-                     deleteButton.title = "Kép törlése";
-                     deleteButton.type = "button";
-                     imgContainer.appendChild(deleteButton);
-
-                     item.appendChild(imgContainer);
-                     carouselImages.appendChild(item);
-
-                     let thumbnail = document.createElement("img");
-                     thumbnail.src = kepUrl;
-                     thumbnail.alt = "Bélyegkép " + (kepIndex + 1);
-                     thumbnail.classList.add("thumbnail-item");
-                     thumbnail.setAttribute("data-bs-target", "#productCarousel");
-                     thumbnail.setAttribute("data-bs-slide-to", kepIndex);
-                     thumbnail.setAttribute("aria-label", "Dia " + (kepIndex + 1));
-
-                     deleteButton.addEventListener("click", async function () {
-                        await handleKepTorles(cikkszam, kepUrl, item, thumbnail);
-                    });
-
-
-                     if (uploadThumbnail) {
-                         carouselThumbnails.insertBefore(thumbnail, uploadThumbnail);
-                     } else {
-                         carouselThumbnails.appendChild(thumbnail);
-                     }
-                 });
-                 frissitCarouselState(cikkszam, firstNewImageIndex);
-            } else {
-                frissitCarouselState(cikkszam);
-            }
-
+            message = result.message || "Képek sikeresen feltöltve!";
+            messageType = "success";
+            await handleKepekClick(cikkszam);
         } else {
-            throw new Error(result.message || "Ismeretlen hiba történt a feltöltés során.");
+            message = result.message || "Ismeretlen hiba történt a feltöltés során.";
+            throw new Error(message);
         }
     } catch (error) {
         console.error("Hiba történt a fájlok feltöltésekor:", error);
-        showToast(`Hiba a feltöltéskor: ${error.message}`, "danger");
+        message = `Hiba a feltöltéskor: ${error.message}`;
     } finally {
          const fileInput = document.getElementById(`fileInput-${cikkszam}`);
          if (fileInput) fileInput.value = "";
+         showToast(message, messageType);
+         if (kepModalInstance) kepModalInstance.hide();
     }
 }
 
-async function handleKepTorles(cikkszam, kepUrl, carouselItemElem, thumbnailElem) {
+async function performKepTorles(cikkszam, kepUrl, carouselItemElem, thumbnailElem) {
     const filename = kepUrl.substring(kepUrl.lastIndexOf('/') + 1);
-    if (!confirm(`Biztosan törölni szeretnéd ezt a képet: ${filename}?`)) {
-        return;
-    }
+    let message = "Hiba történt a kép törlése közben.";
+    let messageType = "danger";
 
     try {
         let keres = await fetch("../php/keptorol.php", {
@@ -628,12 +738,12 @@ async function handleKepTorles(cikkszam, kepUrl, carouselItemElem, thumbnailElem
         let valasz = await keres.json();
 
         if (keres.ok && valasz.success) {
-            showToast(valasz.message || "Kép sikeresen törölve.", "success");
+            message = valasz.message || "Kép sikeresen törölve.";
+            messageType = "success";
 
             const wasActive = carouselItemElem.classList.contains('active');
             const itemsParent = carouselItemElem.parentNode;
-            const siblings = itemsParent.querySelectorAll('.carousel-item');
-            const itemIndex = Array.from(siblings).indexOf(carouselItemElem);
+            const currentItemIndex = Array.from(itemsParent.querySelectorAll('.carousel-item')).indexOf(carouselItemElem);
 
             carouselItemElem.remove();
             if (thumbnailElem) thumbnailElem.remove();
@@ -642,31 +752,36 @@ async function handleKepTorles(cikkszam, kepUrl, carouselItemElem, thumbnailElem
             const remainingThumbnails = document.querySelectorAll('#carouselThumbnails .thumbnail-item:not(.upload-thumbnail)');
 
             let newActiveIndex = 0;
-            if(remainingItems.length > 0) {
-                if(wasActive){
-                    newActiveIndex = Math.max(0, itemIndex - 1);
-                } else {
-                     const currentActive = itemsParent.querySelector('.carousel-item.active');
-                     newActiveIndex = currentActive ? Array.from(remainingItems).indexOf(currentActive) : 0;
-                     newActiveIndex = Math.max(0, newActiveIndex);
-                }
+            if (remainingItems.length > 0) {
+                 if (wasActive) {
+                     newActiveIndex = Math.max(0, currentItemIndex -1);
+                 } else {
+                     const currentActiveElem = itemsParent.querySelector('.carousel-item.active');
+                     newActiveIndex = currentActiveElem ? Array.from(remainingItems).indexOf(currentActiveElem) : 0;
+                     newActiveIndex = Math.max(0, Math.min(newActiveIndex, remainingItems.length - 1));
+                 }
             }
 
-            remainingThumbnails.forEach((thumb, index) => {
+             remainingThumbnails.forEach((thumb, index) => {
                  thumb.setAttribute('data-bs-slide-to', index);
                  thumb.setAttribute('aria-label', `Dia ${index + 1}`);
-            });
+             });
 
             frissitCarouselState(cikkszam, newActiveIndex);
 
         } else {
-            throw new Error(valasz.message || "Hiba történt a kép törlése közben.");
+             message = valasz.message || "Hiba történt a kép törlése közben.";
+             throw new Error(message);
         }
     } catch (error) {
         console.error("Hiba a kép törlésekor:", error);
-        showToast(`Hiba a kép törlésekor: ${error.message}`, "danger");
+        message = `Hiba a kép törlésekor: ${error.message}`;
+        messageType = "danger";
+    } finally {
+        showToast(message, messageType);
     }
 }
+
 
 async function adatMentes(adatok) {
     try {
@@ -676,14 +791,13 @@ async function adatMentes(adatok) {
             body: JSON.stringify(adatok)
         }));
         let valasz = await keres.json();
-        console.log(valasz);
         let szin = (valasz.status =="success") ? "success" : "danger";
         showToast(valasz.message || (valasz.status === "success" ? "Sikeres mentés!" : "Mentés sikertelen!"), szin);
         return valasz;
     } catch (error) {
         console.error("Hiba az adatok mentésekor:", error);
         showToast("Hiba történt az adatok mentésekor.", "danger");
-        return { success: false, message: "Hiba történt az adatok mentésekor." };
+        return { status: "error", message: "Hiba történt az adatok mentésekor." };
     }
 }
 

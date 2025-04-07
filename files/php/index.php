@@ -1,6 +1,3 @@
-<script>
-    console.log(<?php echo $_SESSION?>);
-</script>
 <!DOCTYPE html>
 <html lang="hu">
 

@@ -26,12 +26,12 @@ body {
   background-color: #dde2e6;
 }
 
-input.leiras-input[readonly][data-clickable="true"] {
+input.leiras-input[readonly] {
   cursor: pointer;
   background-color: #e9ecef;
 }
 
-input.leiras-input[readonly][data-clickable="true"]:hover {
+input.leiras-input[readonly]:hover {
   background-color: #dde2e6;
 }
 
@@ -493,17 +493,28 @@ form {
 }
 
 .thumbnail-item.upload-thumbnail {
-  background-color: var(--primary-color);
-  color: white;
-  border-color: var(--secondary-color);
+  background-color: white;
+  color: blue;
+  border-color: #dee2e6;
   opacity: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumbnail-item.upload-thumbnail i.fa-plus {
+  color: blue;
 }
 
 .thumbnail-item.upload-thumbnail:hover {
   opacity: 1;
-  background-color: var(--secondary-color);
-  border-color: var(--primary-color);
+  background-color: #f0f0f0;
+  border-color: blue;
 }
+
+.thumbnail-item.upload-thumbnail:hover i.fa-plus {
+   color: darkblue;
+ }
 
 .thumbnail-item.upload-thumbnail i {
   font-size: 1.5rem;
