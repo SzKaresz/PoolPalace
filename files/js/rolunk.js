@@ -1,122 +1,186 @@
-let adatkezCheckbox = document.getElementById('adatkez');
-let nemRobot = document.getElementsByClassName("g-recaptcha")[0];
-let form = document.getElementById('uzenetKuldes-urlap');
-let error_span = document.getElementsByClassName("error");
-let recaptchaErrorSpan = document.querySelector(".error.recaptcha-error");
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('uzenetKuldes-urlap');
+    const nevInput = document.getElementById('nev');
+    const emailInput = document.getElementById('email');
+    const adatkezCheckbox = document.getElementById('adatkez');
+    const submitButton = document.getElementById('kuldesGomb');
 
-let mezok = {
-    nev: {
-        mezo: document.getElementById('nev'),
-        ellenorzes: (ertek) => /^(?=.*[A-Z].*[A-Z])(?=.*\s).{5,}$/.test(ertek),
-        hibaUzenet: 'A névnek tartalmaznia kell legalább egy szóközt, két nagybetűt és 5 karaktert!',
-        kotelezo: true,
-    },
-    email: {
-        mezo: document.getElementById('email'),
-        ellenorzes: (ertek) => /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(ertek),
-        hibaUzenet: 'Kérjük, érvényes e-mail címet adjon meg!',
-        kotelezo: true
-    }
-};
+    const toastContainer = document.querySelector('.toast-container');
 
-function hibasAdatok(mezo, helyesAdat) {
-    if (helyesAdat) {
-        mezo.classList.add('is-valid');
-        mezo.classList.remove('is-invalid');
-        let errorSpan = mezo.nextElementSibling;
-        if (errorSpan && errorSpan.classList.contains('error')) {
-            errorSpan.style.display = "none";
+    function validateForm() {
+        let isValid = true;
+        clearErrors();
+
+        if (!nevInput.value.trim()) {
+            showError(nevInput, 'A név megadása kötelező.');
+            isValid = false;
         }
-    } else {
-        mezo.classList.add('is-invalid');
-        mezo.classList.remove('is-valid');
-        let errorSpan = mezo.nextElementSibling;
-        if (errorSpan && errorSpan.classList.contains('error')) {
-            errorSpan.style.display = "block";
-        }
-    }
-}
 
-function urlapValidalas(event) {
-    let hiba = false;
-
-    Object.values(mezok).forEach(({ mezo, ellenorzes, hibaUzenet, kotelezo }, i) => {
-        if ((kotelezo && !mezo.value) || (!kotelezo && mezo.value && !ellenorzes(mezo.value))) {
-            error_span[i].innerHTML = hibaUzenet;
-            error_span[i].style.display = "block";
-            hibasAdatok(mezo, false);
-            hiba = true;
-        } else {
-            error_span[i].innerHTML = "";
-            error_span[i].style.display = "none";
-            hibasAdatok(mezo, true);
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailInput.value.trim()) {
+            showError(emailInput, 'Az e-mail cím megadása kötelező.');
+            isValid = false;
+        } else if (!emailPattern.test(emailInput.value.trim())) {
+            showError(emailInput, 'Érvénytelen e-mail formátum.');
+            isValid = false;
         }
-    });
 
-    if (!adatkezCheckbox.checked) {
-        let adatkezErrorSpan = document.querySelector(".error.adatkez-error");
-        if (adatkezErrorSpan) {
-            adatkezErrorSpan.style.display = 'inline';
+        if (!adatkezCheckbox.checked) {
+            showError(adatkezCheckbox, 'Kérjük, fogadja el az Adatkezelési tájékoztatóban leírtakat!', true);
+            isValid = false;
         }
-        hiba = true;
+
+        const recaptchaResponse = grecaptcha.getResponse();
+        if (!recaptchaResponse) {
+             showError(document.querySelector('.g-recaptcha'), 'Kérjük, igazolja, hogy nem robot!', false, '.recaptcha-error');
+        }
+
+
+        return isValid;
     }
 
-    let recaptchaResponse = grecaptcha.getResponse();
-    if (!recaptchaResponse) {
-        if (recaptchaErrorSpan) {
-            recaptchaErrorSpan.style.display = 'inline';
-            document.getElementById("st").hidden = false;
+    function showError(inputElement, message, isCheckbox = false, errorSelectorSuffix = '.error') {
+        let errorElement;
+        if (isCheckbox) {
+             errorElement = form.querySelector('.adatkez-error');
+        } else if (inputElement.classList.contains('g-recaptcha')) {
+             errorElement = form.querySelector(errorSelectorSuffix);
         }
-        hiba = true;
-    } else {
-        if (recaptchaErrorSpan) {
-            recaptchaErrorSpan.style.display = 'none';
-            document.getElementById("st").hidden = true;
+         else {
+            errorElement = inputElement.closest('.inputMezo')?.querySelector(errorSelectorSuffix);
+             if (!errorElement) errorElement = form.querySelector(`${errorSelectorSuffix}`);
         }
+
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+         if(inputElement && !isCheckbox) {
+             inputElement.classList.add('is-invalid');
+         }
     }
 
-    if (hiba) {
-        event.preventDefault();
-    }
-}
-
-form.addEventListener('submit', urlapValidalas);
-adatkezCheckbox.addEventListener('change', checkCheckbox);
-document.addEventListener('DOMContentLoaded', initInputEllenorzes);
-
-function initInputEllenorzes() {
-    Object.values(mezok).forEach(({ mezo, ellenorzes }) => {
-        mezo.addEventListener('input', () => {
-            hibasAdatok(mezo, ellenorzes(mezo.value));
+    function clearErrors() {
+        form.querySelectorAll('.error').forEach(span => {
+             span.textContent = '';
+             span.style.display = 'none';
         });
-    });
-}
-
-function checkCheckbox() {
-    if (adatkezCheckbox.checked) {
-        let adatkezErrorSpan = document.querySelector(".error.adatkez-error");
-        if (adatkezErrorSpan) {
-            adatkezErrorSpan.style.display = 'none';
-        }
+        form.querySelectorAll('.is-invalid').forEach(input => {
+            input.classList.remove('is-invalid');
+        });
+         const adatkezError = form.querySelector('.adatkez-error');
+         if (adatkezError) adatkezError.style.display = 'none';
+         const recaptchaError = form.querySelector('.recaptcha-error');
+         if (recaptchaError) recaptchaError.style.display = 'none';
     }
-}
 
-function checkRecaptcha() {
-    let recaptchaResponse = grecaptcha.getResponse();
-    if (recaptchaResponse) {
-        if (recaptchaErrorSpan) {
-            recaptchaErrorSpan.style.display = 'none';
+    function showToast(message, type = 'success') {
+        if (!toastContainer) {
+            console.error('Toast container not found!');
+            alert(message);
+            return;
         }
+
+        const toastId = 'toast-' + Date.now();
+        const toastBgClass = type === 'success' ? 'text-bg-success' : 'text-bg-danger';
+
+        const toastHTML = `
+            <div id="${toastId}" class="toast align-items-center ${toastBgClass} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        `;
+
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+
+        const toastElement = document.getElementById(toastId);
+        const toastInstance = new bootstrap.Toast(toastElement);
+
+        toastElement.addEventListener('hidden.bs.toast', function () {
+            toastElement.remove();
+        });
+
+        toastInstance.show();
     }
-}
 
-form.addEventListener('submit', urlapValidalas);
-adatkezCheckbox.addEventListener('change', checkCheckbox);
-document.addEventListener('DOMContentLoaded', initInputEllenorzes);
+    if (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
 
-document.addEventListener('grecaptcha.onload', function () {
-    grecaptcha.render('recaptcha-container', {
-        'sitekey': '6Lfs-4kqAAAAACPZ6RbVLP0IAz9sBeCZrsYgRzHY',
-        'callback': checkRecaptcha,
-    });
+            if (!validateForm()) {
+                showToast('Kérjük, javítsa a hibákat az űrlapon!', 'danger');
+                return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Küldés...';
+
+            const formData = new FormData(form);
+            formData.append('adatkez', adatkezCheckbox.checked ? 'on' : 'off');
+
+            fetch('rolunk_form.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                 if (!response.ok) {
+                     throw new Error(`HTTP error! status: ${response.status}`);
+                 }
+                 return response.json();
+             })
+            .then(data => {
+                showToast(data.message, data.success ? 'success' : 'danger');
+
+                if (data.success) {
+                    form.reset();
+                    grecaptcha.reset();
+                    clearErrors();
+                } else {
+                     grecaptcha.reset();
+                }
+            })
+            .catch(error => {
+                console.error('Hiba a form elküldésekor:', error);
+                showToast('Hálózati vagy szerverhiba történt. Kérjük, próbálja meg később.', 'danger');
+                grecaptcha.reset();
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Küldés';
+            });
+        });
+    } else {
+         console.error("Az űrlap (uzenetKuldes-urlap) nem található!");
+     }
+
+     [nevInput, emailInput].forEach(input => {
+         input?.addEventListener('input', () => {
+             if (input.classList.contains('is-invalid')) {
+                 clearErrorForInput(input);
+             }
+         });
+     });
+     adatkezCheckbox?.addEventListener('change', () => {
+          if (form.querySelector('.adatkez-error')?.style.display === 'block') {
+              clearErrorForInput(adatkezCheckbox, true);
+          }
+     });
+
+     function clearErrorForInput(inputElement, isCheckbox = false) {
+         inputElement.classList.remove('is-invalid');
+         let errorElement;
+         if (isCheckbox) {
+             errorElement = form.querySelector('.adatkez-error');
+         } else {
+             errorElement = inputElement.closest('.inputMezo')?.querySelector('.error');
+         }
+         if (errorElement) {
+             errorElement.textContent = '';
+             errorElement.style.display = 'none';
+         }
+     }
 });

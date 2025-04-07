@@ -1,10 +1,6 @@
 <?php
 include './session.php';
 ob_start();
-
-$hiba = isset($_SESSION['hiba']) ? $_SESSION['hiba'] : '';
-$uzenet = isset($_SESSION['uzenet']) ? $_SESSION['uzenet'] : '';
-unset($_SESSION['hiba'], $_SESSION['uzenet']);
 ?>
 <!DOCTYPE html>
 <html lang="hu">
@@ -62,15 +58,6 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
             </div>
         </div>
         <div id="rolunk_form">
-            <!-- Üzenet megjelenítése -->
-            <div id="uzenet-helye">
-                <?php if (!empty($hiba)): ?>
-                    <div class="alert alert-danger" role="alert"><?php echo htmlspecialchars($hiba); ?></div>
-                <?php endif; ?>
-                <?php if (!empty($uzenet)): ?>
-                    <div class="alert alert-success" role="alert"><?php echo htmlspecialchars($uzenet); ?></div>
-                <?php endif; ?>
-            </div>
             <form method="POST" style="width: 100%;" id="uzenetKuldes-urlap">
                 <div class="mb-3">
                     <div class="inputMezo input-group">
@@ -118,52 +105,20 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
                 </div>
                 <span class="error recaptcha-error">Kérjük, igazolja, hogy nem robot!</span> <br hidden id="st">
-                <button type="submit" class="btn btn-primary" name="kuldes">Küldés</button>
+                <button type="submit" class="btn btn-primary" name="kuldes" id="kuldesGomb">Küldés</button>
             </form>
 
             <?php
-            include 'email_kuldes.php';
-
-            if (isset($_POST["kuldes"])) {
-                if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                    $_SESSION["hiba"] = "";
-                    $recaptcha_secret = '6Lfs-4kqAAAAAEy4wjpXoGPC3er4FusWos9bVmnh';
-                    $recaptcha_response = $_POST['g-recaptcha-response'];
-
-                    $verify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret={$recaptcha_secret}&response={$recaptcha_response}");
-                    $response_data = json_decode($verify);
-
-                    if (!$response_data->success) {
-                        $_SESSION["hiba"] = "reCAPTCHA ellenőrzés sikertelen! Kérlek, próbáld újra.";
-                        header("Location: " . $_SERVER['PHP_SELF']);
-                        exit;
-                    }
-
-                    $nev = $_POST['nev'];
-                    $email = $_POST['email'];
-                    $email_targya = $_POST['email_targya'] ?? "Nincs tárgy";
-                    $email_szovege = $_POST['email_szovege'] ?? "Nincs üzenet";
-
-                    $hiba = "";
-                    if (rolunkEmail($nev, $email, $email_targya, $email_szovege, $hiba)) {
-                        $_SESSION["uzenet"] = "Az üzenet sikeresen elküldve.";
-                    } else {
-                        $_SESSION["hiba"] = $hiba;
-                    }
-                    header("Location: " . $_SERVER['PHP_SELF']);
-                    exit;
-                } else {
-                    $_SESSION["hiba"] = "Hibás kérés!";
-                    header("Location: " . $_SERVER['PHP_SELF']);
-                    exit;
-                }
-            }
             ob_end_flush();
             ?>
         </div>
     </div>
 
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    </div>
+
     <?php include './back-to-top.php'; ?>
     <?php include "./footer.php"; ?>
 </body>
+
 </html>
