@@ -61,7 +61,7 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
                             <ul class="list-group">
                                 <?php foreach ($items as $item): ?>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <a href="termekOldal.php?cikkszam=<?= urlencode($item['termek_id']) ?>" class="text-decoration-none">
+                                        <a href="termekOldal.php?cikkszam=<?= urlencode($item['termek_id']) ?>" class="text-decoration-none" target="_blank">
                                             <?= htmlspecialchars($item['nev']) ?> (<?= htmlspecialchars($item['termek_id']) ?>)
                                         </a>
                                         <?php
