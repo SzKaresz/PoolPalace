@@ -336,6 +336,8 @@ async function kategoriaFeltolt() {
             }
         });
 
+        adjustSzuroHeight();
+
     } catch (error) {
         console.log(error);
     }
@@ -449,6 +451,8 @@ async function gyartoFeltolt() {
                 checkbox.checked = true;
             }
         });
+
+        adjustSzuroHeight();
 
     } catch (error) {
         console.log(error);
@@ -658,24 +662,24 @@ function displayProducts(products, totalItems, oldalSzam = 1, osszesOldal = 1) {
 }
 
 function adjustSzuroHeight() {
-    if (window.innerWidth < 1200) {
-        return;
-    }
-
-    let szuroContainer = document.getElementById("szuro-container");
-    let footer = document.querySelector("footer");
+    const szuroContainer = document.getElementById("szuro-container");
+    const footer = document.querySelector("footer");
 
     if (!szuroContainer || !footer) return;
 
-    let windowHeight = window.innerHeight;
-    let footerTop = footer.getBoundingClientRect().top;
-    let navbarHeight = 80;
+    const windowHeight = window.innerHeight;
+    const footerTop = footer.getBoundingClientRect().top;
+    const navbarHeight = 80;
+    const footerHeight = 72;
 
-    if (footerTop > windowHeight) {
-        szuroContainer.style.height = `calc(100vh - ${navbarHeight}px)`;
-    } else {
-        let availableHeight = footerTop - navbarHeight;
+    const availableHeight = footerTop - navbarHeight;
+
+    if (footerTop < windowHeight) {
         szuroContainer.style.height = `${availableHeight}px`;
+        szuroContainer.style.overflowY = "auto";
+    } else {
+        szuroContainer.style.height = `calc(100vh - ${navbarHeight}px)`;
+        szuroContainer.style.overflowY = "auto";
     }
 }
 
@@ -689,6 +693,7 @@ window.addEventListener("load", adjustSzuroHeight);
 function initEventListeners() {
     document.getElementById("szures_button").addEventListener("click", function () {
         loadProducts(1);
+        setTimeout(adjustSzuroHeight, 50);
     });
 
     document.getElementById('clear-filters').addEventListener('click', function () {

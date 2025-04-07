@@ -158,7 +158,6 @@ input.quantity-input::-webkit-outer-spin-button {
     margin-left: 320px;
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 100px);
     justify-content: space-between;
 }
 
@@ -776,7 +775,17 @@ a:hover {
     flex-wrap: wrap;
     gap: 6px;
     margin-top: 30px;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
+}
+
+#pagination-container-top {
+    margin-top: 0 !important;
+    margin-bottom: 15px !important;
+}
+
+#pagination-container-bottom {
+    margin-top: 10px !important;
+    margin-bottom: 30px !important;
 }
 
 .pagination-side {
