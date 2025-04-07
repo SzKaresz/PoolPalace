@@ -9,13 +9,13 @@ if (!isset($_SESSION['user_email'])) {
 
 $email = $_SESSION['user_email'];
 $stmt = $db->prepare("SELECT felhasznalok.nev, felhasznalok.email, felhasznalok.telefonszam,
-                            szallitasi_cim.iranyitoszam AS szallitasi_irsz, szallitasi_cim.telepules AS szallitasi_telepules,
-                            szallitasi_cim.utca_hazszam AS szallitasi_utca, szamlazasi_cim.iranyitoszam AS szamlazasi_irsz,
-                            szamlazasi_cim.telepules AS szamlazasi_telepules, szamlazasi_cim.utca_hazszam AS szamlazasi_utca
-                            FROM felhasznalok 
-                            INNER JOIN szallitasi_cim ON felhasznalok.szallitasi_cim_id = szallitasi_cim.id
-                            INNER JOIN szamlazasi_cim ON felhasznalok.szamlazasi_cim_id = szamlazasi_cim.id
-                            WHERE felhasznalok.email = ?");
+                           szallitasi_cim.iranyitoszam AS szallitasi_irsz, szallitasi_cim.telepules AS szallitasi_telepules,
+                           szallitasi_cim.utca_hazszam AS szallitasi_utca, szamlazasi_cim.iranyitoszam AS szamlazasi_irsz,
+                           szamlazasi_cim.telepules AS szamlazasi_telepules, szamlazasi_cim.utca_hazszam AS szamlazasi_utca
+                           FROM felhasznalok
+                           INNER JOIN szallitasi_cim ON felhasznalok.szallitasi_cim_id = szallitasi_cim.id
+                           INNER JOIN szamlazasi_cim ON felhasznalok.szamlazasi_cim_id = szamlazasi_cim.id
+                           WHERE felhasznalok.email = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -26,12 +26,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nev = !empty($_POST['nev']) ? $_POST['nev'] : $user['nev'];
     $uj_email = !empty($_POST['email']) ? $_POST['email'] : $user['email'];
     $telefonszam = !empty($_POST['telefonszam']) ? $_POST['telefonszam'] : $user['telefonszam'];
-    $szallitasi_irsz = !empty($_POST['szallitasi-irsz']) ? $_POST['szallitasi-irsz'] : $user['szallitasi-irsz'];
-    $szallitasi_telepules = !empty($_POST['szallitasi-telepules']) ? $_POST['szallitasi-telepules'] : $user['szallitasi-telepules'];
-    $szallitasi_utca = !empty($_POST['szallitasi-utca']) ? $_POST['szallitasi-utca'] : $user['szallitasi-utca'];
-    $szamlazasi_irsz = !empty($_POST['szamlazasi-irsz']) ? $_POST['szamlazasi-irsz'] : $user['szamlazasi-irsz'];
-    $szamlazasi_telepules = !empty($_POST['szamlazasi-telepules']) ? $_POST['szamlazasi-telepules'] : $user['szamlazasi-telepules'];
-    $szamlazasi_utca = !empty($_POST['szamlazasi-utca']) ? $_POST['szamlazasi-utca'] : $user['szamlazasi-utca'];
+    $szallitasi_irsz = !empty($_POST['szallitasi-irsz']) ? $_POST['szallitasi-irsz'] : $user['szallitasi_irsz'];
+    $szallitasi_telepules = !empty($_POST['szallitasi-telepules']) ? $_POST['szallitasi-telepules'] : $user['szallitasi_telepules'];
+    $szallitasi_utca = !empty($_POST['szallitasi-utca']) ? $_POST['szallitasi-utca'] : $user['szallitasi_utca'];
+    $szamlazasi_irsz = !empty($_POST['szamlazasi-irsz']) ? $_POST['szamlazasi-irsz'] : $user['szamlazasi_irsz'];
+    $szamlazasi_telepules = !empty($_POST['szamlazasi-telepules']) ? $_POST['szamlazasi-telepules'] : $user['szamlazasi_telepules'];
+    $szamlazasi_utca = !empty($_POST['szamlazasi-utca']) ? $_POST['szamlazasi-utca'] : $user['szamlazasi_utca'];
+
+    $uj_jelszo_post = isset($_POST['uj-jelszo']) ? trim($_POST['uj-jelszo']) : '';
+    $regi_jelszo_post = isset($_POST['regi-jelszo']) ? trim($_POST['regi-jelszo']) : '';
+    $uj_jelszo_ismet_post = isset($_POST['uj-jelszo-ismet']) ? trim($_POST['uj-jelszo-ismet']) : '';
 
     if ($uj_email !== $email) {
         $stmt = $db->prepare("SELECT email FROM felhasznalok WHERE email = ?");
@@ -48,21 +52,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->close();
     }
 
-    if (!empty($_POST['regi-jelszo']) || !empty($_POST['uj-jelszo']) || !empty($_POST['uj-jelszo-ismet'])) {
-        if (empty($_POST['regi-jelszo']) || empty($_POST['uj-jelszo']) || empty($_POST['uj-jelszo-ismet'])) {
-            $_SESSION['error_message'] = "A jelszó módosításához minden mezőt ki kell tölteni!";
+    if (!empty($uj_jelszo_post)) {
+        if (empty($regi_jelszo_post) || empty($uj_jelszo_ismet_post)) {
+            $_SESSION['error_message'] = "A jelszó módosításához a régi jelszót és az új jelszó megerősítését is meg kell adni!";
             header('Location: ' . $_SERVER['PHP_SELF']);
             exit;
         }
 
-        if ($_POST['uj-jelszo'] !== $_POST['uj-jelszo-ismet']) {
+        if ($uj_jelszo_post !== $uj_jelszo_ismet_post) {
             $_SESSION['error_message'] = "Az új jelszavak nem egyeznek meg!";
             header('Location: ' . $_SERVER['PHP_SELF']);
             exit;
         }
 
-        $regi_jelszo = $_POST['regi-jelszo'];
-        $uj_jelszo = $_POST['uj-jelszo'];
+        $regi_jelszo = $regi_jelszo_post;
+        $uj_jelszo = $uj_jelszo_post;
 
         $stmt = $db->prepare("SELECT jelszo FROM felhasznalok WHERE email = ?");
         $stmt->bind_param("s", $email);
@@ -85,12 +89,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $update_stmt = $db->prepare("UPDATE felhasznalok
-                                    INNER JOIN szallitasi_cim ON felhasznalok.szallitasi_cim_id = szallitasi_cim.id
-                                    INNER JOIN szamlazasi_cim ON felhasznalok.szamlazasi_cim_id = szamlazasi_cim.id
-                                    SET felhasznalok.nev = ?, felhasznalok.email = ?, felhasznalok.telefonszam = ?,
-                                        szallitasi_cim.iranyitoszam = ?, szallitasi_cim.telepules = ?, szallitasi_cim.utca_hazszam = ?,
-                                        szamlazasi_cim.iranyitoszam = ?, szamlazasi_cim.telepules = ?, szamlazasi_cim.utca_hazszam = ?
-                                    WHERE felhasznalok.email = ?");
+                                     INNER JOIN szallitasi_cim ON felhasznalok.szallitasi_cim_id = szallitasi_cim.id
+                                     INNER JOIN szamlazasi_cim ON felhasznalok.szamlazasi_cim_id = szamlazasi_cim.id
+                                     SET felhasznalok.nev = ?, felhasznalok.email = ?, felhasznalok.telefonszam = ?,
+                                         szallitasi_cim.iranyitoszam = ?, szallitasi_cim.telepules = ?, szallitasi_cim.utca_hazszam = ?,
+                                         szamlazasi_cim.iranyitoszam = ?, szamlazasi_cim.telepules = ?, szamlazasi_cim.utca_hazszam = ?
+                                     WHERE felhasznalok.email = ?");
     $update_stmt->bind_param(
         "ssssssssss",
         $nev,
@@ -233,7 +237,7 @@ unset($_SESSION['error_message']);
                 <div class="mb-3">
                     <div class="input-group">
                         <span class="input-group-text"><img src="../img/iranyitoszam.png" alt="Irányítószám ikon"></span>
-                        <input type="text" id="szamlazasi-irsz" name="szamlazasi-irsz" class="form-control" value="<?php echo htmlspecialchars($user['szamlazasi_irsz']); ?>" placeholder="Irányítószám">
+                        <input type="text" id="szamlazasi-irsz" name="szamlazasi-irsz" name="szamlazasi-irsz" class="form-control" value="<?php echo htmlspecialchars($user['szamlazasi_irsz']); ?>" placeholder="Irányítószám">
                         <span class="error"></span>
                     </div>
                 </div>

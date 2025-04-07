@@ -86,23 +86,60 @@ function hibasAdatok(mezo, helyesAdat) {
 
 function urlapValidalas(event) {
     let hiba = false;
+    const ujJelszoErtek = document.getElementById('uj-jelszo').value.trim();
+    const jelszoModositasFolyamatban = ujJelszoErtek !== '';
 
-    for (let i = 0; i < Object.values(mezok).length; i++) {
-        let { mezo, ellenorzes, hibaUzenet} = Object.values(mezok)[i];
+    Object.values(mezok).forEach(({ mezo }) => {
+        mezo.classList.remove('is-invalid', 'is-valid');
+        let errorSpan = mezo.nextElementSibling;
+        if (errorSpan && errorSpan.classList.contains('error')) {
+            errorSpan.textContent = '';
+            errorSpan.style.display = 'none';
+        }
+    });
 
-        if (!ellenorzes(mezo.value)) {
-            if (!ellenorzes(mezo.value)) {
-                error_span[i].innerHTML = hibaUzenet;
-                error_span[i].style.display = "block";
-                hibasAdatok(mezo, false);
-                hiba = true;
-                break;
+    for (let kulcs in mezok) {
+        let { mezo, ellenorzes, hibaUzenet, kotelezo } = mezok[kulcs];
+        let ertek = mezo.value.trim();
+        let ervenyes = true;
+        let aktualisHibaUzenet = hibaUzenet;
+
+        if (kulcs === 'regiJelszo' || kulcs === 'ujJelszo' || kulcs === 'ujJelszoUjra') {
+            if (!jelszoModositasFolyamatban && ertek === '') {
+                ervenyes = true;
+            } else if (jelszoModositasFolyamatban && ertek === '') {
+                ervenyes = false;
+                aktualisHibaUzenet = "A jelszó módosításához mindhárom jelszó mezőt ki kell tölteni!";
+            } else if (ertek !== '') {
+                ervenyes = ellenorzes(ertek);
+                if (kulcs === 'ujJelszoUjra' && !ervenyes) {
+                    aktualisHibaUzenet = mezok.ujJelszoUjra.hibaUzenet;
+                }
+            } else {
+                ervenyes = true;
             }
-            else {
-                error_span[i].innerHTML = "";
-                error_span[i].style.display = "none";
-                hibasAdatok(mezo, true);
+        } else {
+            const isKotelezo = kotelezo === true;
+            if (isKotelezo && ertek === '') {
+                ervenyes = false;
+                aktualisHibaUzenet = "Ez a mező kötelező!";
+            } else if (ertek !== '') {
+                ervenyes = ellenorzes(ertek);
+            } else {
+                ervenyes = true;
             }
+        }
+
+        if (!ervenyes) {
+            hibasAdatok(mezo, false);
+            let errorSpan = mezo.nextElementSibling;
+            if (errorSpan && errorSpan.classList.contains('error')) {
+                errorSpan.textContent = aktualisHibaUzenet;
+                errorSpan.style.display = 'block';
+            }
+            hiba = true;
+        } else {
+            hibasAdatok(mezo, true);
         }
     }
 
