@@ -47,7 +47,7 @@
 
                 <div class="mb-3">
                     <label for="productCode" class="form-label">Cikkszám</label>
-                    <input type="text" id="cikkszam" class="form-control" name="productCode" required>
+                    <input type="number" id="cikkszam" class="form-control" name="productCode" required>
                 </div>
 
                 <div class="mb-3">
