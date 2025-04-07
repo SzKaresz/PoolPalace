@@ -86,17 +86,17 @@ input.leiras-input[readonly][data-clickable="true"]:hover {
 
 @media (max-width: 992px) {
   .navbar-collapse {
-    background-color: var(--secondary-color);
-    padding: 10px;
-    border-radius: 8px;
+      background-color: var(--secondary-color);
+      padding: 10px;
+      border-radius: 8px;
   }
 
   .navbar-nav {
-    text-align: center;
+      text-align: center;
   }
 
   .navbar-nav .nav-item {
-    margin: 5px 0;
+      margin: 5px 0;
   }
 }
 
@@ -194,8 +194,8 @@ form {
 
 .search-icon img,
 .search-btn img {
-    width: 30px;
-    height: 30px;
+   width: 30px;
+   height: 30px;
 }
 
 .search-icon img {
@@ -374,13 +374,13 @@ form {
 
 @media (max-width: 767px) {
   .modal-dialog {
-      max-width: 100%;
-      margin: 0;
+       max-width: 100%;
+       margin: 0;
   }
   .modal-content {
-      height: 100vh;
-      border: none;
-      border-radius: 0;
+       height: 100vh;
+       border: none;
+       border-radius: 0;
   }
 }
 
@@ -398,8 +398,8 @@ form {
 
 @media (max-width: 767px) {
   .product-main-image {
-      max-height: 70vh;
-      max-width: 100%;
+       max-height: 70vh;
+       max-width: 100%;
   }
 }
 .upload {
@@ -440,8 +440,8 @@ form {
 
 @media (max-width: 576px) {
   .thumbnail-item {
-      width: 60px;
-      height: 40px;
+       width: 60px;
+       height: 40px;
   }
 }
 
@@ -451,43 +451,64 @@ form {
 
 .carousel-control-prev,
 .carousel-control-next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    bottom: auto;
-    width: auto;
-    padding: 0;
-    opacity: 0.5;
-    transition: opacity 0.15s ease;
+   position: absolute;
+   top: 50%;
+   transform: translateY(-50%);
+   bottom: auto;
+   width: auto;
+   padding: 0;
+   opacity: 0.5;
+   transition: opacity 0.15s ease;
 }
 
 .carousel-control-prev {
-    left: 0;
+   left: 0;
 }
 
 .carousel-control-next {
-    right: 0;
+   right: 0;
 }
 
 .carousel-control-prev:hover,
 .carousel-control-next:hover {
-    opacity: 0.9;
+   opacity: 0.9;
 }
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 50%;
-    padding: 5px;
-    width: 2rem;
-    height: 2rem;
+   background-color: rgba(0, 0, 0, 0.3);
+   border-radius: 50%;
+   padding: 5px;
+   width: 2rem;
+   height: 2rem;
 }
 
 @media (max-width: 576px) {
-    .carousel-control-prev-icon,
-    .carousel-control-next-icon {
-        width: 1rem;
-        height: 1rem;
-        padding: 2px;
-    }
+   .carousel-control-prev-icon,
+   .carousel-control-next-icon {
+       width: 1rem;
+       height: 1rem;
+       padding: 2px;
+   }
+}
+
+.thumbnail-item.upload-thumbnail {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--secondary-color);
+  opacity: 0.8;
+}
+
+.thumbnail-item.upload-thumbnail:hover {
+  opacity: 1;
+  background-color: var(--secondary-color);
+  border-color: var(--primary-color);
+}
+
+.thumbnail-item.upload-thumbnail i {
+  font-size: 1.5rem;
+}
+
+#kepModal input[type="file"] {
+  display: none;
 }

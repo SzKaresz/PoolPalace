@@ -82,16 +82,17 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="leirasModalLabel">Leírás Szerkesztése</h5>
+                    <h5 class="modal-title" id="leirasModalLabel">Leírás Megtekintése/Szerkesztése</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
                 </div>
                 <div class="modal-body">
-                    <textarea id="leirasTextarea" class="form-control" rows="15"></textarea>
+                    <textarea id="leirasTextarea" class="form-control" rows="15" readonly></textarea>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="leirasMegseBtn" data-bs-dismiss="modal">Mégse</button>
-                    <button type="button" class="btn btn-danger" id="leirasTartalomTorlesBtn">Törlés</button>
-                    <button type="button" class="btn btn-primary" id="leirasMenteseBtn">Mentés</button>
+                     <button type="button" class="btn btn-secondary" id="leirasMegseBtn" data-bs-dismiss="modal">Mégse</button>
+                     <button type="button" class="btn btn-info" id="leirasSzerkesztesBtn">Szerkesztés</button>
+                     <button type="button" class="btn btn-danger d-none" id="leirasTartalomTorlesBtn">Tartalom törlése</button>
+                     <button type="button" class="btn btn-primary d-none" id="leirasMenteseBtn">Mentés</button>
                 </div>
             </div>
         </div>
