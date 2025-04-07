@@ -102,7 +102,9 @@
                     <input type="file" class="form-control" name="productImages[]" id="productImages" multiple accept="image/*">
                 </div>
 
-                <button type="submit" id="felvitel_button" class="btn btn-primary" name="felvitel"><img src="../img/folder.png" alt="Felvitel" width="30"></button>
+                <button type="submit" id="felvitel_button" class="btn btn-primary d-inline-flex align-items-center gap-1" name="felvitel">
+                    <img src="../img/folder.png" alt="Felvitel" width="24" height="24"> Felvitel
+                </button>
             </form>
 
         </div>
@@ -129,4 +131,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>
