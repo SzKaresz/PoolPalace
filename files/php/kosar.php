@@ -148,13 +148,13 @@ if (isset($_SESSION['user_email'])) {
                     <?php endforeach; ?>
                 </tbody>
             </table>
-            <div class="row d-flex align-items-end justify-content-between cart-btns">
+            <div class="row d-flex align-items-end justify-content-between cart-btns" style="margin-bottom: 20px;">
                 <div class="col cart-delete"> <button type="button" class="delete-btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#clearCartModal">
                         Kosár kiürítése
                     </button>
                 </div>
                 <div class="col cart-summary">
-                    <h3>Összesen: <?= number_format($osszesen, 0, ',', ' ') ?> Ft</h3>
+                    <h3 class="osszesen">Összesen: <?= number_format($osszesen, 0, ',', ' ') ?> Ft</h3>
                     <button type="button" class="checkout-btn" onclick="window.location.href='megrendeles.php'">Tovább a fizetéshez</button>
                 </div>
             </div>

@@ -25,6 +25,11 @@ h2 {
     white-space: nowrap;
 }
 
+.osszesen {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 .quantity-btn:disabled {
     background: #aaa !important;
     cursor: not-allowed !important;
