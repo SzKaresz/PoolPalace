@@ -90,20 +90,18 @@ ob_start();
                     </div>
                 </div>
 
-                <div id="kartyak"></div>
-                <div class="pagination-container">
-                    <div class="pagination-side pagination-left">
-                        <button>«</button>
-                        <button>
-                            << /button>
-                    </div>
-
+                <div id="pagination-container-top" class="pagination-container">
+                    <div class="pagination-side pagination-left"></div>
                     <div class="pagination-center"></div>
+                    <div class="pagination-side pagination-right"></div>
+                </div>
 
-                    <div class="pagination-side pagination-right">
-                        <button>></button>
-                        <button>»</button>
-                    </div>
+                <div id="kartyak"></div>
+
+                <div id="pagination-container-bottom" class="pagination-container">
+                    <div class="pagination-side pagination-left"></div>
+                    <div class="pagination-center"></div>
+                    <div class="pagination-side pagination-right"></div>
                 </div>
             </div>
         </div>

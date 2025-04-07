@@ -127,13 +127,32 @@ function tetejere() {
 }
 
 function setupPagination(totalPages, current) {
-    const leftContainer = document.querySelector(".pagination-left");
-    const centerContainer = document.querySelector(".pagination-center");
-    const rightContainer = document.querySelector(".pagination-right");
+    const topContainer = document.getElementById("pagination-container-top");
+    const bottomContainer = document.getElementById("pagination-container-bottom");
+    const containers = [topContainer, bottomContainer].filter(c => c !== null);
 
-    leftContainer.innerHTML = "";
-    centerContainer.innerHTML = "";
-    rightContainer.innerHTML = "";
+    if (containers.length === 0) {
+        console.error("Egyik pagination container sem található!");
+        return;
+    }
+
+    containers.forEach(container => {
+        const left = container.querySelector(".pagination-left");
+        const center = container.querySelector(".pagination-center");
+        const right = container.querySelector(".pagination-right");
+        if (left) left.innerHTML = "";
+        if (center) center.innerHTML = "";
+        if (right) right.innerHTML = "";
+        container.style.display = 'none';
+    });
+
+    if (totalPages <= 1) {
+        return;
+    }
+
+    containers.forEach(container => {
+        container.style.display = 'flex';
+    });
 
     function createPageButton(label, page, disabled = false, isActive = false) {
         const button = document.createElement("button");
@@ -150,13 +169,6 @@ function setupPagination(totalPages, current) {
         return button;
     }
 
-    if (totalPages <= 1) {
-        return;
-    }
-
-    leftContainer.appendChild(createPageButton("«", 1, current === 1));
-    leftContainer.appendChild(createPageButton("<", current - 1, current === 1));
-
     const visibleCount = 5;
     let startPage = Math.max(1, current - Math.floor(visibleCount / 2));
     let endPage = startPage + visibleCount - 1;
@@ -166,12 +178,30 @@ function setupPagination(totalPages, current) {
         startPage = Math.max(1, endPage - visibleCount + 1);
     }
 
-    for (let i = startPage; i <= endPage; i++) {
-        centerContainer.appendChild(createPageButton(i, i, false, i === current));
-    }
+    containers.forEach(container => {
+        const left = container.querySelector(".pagination-left");
+        const center = container.querySelector(".pagination-center");
+        const right = container.querySelector(".pagination-right");
 
-    rightContainer.appendChild(createPageButton(">", current + 1, current === totalPages));
-    rightContainer.appendChild(createPageButton("»", totalPages, current === totalPages));
+        if (left) {
+             const btnFirst = createPageButton("«", 1, current === 1);
+             const btnPrev = createPageButton("<", current - 1, current === 1);
+             left.appendChild(btnFirst);
+             left.appendChild(btnPrev);
+        }
+        if (center) {
+            for (let i = startPage; i <= endPage; i++) {
+                 const btnPage = createPageButton(i, i, false, i === current);
+                 center.appendChild(btnPage);
+            }
+        }
+        if (right) {
+             const btnNext = createPageButton(">", current + 1, current === totalPages);
+             const btnLast = createPageButton("»", totalPages, current === totalPages);
+             right.appendChild(btnNext);
+             right.appendChild(btnLast);
+        }
+   });
 }
 
 function loadProducts(page = 1, sortType = '') {
