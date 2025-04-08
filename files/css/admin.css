@@ -22,6 +22,11 @@ body {
   background-color: #e9ecef;
 }
 
+#tablebody input.highlight-match {
+  border: 2px solid red !important;
+  background-color: #ffebeb;
+}
+
 #leiras[readonly]:hover {
   background-color: #dde2e6;
 }

@@ -335,6 +335,12 @@ input[type="range"]::-moz-range-thumb {
     pointer-events: all;
 }
 
+.form_control_container__time__input::-webkit-outer-spin-button,
+.form_control_container__time__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .szurofejlec h4 {
     font-size: 1.5rem;
     color: #333;
@@ -343,8 +349,6 @@ input[type="range"]::-moz-range-thumb {
 
 #szuro_kep img {
     height: 20px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
 }
 
 #szuro_kep img:hover {

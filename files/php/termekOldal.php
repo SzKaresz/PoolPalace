@@ -230,7 +230,7 @@ $kategoria_link = "termekek.php?kategoria=" . urlencode($kategoria_nev);
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="imageZoomModalLabel">Termékkép</h5>
+                    <h5 class="modal-title" id="imageZoomModalLabel"><?php echo nl2br(htmlspecialchars($termek['nev']));?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
                 </div>
                 <div class="modal-body d-flex justify-content-center align-items-center">
