@@ -63,7 +63,7 @@ $total_items = $total_result->fetch_assoc()['total'] ?? 0;
 $sort = isset($_GET['sort']) ? $_GET['sort'] : '';
 $orderSQL = "";
 
-if ($sort === "kiemelt") {
+if ($sort === "nepszeru") {
     $orderSQL = "ORDER BY 
         (SELECT COALESCE(SUM(tt.darabszam), 0) FROM tetelek tt WHERE tt.termek_id = t.cikkszam) DESC, 
         CAST(t.cikkszam AS UNSIGNED) ASC, 

@@ -79,7 +79,7 @@ ob_start();
                                 Rendezés
                             </button>
                             <ul id="dropdown-options" class="dropdown-menu dropdown-products">
-                                <li data-sort="kiemelt">Kiemelt</li>
+                                <li data-sort="nepszeru">Népszerű</li>
                                 <li data-sort="akcio">Akciós</li>
                                 <li data-sort="ar-novekvo">Ár növekvő</li>
                                 <li data-sort="ar-csokkeno">Ár csökkenő</li>
