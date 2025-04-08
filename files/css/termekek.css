@@ -343,8 +343,6 @@ input[type="range"]::-moz-range-thumb {
 
 #szuro_kep img {
     height: 20px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
 }
 
 #szuro_kep img:hover {
