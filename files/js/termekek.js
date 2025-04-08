@@ -253,6 +253,7 @@ function loadProducts(page = 1, sortType = '') {
         .then(data => {
             displayProducts(data.termekek, data.total_items, page, data.total_pages);
             setupPagination(data.total_pages, page);
+            adjustSzuroHeight();
         })
         .catch(error => console.error("Hiba a termékek betöltésekor:", error));
 }
