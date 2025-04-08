@@ -283,12 +283,10 @@ ob_end_flush();
                     </div>
                 </div>
 
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="same-as-shipping">
-                    <label class="form-check-label" for="same-as-shipping">
-                        Számlázási cím megegyezik a szállítási címmel
-                    </label>
-                </div>
+                <label class="form-check mb-3" for="same-as-shipping" style="cursor: pointer;">
+                    <input class="form-check-input" type="checkbox" id="same-as-shipping" style="pointer-events: none;">
+                    <span class="form-check-label">Számlázási cím megegyezik a szállítási címmel</span>
+                </label>
 
                 <div class="accordion" id="billingAccordion">
                     <div class="accordion-item">
@@ -316,19 +314,19 @@ ob_end_flush();
                 </div>
 
                 <div class="mb-3 mt-3">
-                    <label for="payment-method" class="form-label">Fizetési mód<span class="text-danger">*</span></label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="payment-method" id="payment-card" value="Bankkártyás fizetés" checked>
-                        <label class="form-check-label" for="payment-card">Bankkártyás fizetés</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="payment-method" id="payment-cash" value="Utánvét (készpénz)">
-                        <label class="form-check-label" for="payment-cash">Utánvét (készpénz)</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="payment-method" id="payment-transfer" value="Banki átutalás">
-                        <label class="form-check-label" for="payment-transfer">Banki átutalás</label>
-                    </div>
+                    <label class="form-label">Fizetési mód<span class="text-danger">*</span></label>
+                    <label class="form-check" for="payment-card" style="cursor: pointer;">
+                        <input class="form-check-input" type="radio" name="payment-method" id="payment-card" value="Bankkártyás fizetés" style="pointer-events: none;" checked>
+                        <span class="form-check-label">Bankkártyás fizetés</span>
+                    </label>
+                    <label class="form-check" for="payment-cash" style="cursor: pointer;">
+                        <input class="form-check-input" type="radio" name="payment-method" id="payment-cash" value="Utánvét (készpénz)" style="pointer-events: none;">
+                        <span class="form-check-label">Utánvét (készpénz)</span>
+                    </label>
+                    <label class="form-check" for="payment-transfer" style="cursor: pointer;">
+                        <input class="form-check-input" type="radio" name="payment-method" id="payment-transfer" value="Banki átutalás" style="pointer-events: none;">
+                        <span class="form-check-label">Banki átutalás</span>
+                    </label>
                 </div>
 
                 <button type="button" class="btn btn-primary w-100 mt-3" id="place-order-btn">Megrendelés leadása</button>
@@ -400,4 +398,5 @@ ob_end_flush();
     ob_end_flush();
     ?>
 </body>
+
 </html>
