@@ -9,3 +9,11 @@
     margin-left: 5px;
     margin-right: 5px;
 }
+
+.empty-order-wrapper {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

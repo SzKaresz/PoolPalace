@@ -32,13 +32,20 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
     <?php include 'navbar.php'; ?>
 
     <div class="container mt-5 mb-5">
-        <div class="text-center d-flex flex-column align-items-center">
-            <h2 class="mb-4">Rendeléseim</h2>
-
-            <?php if (empty($orders)): ?>
+        <?php if (empty($orders)): ?>
+            <div class="empty-order-wrapper text-center">
+                <h2 class="mb-3">Rendeléseim</h2>
                 <p class="text-muted">Még nem adtál le rendelést.</p>
-            <?php endif; ?>
-        </div>
+            </div>
+        <?php else: ?>
+            <h2 class="text-center my-4">Rendeléseim</h2>
+            <div class="container mt-4 mb-5">
+                <div class="accordion" id="orderAccordion">
+                    <?php foreach ($orders as $index => $order): ?>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; ?>
         <div class="accordion" id="orderAccordion">
             <?php foreach ($orders as $index => $order): ?>
                 <div class="accordion-item">
@@ -89,4 +96,5 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
     <?php include "./footer.php"; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
