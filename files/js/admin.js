@@ -1,5 +1,4 @@
 var termekAdatok;
-var torlendo_cikkszam;
 var eredetiAdatok = [];
 let leirasModalInstance = null;
 let kepModalInstance = null;
@@ -13,6 +12,10 @@ let leirasMegseBtn = null;
 let kepTorlesModalInstance = null;
 let kepTorlendoAdatok = null;
 let kepTorlesMegseClicked = false;
+
+let torlendo_cikkszam = null;
+let confirmOrderDeleteModalInstance = null;
+let torlesModalInstance = null;
 
 document.addEventListener('DOMContentLoaded', async function () {
     const leirasModalElement = document.getElementById('leirasModal');
@@ -104,7 +107,6 @@ document.addEventListener('DOMContentLoaded', async function () {
              });
          }
 
-
         kepTorlesModalElement.addEventListener('hidden.bs.modal', () => {
              if (kepTorlesMegseClicked) {
                  if (kepModalInstance) {
@@ -117,7 +119,6 @@ document.addEventListener('DOMContentLoaded', async function () {
              if (fajlnevElem) fajlnevElem.textContent = '';
         });
     }
-
 
     try {
         let keres = await fetch("../php/admin_adatleker.php");
@@ -163,26 +164,28 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     }
 
+     const confirmModalEl = document.getElementById('confirmOrderDeleteModal');
+     if (confirmModalEl) confirmOrderDeleteModalInstance = new bootstrap.Modal(confirmModalEl);
+
+     const torlesModalEl = document.getElementById('torlesModal');
+     if (torlesModalEl) torlesModalInstance = new bootstrap.Modal(torlesModalEl);
+
      const megerositesTorlesBtn = document.getElementById("megerositesTorles");
      if (megerositesTorlesBtn) {
          megerositesTorlesBtn.addEventListener("click", async function () {
-             if (torlendo_cikkszam) {
-                 let torlesEredmeny = await adatTorles(torlendo_cikkszam);
-                 const torlesModalElement = document.getElementById("torlesModal");
-                 if (torlesModalElement) {
-                     const torlesModalInstanceBs = bootstrap.Modal.getInstance(torlesModalElement);
-                     if (torlesModalInstanceBs) torlesModalInstanceBs.hide();
-                 }
+             if (torlendo_cikkszam && torlendo_cikkszam.cikkszam) {
+                 await executeDelete(torlendo_cikkszam);
+                 if (torlesModalInstance) torlesModalInstance.hide();
+             }
+         });
+     }
 
-                 if (torlesEredmeny.success) {
-                     showToast(torlesEredmeny.message || "A törlés sikeres!", "success");
-                     const rowToRemove = document.getElementById(`row-${torlendo_cikkszam.cikkszam}`);
-                     if (rowToRemove) rowToRemove.remove();
-                     eredetiAdatok = eredetiAdatok.filter(item => item.cikkszam.toString() !== torlendo_cikkszam.cikkszam.toString());
-                 } else {
-                     showToast(torlesEredmeny.message || "Hiba történt a törlés során.", "danger");
-                 }
-                 torlendo_cikkszam = null;
+     const confirmOrderDeleteBtn = document.getElementById("confirmOrderDeleteBtn");
+     if (confirmOrderDeleteBtn) {
+         confirmOrderDeleteBtn.addEventListener("click", async function () {
+             if (torlendo_cikkszam && torlendo_cikkszam.cikkszam) {
+                 await executeDelete(torlendo_cikkszam);
+                 if (confirmOrderDeleteModalInstance) confirmOrderDeleteModalInstance.hide();
              }
          });
      }
@@ -216,7 +219,6 @@ function handleLeirasSzerkesztes() {
 function handleLeirasMentes() {
     if (targetLeirasInput && leirasTextarea) {
         targetLeirasInput.value = leirasTextarea.value;
-
         const row = targetLeirasInput.closest('tr');
         if (row) {
             const cikkszam = row.id.split('-')[1];
@@ -322,7 +324,7 @@ function megjelenitTermekek(adat) {
             </tr>`;
     }
 
-     tablebody.addEventListener('click', function (event) {
+     tablebody.addEventListener('click', async function (event) {
         const target = event.target;
         const button = target.closest('button');
         const input = target.closest('input.leiras-input');
@@ -335,10 +337,32 @@ function megjelenitTermekek(adat) {
             handleModositasClick(row, cikkszam, button);
         } else if (button && button.classList.contains('torles')) {
             torlendo_cikkszam = { cikkszam: cikkszam };
-            const torlesModalElement = document.getElementById("torlesModal");
-            if (torlesModalElement) {
-                const modal = new bootstrap.Modal(torlesModalElement);
-                modal.show();
+            try {
+                let checkResponse = await fetch('../php/admin_check_termek_rendelesben.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cikkszam: cikkszam })
+                });
+                let checkResult = await checkResponse.json();
+
+                if (checkResult.success) {
+                    if (checkResult.inOrders) {
+                        if (!confirmOrderDeleteModalInstance) {
+                            confirmOrderDeleteModalInstance = new bootstrap.Modal(document.getElementById('confirmOrderDeleteModal'));
+                        }
+                        confirmOrderDeleteModalInstance.show();
+                    } else {
+                        if (!torlesModalInstance) {
+                            torlesModalInstance = new bootstrap.Modal(document.getElementById('torlesModal'));
+                        }
+                        torlesModalInstance.show();
+                    }
+                } else {
+                    showToast(checkResult.message || 'Hiba történt az ellenőrzés során.', 'danger');
+                }
+            } catch (error) {
+                console.error('Hiba az ellenőrzés során:', error);
+                showToast('Hiba történt az ellenőrzés során.', 'danger');
             }
         } else if (button && button.classList.contains('kepek')) {
             handleKepekClick(cikkszam);
@@ -346,12 +370,13 @@ function megjelenitTermekek(adat) {
         else if (input && input.classList.contains('leiras-input')) {
             targetLeirasInput = input;
             if (leirasModalInstance) {
-                if (isRowInEditMode(row)) {
-                    setLeirasModalToEditState();
-                } else {
-                    resetLeirasModalToReadOnly();
-                }
-                 leirasTextarea.value = targetLeirasInput.value;
+                 const row = targetLeirasInput.closest('tr');
+                 if (isRowInEditMode(row)) {
+                     setLeirasModalToEditState();
+                 } else {
+                     resetLeirasModalToReadOnly();
+                 }
+                leirasTextarea.value = targetLeirasInput.value;
                 leirasModalInstance.show();
             }
         }
@@ -361,6 +386,41 @@ function megjelenitTermekek(adat) {
              handleMegseClick(row, cikkszam, button);
         }
     });
+}
+
+async function adatTorles(torlendoAdat) {
+    try {
+        let keres = await fetch("../php/admin_torles.php", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(torlendoAdat)
+        });
+        let valasz = await keres.json();
+        return valasz;
+    } catch (error) {
+        console.error("Hiba az adatok törlésekor:", error);
+        showToast("Hiba történt az adatok törlésekor.", "danger");
+        return { success: false, message: "Hiba történt az adatok törlésekor (fetch hiba)." };
+    }
+}
+
+async function executeDelete(torlendoAdat) {
+    try {
+        let torlesEredmeny = await adatTorles(torlendoAdat);
+        if (torlesEredmeny.success) {
+            showToast(torlesEredmeny.message || "A törlés sikeres!", "success");
+            const rowToRemove = document.getElementById(`row-${torlendoAdat.cikkszam}`);
+            if (rowToRemove) rowToRemove.remove();
+            eredetiAdatok = eredetiAdatok.filter(item => item.cikkszam.toString() !== torlendoAdat.cikkszam.toString());
+        } else {
+            showToast(torlesEredmeny.message || "Hiba történt a törlés során.", "danger");
+        }
+    } catch (error) {
+        console.error('Hiba a törlés végrehajtása során:', error);
+        showToast('Hiba történt a törlés végrehajtása során.', 'danger');
+    } finally {
+        torlendo_cikkszam = null;
+    }
 }
 
 function handleMegseClick(row, cikkszam, sourceButton) {
@@ -584,7 +644,6 @@ async function handleKepekClick(cikkszam) {
                          }
                      });
 
-
                     kepIndex++;
                 }
             });
@@ -624,7 +683,6 @@ async function handleKepekClick(cikkszam) {
             kepModalBody.appendChild(fileInput);
          }
 
-
         frissitCarouselState(cikkszam);
 
     } catch (error) {
@@ -633,7 +691,6 @@ async function handleKepekClick(cikkszam) {
         carouselThumbnails.innerHTML = '';
     }
 }
-
 
 function frissitCarouselState(cikkszam, startIndex = 0) {
     const carouselElement = document.getElementById('productCarousel');
@@ -689,7 +746,6 @@ function frissitCarouselState(cikkszam, startIndex = 0) {
      const fileInput = document.getElementById(`fileInput-${cikkszam}`);
      if (fileInput) fileInput.value = "";
 }
-
 
 function handleCarouselSlide(event) {
     const activeIndex = event.to;
@@ -810,7 +866,6 @@ async function performKepTorles(cikkszam, kepUrl, carouselItemElem, thumbnailEle
     }
 }
 
-
 async function adatMentes(adatok) {
     try {
         let keres = await fetch("../php/admin_modositas_mentes.php", ({
@@ -868,22 +923,6 @@ function kiemelTalalatokat(kereses) {
             input.classList.add('highlight-match');
         }
     });
-}
-
-async function adatTorles(torlendoAdat) {
-    try {
-        let keres = await fetch("../php/admin_torles.php", ({
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(torlendoAdat)
-        }));
-        let valasz = await keres.json();
-        return valasz;
-    } catch (error) {
-        console.error("Hiba az adatok törlésekor:", error);
-        showToast("Hiba történt az adatok törlésekor.", "danger");
-        return { success: false, message: "Hiba történt az adatok törlésekor." };
-    }
 }
 
 function showToast(message, type = "success") {

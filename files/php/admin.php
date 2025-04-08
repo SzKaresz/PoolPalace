@@ -58,10 +58,10 @@
                     <textarea id="leirasTextarea" class="form-control" rows="15" readonly></textarea>
                 </div>
                 <div class="modal-footer">
-                     <button type="button" class="btn btn-secondary" id="leirasMegseBtn" data-bs-dismiss="modal">Mégse</button>
-                     <button type="button" class="btn btn-info" id="leirasSzerkesztesBtn">Szerkesztés</button>
-                     <button type="button" class="btn btn-danger d-none" id="leirasTartalomTorlesBtn">Tartalom törlése</button>
-                     <button type="button" class="btn btn-primary d-none" id="leirasMenteseBtn">Mentés és bezárás</button>
+                    <button type="button" class="btn btn-secondary" id="leirasMegseBtn" data-bs-dismiss="modal">Mégse</button>
+                    <button type="button" class="btn btn-info" id="leirasSzerkesztesBtn">Szerkesztés</button>
+                    <button type="button" class="btn btn-danger d-none" id="leirasTartalomTorlesBtn">Tartalom törlése</button>
+                    <button type="button" class="btn btn-primary d-none" id="leirasMenteseBtn">Mentés és bezárás</button>
                 </div>
             </div>
         </div>
@@ -90,9 +90,9 @@
                     <div class="d-flex justify-content-center flex-wrap gap-2 mt-3" id="carouselThumbnails">
                     </div>
                 </div>
-                 <div class="modal-footer">
-                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
-                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
+                </div>
             </div>
         </div>
     </div>
@@ -115,7 +115,7 @@
         </div>
     </div>
 
-     <div class="modal fade" id="kepTorlesModal" tabindex="-1" aria-labelledby="kepTorlesModalLabel" aria-hidden="true">
+    <div class="modal fade" id="kepTorlesModal" tabindex="-1" aria-labelledby="kepTorlesModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -129,6 +129,25 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
                     <button type="button" class="btn btn-danger" id="megerositesKepTorles">Törlés</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="confirmOrderDeleteModal" tabindex="-1" aria-labelledby="confirmOrderDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmOrderDeleteModalLabel">Figyelmeztetés!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+                </div>
+                <div class="modal-body">
+                    Ez a termék szerepel legalább egy megrendelésben. A törlésével ezekből a megrendelésekből is el lesz távolítva.
+                    <br><br>
+                    <strong>Biztosan törölni szeretné?</strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                    <button type="button" class="btn btn-danger" id="confirmOrderDeleteBtn">Törlés</button>
                 </div>
             </div>
         </div>
