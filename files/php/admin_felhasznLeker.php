@@ -9,7 +9,8 @@ $sql_leker = "SELECT
     szamlazasi_cim.utca_hazszam, 
     szallitasi_cim.iranyitoszam AS sziranyitoszam, 
     szallitasi_cim.telepules AS sztelepules, 
-    szallitasi_cim.utca_hazszam AS szutcahazszam  
+    szallitasi_cim.utca_hazszam AS szutcahazszam,
+    felhasznalok.jogosultsag  
 FROM felhasznalok 
 INNER JOIN szallitasi_cim ON szallitasi_cim.id = felhasznalok.szallitasi_cim_id 
 INNER JOIN szamlazasi_cim ON szamlazasi_cim.id = felhasznalok.szamlazasi_cim_id 

@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if ($user && password_verify($password, $user['jelszo'])) {
                 $_SESSION['user_email'] = $user['email'];
-                $_SESSION['user_nev'] = $user['nev'];
+                $_SESSION['user_jog'] = $user['jogosultsag'];
                 header('Location: index.php');
                 exit;
             }

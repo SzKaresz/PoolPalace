@@ -99,7 +99,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <hr class="dropdown-divider">
                         </li>
                         <li><a class="dropdown-item" href="./rendeleseim.php">Rendeléseim</a></li>
-                        <?php if (isset($_SESSION['user_nev']) && $_SESSION['user_nev'] === 'Admin'): ?>
+                        <?php if (isset($_SESSION['user_jog']) && $_SESSION['user_jog'] === 'admin'): ?>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>

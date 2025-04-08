@@ -87,7 +87,6 @@ async function accordFeltolt(id) {
                         <option value="Fizetve">Fizetve</option>
                         <option value="Szállítás alatt">Szállítás alatt</option>
                         <option value="Teljesítve">Teljesítve</option>
-                        <option value="Törölve">Törölve</option>
                     </select>
                 </div>
             </div>
@@ -216,8 +215,10 @@ document.addEventListener("click", function (event) {
                         let input = row.querySelector(".quantity-input");
                         input.setAttribute("data-original-value", input.value);
                     });
-                } else {
-                    showToast(result.messages, "danger");
+                }
+                else
+                {
+                    showToast(result.messages, "info");
                 }
             })
             .catch(error => {

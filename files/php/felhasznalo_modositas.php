@@ -13,6 +13,7 @@ $szutcahazszam = $input['szutcahazszam'] ?? null;
 $iranyitoszam = $input['iranyitoszam'] ?? null;
 $telepules = $input['telepules'] ?? null;
 $utcahazszam = $input['utca_hazszam'] ?? null;
+$jogosultsag = $input['jogosultsag']?? null;
 
 
 if ($email === null || $nev === null || $telefonszam === null) {
@@ -31,7 +32,8 @@ SET
     szallitasi_cim.utca_hazszam = '$szutcahazszam',
     szamlazasi_cim.iranyitoszam = '$iranyitoszam',
     szamlazasi_cim.telepules = '$telepules',
-    szamlazasi_cim.utca_hazszam = '$utcahazszam'
+    szamlazasi_cim.utca_hazszam = '$utcahazszam',
+    jogosultsag ='$jogosultsag'
 WHERE felhasznalok.email = '$email';
 ";
 $eredmeny = adatokValtoztatasa($muvelet);
@@ -39,6 +41,6 @@ $eredmeny = adatokValtoztatasa($muvelet);
 if ($eredmeny === "Sikeres művelet!") {
     echo json_encode(["success" => true, "message" => "A felhasználó frissítve!"]);
 } else {
-    echo json_encode(["status" => "error", "message" => "Sikertelen módosítás!"]);
+    echo json_encode(["status" => "error", "message" => "Nem történt változtatás!"]);
 }
 ?>

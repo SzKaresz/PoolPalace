@@ -3,21 +3,31 @@ async function felhasznaloLeker() {
         let keres = await fetch("../php/admin_felhasznLeker.php");
         if (keres.ok) {
             let valasz = await keres.json();
+            valasz.sort((a, b) => {
+                if (a.jogosultsag === "admin" && b.jogosultsag !== "admin") {
+                    return -1;
+                } else if (a.jogosultsag !== "admin" && b.jogosultsag === "admin") {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
             let felhasznaloDiv = document.getElementById("felhasznalok");
             felhasznaloDiv.innerHTML = ""; // Előző tartalom törlése
 
             for (const item of valasz) {
+                let szamlalo = 0
                 let kartya = document.createElement("div");
                 kartya.className = "card mb-3";
                 kartya.style.maxWidth = "100%";
                 kartya.innerHTML = `
                     <div class="row g-0">
                         <div class="col-md-1 d-flex align-items-center justify-content-center">
-                            <img src="${(item.nev == "Admin" ? "../img/admin.png" : "../img/users.png")}" class="img-fluid rounded-start" alt="Felhasználó ikon">
+                            <img src="${(item.jogosultsag == "admin" ? "../img/admin.png" : "../img/users.png")}" class="img-fluid rounded-start" alt="Felhasználó ikon">
                         </div>
                         <div class="col-md-11">
                             <div class="card-body row">
-                                <div class="col-md-4 col-12">
+                                <div class="col-md-3 col-12">
                                     <h3>Személyes adatok</h3>
                                     <form>
                                         <label for="nev">Név</label>
@@ -28,7 +38,7 @@ async function felhasznaloLeker() {
                                         <input type="text" class="form-control szerkesztheto" value="${item.telefonszam}" disabled>
                                     </form>
                                 </div>
-                                <div class="col-md-4 col-12">
+                                <div class="col-md-3 col-12">
                                     <h3>Szállítási adatok</h3>
                                     <form>
                                         <label for="sziranyitoszam">Irányítószám</label>
@@ -39,7 +49,7 @@ async function felhasznaloLeker() {
                                         <input type="text" class="form-control szerkesztheto" value="${item.szutcahazszam}" disabled>
                                     </form>
                                 </div>
-                                <div class="col-md-4 col-12">
+                                <div class="col-md-3 col-12">
                                     <h3>Számlázási adatok</h3>
                                     <form>
                                         <label for="iranyitoszam">Irányítószám</label>
@@ -50,6 +60,23 @@ async function felhasznaloLeker() {
                                         <input type="text" class="form-control szerkesztheto" value="${item.utca_hazszam}" disabled>
                                     </form>
                                 </div>
+                                <div class="col-md-3 col-12">
+                                    <h3>Jogosultság</h3>
+                                    <div class="form-check">
+                                        <input class="form-check-input szerkesztheto" type="radio" name="jogosultsag_${item.nev}" value="admin" id="admin_jog_${item.nev}" ${item.jogosultsag === "admin" ? "checked" : ""} disabled>
+                                        <label class="form-check-label" for="admin_jog_${item.nev}">
+                                            Admin
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input szerkesztheto" type="radio" name="jogosultsag_${item.nev}" value="felhasználó" id="felhaszn_jog_${item.nev}" ${item.jogosultsag !== "admin" ? "checked" : ""} disabled>
+                                        <label class="form-check-label" for="felhaszn_jog_${item.nev}">
+                                            Felhasználó
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
                             </div>
                             <div class="text-end p-3">
                             <button class="btn btn-outline-secondary modositas-gomb">
@@ -61,7 +88,7 @@ async function felhasznaloLeker() {
                             <button class="btn btn-outline-secondary vissza-gomb d-none">
                                 <img src="../img/back.png" alt="Vissza" width="30">
                             </button>
-                            <button class="btn btn-outline-danger torles-gomb ${(item.nev != "Admin") ? "" : "d-none"}" data-id="${item.email}">
+                            <button class="btn btn-outline-danger torles-gomb ${(item.jogosultsag != "admin") ? "" : "d-none"}" data-id="${item.email}">
                                 <img src="../img/delete.png" alt="Törlés" width="30">
                             </button>
                         </div>
@@ -87,6 +114,11 @@ async function felhasznaloLeker() {
                 });
 
                 mentesGomb.addEventListener("click", async function () {
+                    const kartya = this.closest(".card");
+                    const nev = kartya.querySelector('input[name^="jogosultsag_"]').name.split("_")[1];
+                    const checkedRadio = kartya.querySelector(`input[name="jogosultsag_${nev}"]:checked`);
+                    const jogosultsag = checkedRadio ? checkedRadio.value : null;
+
                     let adatok = {
                         email: item.email,
                         nev: inputMezok[0].value,
@@ -96,7 +128,9 @@ async function felhasznaloLeker() {
                         szutcahazszam: inputMezok[4].value,
                         iranyitoszam: inputMezok[5].value,
                         telepules: inputMezok[6].value,
-                        utca_hazszam: inputMezok[7].value
+                        utca_hazszam: inputMezok[7].value,
+                        jogosultsag:jogosultsag
+
                     };
 
                     let mentesSikeres = await felhasznaloModosit(adatok);
@@ -107,8 +141,10 @@ async function felhasznaloLeker() {
                         modositasGomb.classList.remove("d-none");
                         mentesGomb.classList.add("d-none");
                         visszaGomb.classList.add("d-none");
+                        felhasznaloLeker()
                     } else {
-                        showToast(mentesSikeres.message, "danger");
+                        showToast(mentesSikeres.message, "info");
+                        felhasznaloLeker()
                     }
 
                 });
@@ -144,8 +180,8 @@ async function felhasznaloLeker() {
                         torlendoEmail = null;
                     }
                 });
-               
-                
+
+
 
             }
         }
