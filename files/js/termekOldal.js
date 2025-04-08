@@ -2,11 +2,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const productContainer = document.querySelector('.add-to-cart-section');
     const carouselElement = document.getElementById('productCarousel');
 
-    const quantityInput = productContainer?.querySelector('.quantity-input');
-    const minusBtn = productContainer?.querySelector('.quantity-btn.minus');
-    const plusBtn = productContainer?.querySelector('.quantity-btn.plus');
-    const addToCartBtn = productContainer?.querySelector('.add-to-cart');
-
     let cikkszam = null;
     let maxStock = 1;
     let quantityInCart = 0;
@@ -15,164 +10,160 @@ document.addEventListener('DOMContentLoaded', function () {
         cikkszam = productContainer.dataset.cikkszam;
         maxStock = parseInt(productContainer.dataset.maxKeszlet || '1');
         quantityInCart = parseInt(productContainer.dataset.inCartQuantity || '0');
-    } else {
-        setupCarousel();
-        updateCartCountOnLoad();
-        return;
-    }
 
-    if (quantityInput && minusBtn && plusBtn && addToCartBtn && cikkszam) {
+        const quantityInput = productContainer.querySelector('.quantity-input');
+        const minusBtn = productContainer.querySelector('.quantity-btn.minus');
+        const plusBtn = productContainer.querySelector('.quantity-btn.plus');
+        const addToCartBtn = productContainer.querySelector('.add-to-cart');
 
-        function updateQuantityButtons() {
-            try {
-                const currentValue = parseInt(quantityInput.value);
-                if (minusBtn) minusBtn.disabled = currentValue <= 1;
-                if (plusBtn) plusBtn.disabled = currentValue >= maxStock;
-            } catch (e) {
-                console.error("Hiba a gombok frissítésekor:", e);
+        if (quantityInput && minusBtn && plusBtn && addToCartBtn && cikkszam) {
+
+            function updateQuantityButtons() {
+                try {
+                    const currentValue = parseInt(quantityInput.value);
+                    if (minusBtn) minusBtn.disabled = currentValue <= 1;
+                    if (plusBtn) plusBtn.disabled = currentValue >= maxStock;
+                } catch (e) {
+                    console.error("Hiba a gombok frissítésekor:", e);
+                }
             }
-        }
 
-        function handleCounterChange(change) {
-            let currentValue = parseInt(quantityInput.value);
-            if (isNaN(currentValue)) currentValue = 1;
-            let newValue = currentValue + change;
+            function handleCounterChange(change) {
+                let currentValue = parseInt(quantityInput.value);
+                if (isNaN(currentValue)) currentValue = 1;
+                let newValue = currentValue + change;
 
-            if (newValue < 1) newValue = 1;
-            else if (newValue > maxStock) newValue = maxStock;
+                if (newValue < 1) newValue = 1;
+                else if (newValue > maxStock) newValue = maxStock;
 
-            quantityInput.value = newValue;
-            updateQuantityButtons();
-        }
-
-        function handleManualInputChange() {
-            let currentValue = parseInt(quantityInput.value);
-            if (isNaN(currentValue) || currentValue < 1) currentValue = 1;
-            else if (currentValue > maxStock) currentValue = maxStock;
-
-            quantityInput.value = currentValue;
-            updateQuantityButtons();
-        }
-
-        function handleAddToCart(event) {
-            const quantityToAdd = parseInt(quantityInput.value);
-            if (isNaN(quantityToAdd) || quantityToAdd < 1) {
-                showToast("Kérjük, adjon meg érvényes mennyiséget (legalább 1).", "warning");
-                quantityInput.value = 1;
+                quantityInput.value = newValue;
                 updateQuantityButtons();
-                return;
             }
 
-            quantityInCart = parseInt(productContainer.dataset.inCartQuantity || '0');
+            function handleManualInputChange() {
+                let currentValue = parseInt(quantityInput.value);
+                if (isNaN(currentValue) || currentValue < 1) currentValue = 1;
+                else if (currentValue > maxStock) currentValue = maxStock;
 
-            if ((quantityInCart + quantityToAdd) > maxStock) {
-                const availableToAdd = maxStock - quantityInCart;
-                let message = `Sajnos csak ${maxStock} db van raktáron. `;
-                if (quantityInCart > 0) message += `Jelenleg ${quantityInCart} db van a kosaradban. `;
-                message += availableToAdd > 0 ? `Maximum ${availableToAdd} db-ot tudsz hozzáadni.` : `Nem tudsz többet hozzáadni.`;
-                showToast(message, "warning");
-                quantityInput.value = Math.max(1, availableToAdd);
+                quantityInput.value = currentValue;
                 updateQuantityButtons();
-                return;
             }
 
-            addToCartBtn.disabled = true;
-            addToCartBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Feldolgozás...`;
+            function handleAddToCart(event) {
+                const quantityToAdd = parseInt(quantityInput.value);
+                if (isNaN(quantityToAdd) || quantityToAdd < 1) {
+                    showToast("Kérjük, adjon meg érvényes mennyiséget (legalább 1).", "warning");
+                    quantityInput.value = 1;
+                    updateQuantityButtons();
+                    return;
+                }
 
-            fetch("../php/kosarMuvelet.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                body: JSON.stringify({
-                    action: "add",
-                    termek_id: cikkszam,
-                    mennyiseg: quantityToAdd
+                quantityInCart = parseInt(productContainer.dataset.inCartQuantity || '0');
+
+                if ((quantityInCart + quantityToAdd) > maxStock) {
+                    const availableToAdd = maxStock - quantityInCart;
+                    let message = `Sajnos csak ${maxStock} db van raktáron. `;
+                    if (quantityInCart > 0) message += `Jelenleg ${quantityInCart} db van a kosaradban. `;
+                    message += availableToAdd > 0 ? `Maximum ${availableToAdd} db-ot tudsz hozzáadni.` : `Nem tudsz többet hozzáadni.`;
+                    showToast(message, "warning");
+                    quantityInput.value = Math.max(1, availableToAdd);
+                    updateQuantityButtons();
+                    return;
+                }
+
+                addToCartBtn.disabled = true;
+                addToCartBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Feldolgozás...`;
+
+                fetch("../php/kosarMuvelet.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                    body: JSON.stringify({
+                        action: "add",
+                        termek_id: cikkszam,
+                        mennyiseg: quantityToAdd
+                    })
                 })
-            })
-                .then(res => {
-                    if (!res.ok) { throw new Error(`HTTP error! status: ${res.status}`); }
-                    return res.json();
+                    .then(res => {
+                        if (!res.ok) { throw new Error(`HTTP error! status: ${res.status}`); }
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (data && data.success) {
+                            updateCartCount();
+                            if (typeof animateToCart === 'function') animateToCart(event);
+
+                            quantityInput.value = 1;
+                            updateQuantityButtons();
+
+                            if (typeof data.uj_kosar_mennyiseg_termek !== "undefined") {
+                                productContainer.dataset.inCartQuantity = data.uj_kosar_mennyiseg_termek;
+                            } else {
+                                productContainer.dataset.inCartQuantity = quantityInCart + quantityToAdd;
+                            }
+
+                        } else {
+                            showToast(data?.error || "Nem sikerült a terméket kosárba tenni.", "danger");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Hiba a kosárba helyezéskor:", error);
+                        showToast("Hálózati hiba vagy szerverhiba történt a kosárba helyezéskor.", "danger");
+                    })
+                    .finally(() => {
+                        addToCartBtn.disabled = false;
+                        addToCartBtn.innerHTML = `<img src="../img/cart.png" class="cart-icon-img" alt="Kosár"> Kosárba`;
+                    });
+            }
+
+            plusBtn.addEventListener('click', () => handleCounterChange(1));
+            minusBtn.addEventListener('click', () => handleCounterChange(-1));
+            quantityInput.addEventListener('change', handleManualInputChange);
+            quantityInput.addEventListener('blur', handleManualInputChange);
+            quantityInput.addEventListener("keypress", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleManualInputChange();
+                    quantityInput.blur();
+                }
+            });
+            addToCartBtn.addEventListener('click', handleAddToCart);
+
+            function initializeQuantity() {
+                fetch("../php/kosarMuvelet.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                    body: JSON.stringify({ action: "getCart" })
                 })
-                .then(data => {
-                    if (data && data.success) {
-                        updateCartCount();
-                        if (typeof animateToCart === 'function') animateToCart(event);
+                    .then(res => {
+                        if (!res.ok) { throw new Error(`HTTP error! status: ${res.status}`); }
+                        return res.json();
+                    })
+                    .then(data => {
+                        let actualInCart = 0;
+                        if (data.success && Array.isArray(data.kosar)) {
+                            const foundItem = data.kosar.find(item => item.termek_id === cikkszam);
+                            if (foundItem) {
+                                actualInCart = parseInt(foundItem.darabszam || '0');
+                            }
+                        } else if (data.success === false) {
+                            actualInCart = 0;
+                        } else {
+                            actualInCart = 0;
+                        }
+                        productContainer.dataset.inCartQuantity = actualInCart;
 
                         quantityInput.value = 1;
                         updateQuantityButtons();
-
-                        if (typeof data.uj_kosar_mennyiseg_termek !== "undefined") {
-                            productContainer.dataset.inCartQuantity = data.uj_kosar_mennyiseg_termek;
-                        } else {
-                            productContainer.dataset.inCartQuantity = quantityInCart + quantityToAdd;
-                        }
-
-                    } else {
-                        showToast(data?.error || "Nem sikerült a terméket kosárba tenni.", "danger");
-                    }
-                })
-                .catch(error => {
-                    console.error("Hiba a kosárba helyezéskor:", error);
-                    showToast("Hálózati hiba vagy szerverhiba történt a kosárba helyezéskor.", "danger");
-                })
-                .finally(() => {
-                    addToCartBtn.disabled = false;
-                    addToCartBtn.innerHTML = `<img src="../img/cart.png" class="cart-icon-img" alt="Kosár"> Kosárba`;
-                });
-        }
-
-        plusBtn.addEventListener('click', () => handleCounterChange(1));
-        minusBtn.addEventListener('click', () => handleCounterChange(-1));
-        quantityInput.addEventListener('change', handleManualInputChange);
-        quantityInput.addEventListener('blur', handleManualInputChange);
-        quantityInput.addEventListener("keypress", function (e) {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                handleManualInputChange();
-                quantityInput.blur();
+                    })
+                    .catch(error => {
+                        console.error("Hiba a kosár tartalmának kezdeti lekérésekor:", error);
+                        quantityInput.value = 1;
+                        updateQuantityButtons();
+                    });
             }
-        });
-        addToCartBtn.addEventListener('click', handleAddToCart);
 
-        function initializeQuantity() {
-            fetch("../php/kosarMuvelet.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                body: JSON.stringify({ action: "getCart" })
-            })
-                .then(res => {
-                    if (!res.ok) { throw new Error(`HTTP error! status: ${res.status}`); }
-                    return res.json();
-                })
-                .then(data => {
-                    let actualInCart = 0;
-                    if (data.success && Array.isArray(data.kosar)) {
-                        const foundItem = data.kosar.find(item => item.termek_id === cikkszam);
-                        if (foundItem) {
-                            actualInCart = parseInt(foundItem.darabszam || '0');
-                        }
-                    } else if (data.success === false) {
-                        console.log("Kosár lekérése sikertelen (pl. nincs bejelentkezve?), inicializálás 0-val.");
-                        actualInCart = 0;
-                    } else {
-                        console.warn("Váratlan válasz a kosár lekérésekor, inicializálás 0-val.");
-                        actualInCart = 0;
-                    }
-                    productContainer.dataset.inCartQuantity = actualInCart;
-
-                    quantityInput.value = 1;
-                    updateQuantityButtons();
-                })
-                .catch(error => {
-                    console.error("Hiba a kosár tartalmának kezdeti lekérésekor:", error);
-                    quantityInput.value = 1;
-                    updateQuantityButtons();
-                });
+            initializeQuantity();
         }
-
-        initializeQuantity();
-
-    } else {
-
     }
 
     function setupCarousel() {
@@ -206,7 +197,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const imageZoomModalElement = document.getElementById('imageZoomModal');
     const zoomedImage = document.getElementById('zoomedImage');
-    const productCarouselElement = document.getElementById('productCarousel');
     const modalBody = imageZoomModalElement ? imageZoomModalElement.querySelector('.modal-body') : null;
 
     let imageZoomModalInstance = null;
@@ -214,7 +204,6 @@ document.addEventListener('DOMContentLoaded', function () {
         imageZoomModalInstance = new bootstrap.Modal(imageZoomModalElement);
     }
 
-    // Pan változók
     let isDragging = false;
     let startX, startY;
     let initialImageX = 0;
@@ -222,27 +211,24 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentX = 0;
     let currentY = 0;
 
-    // Zoom változók
     let currentScale = 1;
-    const minScale = 1;     // Minimális nagyítás (eredeti méret)
-    const maxScale = 4;     // Maximális nagyítási szint (pl. 4x)
-    const zoomFactor = 1.1; // Nagyítás/kicsinyítés mértéke görgetésenként
+    const minScale = 1;
+    const maxScale = 4;
+    const zoomFactor = 1.1;
 
-    // Eseménykezelő a carousel képekre kattintáshoz (változatlan)
-    if (productCarouselElement && zoomedImage && imageZoomModalInstance) {
-        productCarouselElement.addEventListener('click', function(event) {
-            const activeItem = productCarouselElement.querySelector('.carousel-item.active');
+    if (carouselElement && zoomedImage && imageZoomModalInstance) {
+        carouselElement.addEventListener('click', function (event) {
+            const activeItem = carouselElement.querySelector('.carousel-item.active');
             if (!activeItem) return;
             const clickedImage = event.target.closest('.zoomable-image');
             if (clickedImage && activeItem.contains(clickedImage)) {
                 event.preventDefault();
-                // Reset zoom and pan on open
                 currentScale = 1;
                 currentX = 0;
                 currentY = 0;
                 initialImageX = 0;
                 initialImageY = 0;
-                zoomedImage.style.transformOrigin = 'center center'; // Alapértelmezett origó
+                zoomedImage.style.transformOrigin = 'center center';
                 zoomedImage.style.transform = 'translate(0px, 0px) scale(1)';
                 zoomedImage.src = clickedImage.src;
                 imageZoomModalInstance.show();
@@ -250,7 +236,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Egérgörgő eseménykezelő a zoomhoz (modal body-n)
     if (modalBody && zoomedImage) {
         modalBody.addEventListener('wheel', (e) => {
             e.preventDefault();
@@ -276,14 +261,14 @@ document.addEventListener('DOMContentLoaded', function () {
             currentScale = newScale;
 
             if (currentScale <= minScale) {
-                 currentX = 0;
-                 currentY = 0;
+                currentX = 0;
+                currentY = 0;
             } else {
-                 currentX *= (currentScale / oldScale);
-                 currentY *= (currentScale / oldScale);
-                 const bounds = getPanBoundaries(zoomedImage, modalBody, currentScale);
-                 currentX = Math.max(bounds.minX, Math.min(bounds.maxX, currentX));
-                 currentY = Math.max(bounds.minY, Math.min(bounds.maxY, currentY));
+                currentX *= (currentScale / oldScale);
+                currentY *= (currentScale / oldScale);
+                const bounds = getPanBoundaries(zoomedImage, modalBody, currentScale);
+                currentX = Math.max(bounds.minX, Math.min(bounds.maxX, currentX));
+                currentY = Math.max(bounds.minY, Math.min(bounds.maxY, currentY));
             }
 
             zoomedImage.style.transform = `translate(${currentX}px, ${currentY}px) scale(${currentScale})`;
@@ -334,23 +319,23 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-     function getPanBoundaries(imageElement, containerElement, scale) {
-         const imageRect = imageElement.getBoundingClientRect();
-         const containerRect = containerElement.getBoundingClientRect();
+    function getPanBoundaries(imageElement, containerElement, scale) {
+        const imageRect = imageElement.getBoundingClientRect();
+        const containerRect = containerElement.getBoundingClientRect();
 
-         const scaledWidth = imageRect.width;
-         const scaledHeight = imageRect.height;
+        const scaledWidth = imageRect.width;
+        const scaledHeight = imageRect.height;
 
-         const overflowX = scaledWidth - containerRect.width;
-         const overflowY = scaledHeight - containerRect.height;
+        const overflowX = scaledWidth - containerRect.width;
+        const overflowY = scaledHeight - containerRect.height;
 
-         const maxX = overflowX > 0 ? overflowX / 2 : 0;
-         const minX = overflowX > 0 ? -overflowX / 2 : 0;
-         const maxY = overflowY > 0 ? overflowY / 2 : 0;
-         const minY = overflowY > 0 ? -overflowY / 2 : 0;
+        const maxX = overflowX > 0 ? overflowX / 2 : 0;
+        const minX = overflowX > 0 ? -overflowX / 2 : 0;
+        const maxY = overflowY > 0 ? overflowY / 2 : 0;
+        const minY = overflowY > 0 ? -overflowY / 2 : 0;
 
-         return { minX, maxX, minY, maxY };
-     }
+        return { minX, maxX, minY, maxY };
+    }
 
     if (imageZoomModalElement) {
         imageZoomModalElement.addEventListener('hidden.bs.modal', () => {
@@ -360,11 +345,11 @@ document.addEventListener('DOMContentLoaded', function () {
             currentY = 0;
             initialImageX = 0;
             initialImageY = 0;
-            if(modalBody) modalBody.classList.remove('zoomed-image-dragging');
-            if(zoomedImage) {
-                 zoomedImage.style.transformOrigin = 'center center';
-                 zoomedImage.style.transform = 'translate(0px, 0px) scale(1)';
-                 zoomedImage.src = "";
+            if (modalBody) modalBody.classList.remove('zoomed-image-dragging');
+            if (zoomedImage) {
+                zoomedImage.style.transformOrigin = 'center center';
+                zoomedImage.style.transform = 'translate(0px, 0px) scale(1)';
+                zoomedImage.src = "";
             }
         });
     }
@@ -381,7 +366,6 @@ function getProductImageForAnimation() {
         return firstCarouselImage;
     }
 
-    console.warn("Nem található kép az animációhoz.");
     return null;
 }
 
@@ -424,10 +408,10 @@ function showToast(message, type = "danger") {
 
 function animateToCart(event) {
     const cartIcon = document.querySelector(".cart-icon img");
-    if (!cartIcon) { console.warn("Kosár ikon (.cart-icon img) nem található."); return; }
+    if (!cartIcon) { return; }
 
     const productImage = getProductImageForAnimation();
-    if (!productImage) { console.warn("Nem található kép az animációhoz."); return; }
+    if (!productImage) { return; }
 
     const img = document.createElement("img");
     img.src = productImage.src;
