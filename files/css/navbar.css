@@ -104,7 +104,7 @@
     margin: 0 auto;
     background: none;
     cursor: pointer;
-    margin-left: 10px;
+    margin-left: 20px;
 }
 
 
@@ -515,12 +515,11 @@
 #remove {
     background-color: white;
     border-color: lightgray;
-    font-size:larger;
+    font-size: larger;
     border-left: none;
     border-radius: 0px 5px 5px 0px;
-    margin-right: 10px;
     display: flex;
-    align-items: center; 
+    align-items: center;
     justify-content: center;
     padding: 0 10px;
 }
@@ -529,4 +528,156 @@
     box-shadow: none !important;
     outline: none;
     border-right: none;
+}
+
+.search-container {
+    position: relative;
+    width: 100%;
+}
+
+.keresoGroup {
+    max-width: 440px;
+    position: relative;
+    width: 100%;
+}
+
+.search-results-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1051;
+    width: 100%;
+    max-height: 350px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: none;
+
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+
+    box-sizing: border-box;
+}
+
+.search-results-list a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    color: #293144;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    border-bottom: 1px solid #eee;
+}
+
+.search-results-list a:last-child {
+    border-bottom: none;
+}
+
+.search-results-list a:hover {
+    background-color: #f0f8ff;
+    transform: scale(1.02);
+    font-weight: 600;
+}
+
+.search-results-list a .item-name {
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-results-list a .item-thumb {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    object-fit: contain;
+    border-radius: 6px;
+    background-color: #f2f2f2;
+    padding: 2px;
+}
+
+.search-results-list a .item-price {
+    color: #22aa77;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.keresoGroup.dropdown-visible input.form-control {
+    border-bottom-left-radius: 0 !important;
+}
+
+.keresoGroup.dropdown-visible #remove {
+    border-bottom-right-radius: 0 !important;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    text-decoration: none;
+    cursor: pointer;
+    color: #333;
+    background-color: #fff;
+    transition: background-color 0.2s ease;
+}
+
+.search-result-item:hover {
+    background-color: #f7f7f7;
+}
+
+.search-result-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    margin-right: 10px;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+}
+
+.search-result-text {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.search-result-name {
+    font-weight: 500;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 240px;
+}
+
+.search-result-price {
+    font-size: 14px;
+    color: #1e88e5;
+    font-weight: 600;
+}
+
+@media (max-width: 1199px) {
+    .search-container {
+        position: relative;
+        z-index: 1050;
+    }
+
+    .keresoGroup {
+        width: 100%;
+        position: relative;
+        z-index: 1051;
+    }
+
+    .search-results-list {
+        width: 100%;
+        left: 0;
+        border-radius: 5px;
+        border-top: 1px solid #ccc;
+    }
 }

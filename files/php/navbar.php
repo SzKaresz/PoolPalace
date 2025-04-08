@@ -49,15 +49,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </div>
 
         <form id="searchForm" onsubmit="redirectToProducts(event)" method="GET" class="search-container">
-            <div class="input-group">
-                <input type="text" name="query" id="keresomezo" placeholder="Keresés..." class="form-control" />
-                <button id="remove" type="button" class="btn" onclick="document.getElementById('keresomezo').value = '';">
-                    x
-                </button>
-                <button type="submit" class="btn search-btn" id="kereses_button">
-                    <img src="../img/search.png" alt="Keresés">
-                </button>
+            <div class="keresoGroup input-group">
+                <input type="text" name="query" id="keresomezo" placeholder="Keresés..." class="form-control" autocomplete="off" />
+                <button id="remove" type="button" class="btn">x</button>
+                <div id="search-results-dropdown" class="search-results-list"></div>
             </div>
+            <button type="submit" class="btn search-btn" id="kereses_button">
+                <img src="../img/search.png" alt="Keresés">
+            </button>
         </form>
 
         <script>
@@ -168,8 +167,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
                 .then(response => {
                     if (response.ok) {
                         window.location.href = "./index.php";
-                    } else {
-                        console.error("Kijelentkezés nem sikerült!");
                     }
                 })
                 .catch(error => console.error("Hiba a kijelentkezésnél:", error));
@@ -178,7 +175,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
 
     function toggleSearch() {
         const searchForm = document.getElementById('searchForm');
-
         if (searchForm.classList.contains('active')) {
             searchForm.style.height = "0px";
             searchForm.style.opacity = "0";
@@ -188,5 +184,98 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
             searchForm.style.height = "50px";
             searchForm.style.opacity = "1";
         }
+    }
+
+    let debounceTimer;
+    const searchInput = document.getElementById('keresomezo');
+    const resultsDropdown = document.getElementById('search-results-dropdown');
+    const keresoGroup = document.querySelector('.keresoGroup');
+    const delay = 350;
+
+    if (searchInput && resultsDropdown) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.trim();
+            clearTimeout(debounceTimer);
+
+            if (searchTerm.length >= 2) {
+                debounceTimer = setTimeout(() => {
+                    fetch('./live_search.php?term=' + encodeURIComponent(searchTerm))
+                        .then(response => {
+                            if (!response.ok) throw new Error('Hálózati hiba: ' + response.statusText);
+                            return response.json();
+                        })
+                        .then(data => {
+                            resultsDropdown.innerHTML = '';
+                            if (data.length > 0) {
+                                keresoGroup.classList.add('dropdown-visible');
+                                data.forEach(item => {
+                                    const wrapper = document.createElement('div');
+                                    wrapper.classList.add('search-result-item');
+                                    wrapper.addEventListener('click', function(event) {
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        window.location.href = item.url;
+                                    });
+
+                                    const img = document.createElement('img');
+                                    img.src = `../img/termekek/${item.id}.webp`;
+                                    img.alt = item.name;
+
+                                    const textWrapper = document.createElement('div');
+                                    textWrapper.classList.add('search-result-text');
+
+                                    const name = document.createElement('div');
+                                    name.classList.add('search-result-name');
+                                    name.textContent = item.name;
+
+                                    const price = document.createElement('div');
+                                    price.classList.add('search-result-price');
+                                    price.textContent = item.price + ' Ft';
+
+                                    textWrapper.appendChild(name);
+                                    textWrapper.appendChild(price);
+
+                                    wrapper.appendChild(img);
+                                    wrapper.appendChild(textWrapper);
+
+                                    resultsDropdown.appendChild(wrapper);
+                                });
+                                resultsDropdown.style.display = 'block';
+                            } else {
+                                keresoGroup.classList.remove('dropdown-visible');
+                                const noResultDiv = document.createElement('div');
+                                noResultDiv.textContent = 'Nincs találat.';
+                                noResultDiv.style.padding = '8px 12px';
+                                noResultDiv.style.color = '#666';
+                                resultsDropdown.appendChild(noResultDiv);
+                                resultsDropdown.style.display = 'block';
+                            }
+                        })
+                        .catch(error => {
+                            keresoGroup.classList.remove('dropdown-visible');
+                            resultsDropdown.innerHTML = '';
+                            resultsDropdown.style.display = 'none';
+                        });
+                }, delay);
+            } else {
+                keresoGroup.classList.remove('dropdown-visible');
+                resultsDropdown.innerHTML = '';
+                resultsDropdown.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!searchInput.contains(event.target) && !resultsDropdown.contains(event.target)) {
+                resultsDropdown.style.display = 'none';
+                keresoGroup.classList.remove('dropdown-visible');
+            }
+        });
+
+        resultsDropdown.addEventListener('click', function(event) {
+            if (event.target.tagName === 'A') {
+                resultsDropdown.style.display = 'none';
+                keresoGroup.classList.remove('dropdown-visible');
+            }
+        });
     }
 </script>
