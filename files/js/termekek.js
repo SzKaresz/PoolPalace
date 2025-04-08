@@ -184,24 +184,24 @@ function setupPagination(totalPages, current) {
         const right = container.querySelector(".pagination-right");
 
         if (left) {
-             const btnFirst = createPageButton("«", 1, current === 1);
-             const btnPrev = createPageButton("<", current - 1, current === 1);
-             left.appendChild(btnFirst);
-             left.appendChild(btnPrev);
+            const btnFirst = createPageButton("«", 1, current === 1);
+            const btnPrev = createPageButton("<", current - 1, current === 1);
+            left.appendChild(btnFirst);
+            left.appendChild(btnPrev);
         }
         if (center) {
             for (let i = startPage; i <= endPage; i++) {
-                 const btnPage = createPageButton(i, i, false, i === current);
-                 center.appendChild(btnPage);
+                const btnPage = createPageButton(i, i, false, i === current);
+                center.appendChild(btnPage);
             }
         }
         if (right) {
-             const btnNext = createPageButton(">", current + 1, current === totalPages);
-             const btnLast = createPageButton("»", totalPages, current === totalPages);
-             right.appendChild(btnNext);
-             right.appendChild(btnLast);
+            const btnNext = createPageButton(">", current + 1, current === totalPages);
+            const btnLast = createPageButton("»", totalPages, current === totalPages);
+            right.appendChild(btnNext);
+            right.appendChild(btnLast);
         }
-   });
+    });
 }
 
 function loadProducts(page = 1, sortType = '') {
@@ -242,7 +242,7 @@ function loadProducts(page = 1, sortType = '') {
     queryParams.set("toprice", toPrice);
 
     let keresesiErtek = localStorage.getItem("keresesErtek");
-    document.getElementById("keresomezo").value=keresesiErtek
+    document.getElementById("keresomezo").value = keresesiErtek
     if (keresesiErtek) {
         queryParams.set("kereses", keresesiErtek);
 
@@ -294,8 +294,16 @@ async function kategoriaFeltolt() {
             }
 
             let label = document.createElement('label');
-            label.innerHTML = adat.kategoria_nev;
             label.htmlFor = adat.kategoria_nev;
+
+            let maxHossz = 23;
+            let nev = adat.kategoria_nev;
+            if (nev.length > maxHossz) {
+                label.innerHTML = nev.substring(0, maxHossz) + "...";
+                label.title = nev;
+            } else {
+                label.innerHTML = nev;
+            }
 
             div.appendChild(checkbox);
             div.appendChild(label);
@@ -401,7 +409,7 @@ async function gyartoFeltolt() {
             let checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.name = "gyartok";
-            checkbox.id = adat.gyarto_nev
+            checkbox.id = adat.gyarto_nev;
             checkbox.value = adat.gyarto_nev;
             checkbox.style.marginRight = "10px";
 
@@ -410,8 +418,16 @@ async function gyartoFeltolt() {
             }
 
             let label = document.createElement('label');
-            label.innerHTML = adat.gyarto_nev;
-            label.htmlFor = adat.gyarto_nev
+            label.htmlFor = adat.gyarto_nev;
+
+            let maxHossz = 23;
+            let nev = adat.gyarto_nev;
+            if (nev.length > maxHossz) {
+                label.innerHTML = nev.substring(0, maxHossz) + "...";
+                label.title = nev;
+            } else {
+                label.innerHTML = nev;
+            }
 
             div.appendChild(checkbox);
             div.appendChild(label);
@@ -772,7 +788,7 @@ document.addEventListener("DOMContentLoaded", function () {
     checkCartState();
 });
 
-document.getElementById("remove").addEventListener("click", function(){
+document.getElementById("remove").addEventListener("click", function () {
     localStorage.removeItem("keresesErtek");
     loadProducts()
 })
