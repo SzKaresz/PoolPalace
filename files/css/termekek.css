@@ -141,7 +141,7 @@ input.quantity-input::-webkit-outer-spin-button {
         box-sizing: border-box;
     }
 
-    #kontener{
+    #kontener {
         padding: 0;
     }
 }
@@ -337,8 +337,8 @@ input[type="range"]::-moz-range-thumb {
 
 .form_control_container__time__input::-webkit-outer-spin-button,
 .form_control_container__time__input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .szurofejlec h4 {
@@ -639,7 +639,7 @@ a:hover {
         gap: 10px;
     }
 
-    #fejlec-container > *:not(#talalatok) {
+    #fejlec-container>*:not(#talalatok) {
         order: 1;
     }
 
@@ -949,4 +949,31 @@ a:hover {
 
 .add-to-cart {
     margin-right: 12px;
+}
+
+.szuro-dupla {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 40px;
+    width: 100%;
+}
+
+@media (max-width: 1200px) {
+    .szuro-dupla {
+        margin: 0 auto;
+        max-width: 900px;
+    }
+
+    .szuro-dupla .szuroSector {
+        flex: 1 1 300px;
+        max-width: 400px;
+    }    
+}
+
+@media (max-width: 600px) {
+    .szuro-dupla .szuroSector {
+        max-width: 100%;
+        flex: 1 1 100%;
+    }
 }

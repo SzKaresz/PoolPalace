@@ -34,11 +34,13 @@ ob_start();
                 <div class="szuroContent">
                     <a href="javascript:void(0)" id="clear-filters" class="clear-filters-link">Paraméterek törlése</a>
                     <form id="szures_form" method="post">
-                        <div class="szuroSector kategoriak">
-                            <div id="kategoriak"></div>
-                        </div>
-                        <div class="szuroSector gyartok">
-                            <div id="gyartok"></div>
+                        <div class="szuro-dupla">
+                            <div class="szuroSector kategoriak">
+                                <div id="kategoriak"></div>
+                            </div>
+                            <div class="szuroSector gyartok">
+                                <div id="gyartok"></div>
+                            </div>
                         </div>
                         <div class="szuroSector ar">
                             <div id="ar">
@@ -113,4 +115,5 @@ ob_start();
     ob_end_flush();
     ?>
 </body>
+
 </html>
