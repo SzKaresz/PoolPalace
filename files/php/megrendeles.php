@@ -134,6 +134,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    $valodi_total = 0;
+    $termekek = [];
+
+    foreach ($cart_items as $item) {
+        $valodi_ar = (!is_null($item['akcios_ar']) && $item['akcios_ar'] > 0 && $item['akcios_ar'] < $item['egysegar']) ? $item['akcios_ar'] : $item['egysegar'];
+        $valodi_total += $item['darabszam'] * $valodi_ar;
+
+        $termekek[] = [
+            'cikkszam' => $item['cikkszam'],
+            'nev' => $item['nev'],
+            'egysegar' => $item['egysegar'],
+            'akcios_ar' => $item['akcios_ar'],
+            'darabszam' => $item['darabszam'],
+            'ar' => $valodi_ar
+        ];
+    }
+
     $stmt = $db->prepare("INSERT INTO megrendeles (
         email, nev, telefonszam, osszeg, 
         szallit_irsz, szallit_telep, szallit_cim, 
@@ -145,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data['email'],
         $data['name'],
         $data['phone'],
-        $data['total'],
+        $valodi_total,
         $data['shipping_postal_code'],
         $data['shipping_city'],
         $data['shipping_address'],
@@ -156,19 +173,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute();
     $megrendeles_id = $stmt->insert_id;
 
-    foreach ($data['cart_items'] as $item) {
+    foreach ($termekek as $t) {
         $stmt = $db->prepare("INSERT INTO tetelek (megrendeles_id, termek_id, darabszam, egysegar) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("isid", $megrendeles_id, $item['cikkszam'], $item['darabszam'], $item['egysegar']);
+        $stmt->bind_param("isid", $megrendeles_id, $t['cikkszam'], $t['darabszam'], $t['ar']);
         $stmt->execute();
 
         $stmt = $db->prepare("UPDATE termekek SET darabszam = darabszam - ? WHERE cikkszam = ? AND darabszam >= ?");
-        $stmt->bind_param("isi", $item['darabszam'], $item['cikkszam'], $item['darabszam']);
+        $stmt->bind_param("isi", $t['darabszam'], $t['cikkszam'], $t['darabszam']);
         $stmt->execute();
 
         if ($stmt->affected_rows === 0) {
             echo json_encode([
                 "success" => false,
-                "error" => "A(z) {$item['cikkszam']} cikkszámú termékből nincs elég raktáron!"
+                "error" => "A(z) {$t['cikkszam']} cikkszámú termékből nincs elég raktáron!"
             ]);
             exit;
         }
@@ -183,10 +200,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     echo json_encode(["success" => true, "order_id" => $megrendeles_id]);
-
     include 'email_kuldes.php';
-    kuldRendelesVisszaigazolas($felhasznalo_email, $data['name'], $megrendeles_id, $data['cart_items'], $data['total'], $data['payment_method']);
-
+    kuldRendelesVisszaigazolas($felhasznalo_email, $data['name'], $megrendeles_id, $termekek, $valodi_total, $data['payment_method']);
     exit;
 }
 
@@ -220,7 +235,7 @@ ob_end_flush();
                             <img src="<?= htmlspecialchars($item['kep_url'] ?? '../img/default.png') ?>" alt="<?= htmlspecialchars($item['nev']) ?>" class="img-thumbnail me-3" style="width: 50px; height: 50px;">
                             <div>
                                 <h6 class="my-0">
-                                    <a href="termekOldal.php?cikkszam=<?= htmlspecialchars($item['cikkszam']) ?>" class="cart-product">
+                                    <a href="termekOldal.php?cikkszam=<?= htmlspecialchars($item['cikkszam']) ?>" class="cart-product" target="_blank">
                                         <?= htmlspecialchars($item['nev']) ?>
                                     </a>
                                 </h6>
