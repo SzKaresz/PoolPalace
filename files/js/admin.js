@@ -135,14 +135,31 @@ document.addEventListener('DOMContentLoaded', async function () {
     const keresomezo = document.getElementById("keresomezo");
     if (keresomezo) {
         keresomezo.addEventListener("input", function () {
-             let keresesiErtek = this.value.toLowerCase().trim();
-             let szurtAdatok = JSON.parse(JSON.stringify(eredetiAdatok)).filter(item =>
-                 keresesiErtek === "" ||
-                 item.cikkszam.toString().toLowerCase().includes(keresesiErtek) ||
-                 item.nev.toLowerCase().includes(keresesiErtek) ||
-                 (item.leiras && item.leiras.toLowerCase().includes(keresesiErtek))
-             );
+            let keresesiErtek = this.value.toLowerCase().trim();
+            let szurtAdatok = JSON.parse(JSON.stringify(eredetiAdatok)).filter(item => {
+                if (keresesiErtek === "") {
+                    return true;
+                }
+                const isNumericSearch = !isNaN(parseFloat(keresesiErtek)) && isFinite(keresesiErtek);
+
+                const textMatch =
+                    item.cikkszam.toString().toLowerCase().includes(keresesiErtek) ||
+                    item.nev.toLowerCase().includes(keresesiErtek) ||
+                    (item.leiras && item.leiras.toLowerCase().includes(keresesiErtek));
+
+                let numericMatch = false;
+                if (isNumericSearch) {
+                    const searchNumStr = keresesiErtek;
+                    numericMatch =
+                        item.egysegar.toString().includes(searchNumStr) ||
+                        (item.akcios_ar && item.akcios_ar != -1 && item.akcios_ar.toString().includes(searchNumStr)) ||
+                        (item.darabszam && item.darabszam.toString().includes(searchNumStr));
+                }
+
+                return textMatch || numericMatch;
+            });
              megjelenitTermekek(szurtAdatok);
+             kiemelTalalatokat(keresesiErtek);
         });
     }
 
@@ -252,6 +269,7 @@ function megjelenitTermekek(adat) {
                         <th scope="col">Név</th>
                         <th scope="col">Egységár</th>
                         <th scope="col">Akciós ár</th>
+                        <th scope="col">Készlet</th>
                         <th scope="col">Leírás</th>
                         <th scope="col" class="text-end">Műveletek</th>
                     </tr>
@@ -266,7 +284,7 @@ function megjelenitTermekek(adat) {
     tablebody.innerHTML = '';
 
     if (adat.length === 0) {
-        tablebody.innerHTML = '<tr><td colspan="6" class="text-center">Nincsenek megjeleníthető termékek.</td></tr>';
+        tablebody.innerHTML = '<tr><td colspan="7" class="text-center">Nincsenek megjeleníthető termékek.</td></tr>';
         return;
     }
 
@@ -278,6 +296,7 @@ function megjelenitTermekek(adat) {
                 <td><input type="text" class="form-control" id="nev-${item.cikkszam}" value="${item.nev}" readonly></td>
                 <td><input type="number" class="form-control" id="egysegar-${item.cikkszam}" value="${item.egysegar}" readonly></td>
                 <td><input type="number" class="form-control" id="akciosar-${item.cikkszam}" value="${(item.akcios_ar == -1 || item.akcios_ar == null) ? '' : item.akcios_ar}" readonly></td>
+                <td><input type="number" class="form-control" id="darabszam-${item.cikkszam}" value="${item.darabszam ?? 0}" readonly></td>
                 <td>
                     <input
                         type="text"
@@ -357,6 +376,8 @@ function handleMegseClick(row, cikkszam, sourceButton) {
                  originalValue = (originalData.akcios_ar == -1 || originalData.akcios_ar == null) ? '' : originalData.akcios_ar;
              } else if (key === 'leiras') {
                  originalValue = originalData.leiras || '';
+             } else if (key === 'darabszam') {
+                 originalValue = originalData.darabszam ?? 0;
              } else if (originalData.hasOwnProperty(key)) {
                  originalValue = originalData[key];
              } else if (key === 'nev'){
@@ -365,6 +386,11 @@ function handleMegseClick(row, cikkszam, sourceButton) {
                  originalValue = originalData.egysegar;
              }
              input.value = originalValue;
+             input.classList.remove('is-valid', 'is-invalid');
+             const errorSpan = input.nextElementSibling;
+             if (errorSpan && errorSpan.classList.contains('error')) {
+                errorSpan.style.display = 'none';
+             }
         }
     });
 
@@ -394,6 +420,7 @@ async function handleMentesClick(row, cikkszam, mentesButton) {
         nev: row.querySelector(`#nev-${cikkszam}`).value,
         egysegar: row.querySelector(`#egysegar-${cikkszam}`).value,
         akciosar: row.querySelector(`#akciosar-${cikkszam}`).value.trim() === '' ? -1 : row.querySelector(`#akciosar-${cikkszam}`).value,
+        darabszam: row.querySelector(`#darabszam-${cikkszam}`).value,
         leiras: row.querySelector(`#leiras-${cikkszam}`).value,
     };
 
@@ -403,6 +430,7 @@ async function handleMentesClick(row, cikkszam, mentesButton) {
         if (currentData.nev !== originalData.nev ||
              currentData.egysegar.toString() !== originalData.egysegar.toString() ||
              currentData.akciosar.toString() !== (originalData.akcios_ar == null ? '-1' : originalData.akcios_ar.toString()) ||
+             currentData.darabszam.toString() !== (originalData.darabszam == null ? '0' : originalData.darabszam.toString()) ||
              (currentData.leiras || '') !== (originalData.leiras || '')
             ) {
             changed = true;
@@ -410,7 +438,6 @@ async function handleMentesClick(row, cikkszam, mentesButton) {
     } else {
         changed = true;
     }
-
 
     if (!changed) {
         showToast("Nem történt változás.", "info");
@@ -431,6 +458,7 @@ async function handleMentesClick(row, cikkszam, mentesButton) {
             eredetiAdatok[index].nev = currentData.nev;
             eredetiAdatok[index].egysegar = currentData.egysegar;
             eredetiAdatok[index].akcios_ar = currentData.akciosar;
+            eredetiAdatok[index].darabszam = currentData.darabszam;
             eredetiAdatok[index].leiras = currentData.leiras;
         }
         handleMegseClick(row, cikkszam, mentesButton);
@@ -799,6 +827,47 @@ async function adatMentes(adatok) {
         showToast("Hiba történt az adatok mentésekor.", "danger");
         return { status: "error", message: "Hiba történt az adatok mentésekor." };
     }
+}
+
+function kiemelTalalatokat(kereses) {
+    const tableBody = document.getElementById("tablebody");
+    if (!tableBody) return;
+
+    const kiemeltMezok = tableBody.querySelectorAll('input.highlight-match');
+    kiemeltMezok.forEach(mezo => {
+        mezo.classList.remove('highlight-match');
+    });
+
+    if (kereses === "") {
+        return;
+    }
+
+    const isNumericSearch = !isNaN(parseFloat(kereses)) && isFinite(kereses);
+    const inputMezok = tableBody.querySelectorAll('input[type="text"], input[type="number"]');
+
+    inputMezok.forEach(input => {
+        const ertek = input.value;
+        const ertekLower = ertek.toLowerCase();
+        let highlight = false;
+
+        if (input.id.startsWith('cikkszam-') && ertek.includes(kereses)) {
+            highlight = true;
+        } else if (input.id.startsWith('nev-') && ertekLower.includes(kereses)) {
+            highlight = true;
+        }
+        else if (input.id.startsWith('leiras-') && ertekLower.includes(kereses)) {
+             highlight = true;
+        }
+        else if (isNumericSearch && (input.id.startsWith('egysegar-') || input.id.startsWith('akciosar-') || input.id.startsWith('darabszam-'))) {
+             if (ertek.includes(kereses)) {
+                 highlight = true;
+             }
+        }
+
+        if (highlight) {
+            input.classList.add('highlight-match');
+        }
+    });
 }
 
 async function adatTorles(torlendoAdat) {

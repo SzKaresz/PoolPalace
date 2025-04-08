@@ -8,14 +8,22 @@ $id = $input['cikkszam'] ?? null;
 $nev = $input['nev'] ?? null;
 $ar = $input['egysegar'] ?? null;
 $akciosar = ($input['akciosar'] == "") ? -1 : $input["akciosar"] ?? null;
+$darabszam = $input['darabszam'] ?? 0;
 $leiras = $input['leiras'] ?? null;
 
-if ($id === null || $nev === null || $ar === null) {
+if ($id === null || $nev === null || $ar === null || $darabszam === null) {
     echo json_encode(["status" => "error", "message" => "Hiányzó adatok!"]);
     exit;
 }
 
-$muvelet = "UPDATE `termekek` SET `nev`='$nev',`egysegar`='$ar',`akcios_ar`='$akciosar',`leiras`='$leiras' WHERE  cikkszam = {$id}";
+$muvelet = "UPDATE `termekek` SET 
+                `nev`='$nev', 
+                `egysegar`='$ar', 
+                `akcios_ar`='$akciosar', 
+                `darabszam`='$darabszam',
+                `leiras`='$leiras' 
+            WHERE cikkszam = {$id}";
+
 $eredmeny = adatokValtoztatasa($muvelet);
 
 if ($eredmeny === "Sikeres művelet!") {
