@@ -99,7 +99,7 @@
 
                 <div class="mb-3">
                     <label for="productImages" class="form-label">Termék képek</label>
-                    <input type="file" class="form-control" name="productImages[]" id="productImages" multiple accept="image/*">
+                    <input type="file" class="form-control" name="productImages[]" id="productImages" multiple accept=".webp">
                 </div>
 
                 <button type="submit" id="felvitel_button" class="btn btn-primary d-inline-flex align-items-center gap-1" name="felvitel">

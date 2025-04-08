@@ -528,3 +528,8 @@ form {
 #kepModal input[type="file"] {
   display: none;
 }
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
