@@ -4,27 +4,62 @@ async function rendelesBetolt() {
         if (keres.ok) {
             let valasz = await keres.json();
             let tartalom = document.getElementById("tartalom");
-            tartalom.innerHTML = `<div id="accord_div" class="accordion accordion-flush"></div>`;
-            let accord_div = document.getElementById("accord_div");
+            tartalom.innerHTML = `
+            <ul class="nav nav-tabs" id="rendelesTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="osszes-tab" data-bs-toggle="tab" data-bs-target="#osszes" type="button" role="tab" aria-controls="osszes" aria-selected="true">Összes</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="feldolgozas-tab" data-bs-toggle="tab" data-bs-target="#feldolgozas" type="button" role="tab" aria-controls="feldolgozas" aria-selected="false">Feldolgozás alatt</button>
+                </li>
+                 <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="fizetesre-var-tab" data-bs-toggle="tab" data-bs-target="#fizetesre-var" type="button" role="tab" aria-controls="fizetesre-var" aria-selected="false">Fizetésre vár</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="fizetve-tab" data-bs-toggle="tab" data-bs-target="#fizetve" type="button" role="tab" aria-controls="fizetve" aria-selected="false">Fizetve</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="szallitas-alatt-tab" data-bs-toggle="tab" data-bs-target="#szallitas-alatt" type="button" role="tab" aria-controls="szallitas-alatt" aria-selected="false">Szállítás alatt</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="teljesitve-tab" data-bs-toggle="tab" data-bs-target="#teljesitve" type="button" role="tab" aria-controls="teljesitve" aria-selected="false">Teljesítve</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="rendelesTabContent">
+                <div class="tab-pane fade show active" id="osszes" role="tabpanel" aria-labelledby="osszes-tab"></div>
+                <div class="tab-pane fade" id="feldolgozas" role="tabpanel" aria-labelledby="feldolgozas-tab"></div>
+                <div class="tab-pane fade" id="fizetesre-var" role="tabpanel" aria-labelledby="fizetesre-var-tab"></div>
+                <div class="tab-pane fade" id="fizetve" role="tabpanel" aria-labelledby="fizetve-tab"></div>
+                 <div class="tab-pane fade" id="szallitas-alatt" role="tabpanel" aria-labelledby="szallitas-alatt-tab"></div>
+                 <div class="tab-pane fade" id="teljesitve" role="tabpanel" aria-labelledby="teljesitve-tab"></div>
+            </div>
+            `;
+
+            let osszesTab = document.getElementById("osszes");
+            let rendelesAccordion; 
 
             for (const item of valasz) {
                 let egyediId = `flush-collapse-${item.id}`;
-
-                accord_div.innerHTML += `
-                <div class="accordion-item m-5 border rounded shadow-sm  sm-12">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${egyediId}" aria-expanded="false" aria-controls="${egyediId}">
-                            Megrendelés #${item.id} - ${item.nev}
-                        </button>
-                    </h2>
-                    <div id="${egyediId}" class="accordion-collapse collapse" data-bs-parent="#accord_div">
-                        <div class="accordion-body" id="accord_body_${item.id}">
+                rendelesAccordion = document.createElement('div'); 
+                rendelesAccordion.classList.add('accordion', 'accordion-flush', 'm-4', 'border', 'rounded', 'shadow-sm');
+                rendelesAccordion.innerHTML = `
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading-${item.id}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${egyediId}" aria-expanded="false" aria-controls="${egyediId}">
+                                Megrendelés #${item.id} - ${item.nev}
+                            </button>
+                        </h2>
+                        <div id="${egyediId}" class="accordion-collapse collapse" aria-labelledby="heading-${item.id}" data-bs-parent="#rendelesTabContent">
+                            <div class="accordion-body" id="accord_body_${item.id}"></div>
                         </div>
                     </div>
-                </div>
-
                 `;
-                accordFeltolt(item.id);
+
+                osszesTab.appendChild(rendelesAccordion.cloneNode(true));
+
+                await accordFeltolt(rendelesAccordion, item.id);
+
+                addOrderToTab(item.statusz, rendelesAccordion, item.id); 
             }
         }
     } catch (error) {
@@ -32,7 +67,27 @@ async function rendelesBetolt() {
     }
 }
 
-async function accordFeltolt(id) {
+
+
+function addOrderToTab(statusz, rendelesAccordion, id) {
+    let targetTab = getTargetTabId(statusz);
+    let existingAccordion = document.querySelector(`#${targetTab} #flush-collapse-${id}`);
+    if (existingAccordion) {
+        existingAccordion.parentNode.innerHTML = rendelesAccordion.innerHTML;
+    } else {
+        document.getElementById(targetTab).appendChild(rendelesAccordion);
+    }
+}
+function getTargetTabId(statusz) {
+    switch (statusz) {
+        case "Feldolgozás alatt": return "feldolgozas";
+        case "Fizetésre vár": return "fizetesre-var";
+        case "Fizetve": return "fizetve";
+        case "Szállítás alatt": return "szallitas-alatt";
+        case "Teljesítve": return "teljesitve";
+        default: return "osszes";
+    }
+}async function accordFeltolt(rendelesAccordion, id) {
     try {
         let keres = await fetch("../php/rendelesek_termekek.php", {
             method: "POST",
@@ -70,7 +125,7 @@ async function accordFeltolt(id) {
                     </tr>`;
             }).join('');
 
-            document.getElementById(`accord_body_${id}`).innerHTML += `
+            rendelesAccordion.querySelector(`#accord_body_${id}`).innerHTML = `
             <div id="termekek">
                 <table class="table table-striped mt-2">
                     <thead>
@@ -105,10 +160,10 @@ async function accordFeltolt(id) {
 
                     `;
 
-            let betoltve = false
+            let betoltve = false;
             for (const item of valasz) {
                 if (betoltve == false) {
-                    document.getElementById(`adatok_${id}`).innerHTML += `
+                    rendelesAccordion.querySelector(`#adatok_${id}`).innerHTML += `
                     <div class="col-md-6">
                     <div class="mb-3">
                         <h3>Szállítási adatok</h3>
@@ -144,15 +199,16 @@ async function accordFeltolt(id) {
                     </div>
 
                 </div>
-                `
-                    betoltve = true
+                `;
+                    betoltve = true;
                 }
             }
 
-            let statusSelect = document.getElementById(`status_${id}`);
+            let statusSelect = rendelesAccordion.querySelector(`#status_${id}`);
             if (valasz.length > 0 && valasz[0].statusz) {
                 statusSelect.value = valasz[0].statusz;
             }
+
         } else {
             console.log("Hiba történt a lekérdezés során.");
         }
@@ -222,6 +278,7 @@ document.addEventListener("click", function (event) {
                         let input = row.querySelector(".quantity-input");
                         input.setAttribute("data-original-value", input.value);
                     });
+                    rendelesBetolt(); 
                 }
                 else {
                     showToast(result.messages, "info");
@@ -343,7 +400,7 @@ async function termekTorles(cikkszam, id, db) {
         if (db == 1) {
             const loadingOverlay = document.getElementById("loading-overlay");
             let modal = new bootstrap.Modal(document.getElementById("termektorlesModal"));
-            document.getElementById("cikkszam_torol").innerHTML=cikkszam
+            document.getElementById("cikkszam_torol").innerHTML = cikkszam
             modal.show();
 
             aktivTorlesAdatok = { id };
@@ -354,7 +411,7 @@ async function termekTorles(cikkszam, id, db) {
 
         } else {
             let modal = new bootstrap.Modal(document.getElementById("termekModal"));
-            document.getElementById("cikkszam_torol2").innerHTML=cikkszam
+            document.getElementById("cikkszam_torol2").innerHTML = cikkszam
             modal.show();
 
             aktivTorlesAdatok = { cikkszam, id };
