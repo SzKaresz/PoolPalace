@@ -33,9 +33,9 @@ END;";
     if ($eredmeny === "Sikeres művelet!") {
         include "./email_kuldes.php";
         kuldRendelesTorles($ered[0]["email"], $ered[0]["nev"], $megrendeles_id);
-        echo json_encode(["success" => true, "message" => "A törlés sikeres!"]);
+        echo json_encode(["success" => true, "message" => "A $megrendeles_id azonosítójú rendelés törlése sikeres!"]);
     } else {
-        echo json_encode(["status" => "error", "message" => "A törlés sikertelen!"]);
+        echo json_encode(["status" => "error", "message" => "A rendelés törlése sikertelen!"]);
     }
 } else {
     echo json_encode(["hiba" => "Nincs megadva ID"]);

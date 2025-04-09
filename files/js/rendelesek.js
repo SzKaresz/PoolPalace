@@ -62,7 +62,12 @@ async function accordFeltolt(id) {
                     </td>
                     <td>${ar.toLocaleString("hu-HU", { style: 'currency', currency: 'HUF', minimumFractionDigits: 0, useGrouping: true })}</td>
                     <td class="osszeg">${osszeg.toLocaleString("hu-HU", { style: 'currency', currency: 'HUF', minimumFractionDigits: 0, useGrouping: true })}</td>
-                </tr>`;
+                    <td>
+                         <button class="remove-btn btn btn-danger" onclick="termekTorles('${item.cikkszam}',${id},${valasz.length})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                    </tr>`;
             }).join('');
 
             document.getElementById(`accord_body_${id}`).innerHTML += `
@@ -75,6 +80,7 @@ async function accordFeltolt(id) {
                             <th>Termék db</th>
                             <th>Termék ára</th>
                             <th>Összeg</th>
+                            <th>Művelet</th>
                         </tr>
                     </thead>
                     <tbody>${tbodyContent}</tbody>
@@ -101,8 +107,8 @@ async function accordFeltolt(id) {
 
             let betoltve = false
             for (const item of valasz) {
-                if(betoltve==false){
-                    document.getElementById(`adatok_${id}`).innerHTML+=`
+                if (betoltve == false) {
+                    document.getElementById(`adatok_${id}`).innerHTML += `
                     <div class="col-md-6">
                     <div class="mb-3">
                         <h3>Szállítási adatok</h3>
@@ -136,12 +142,13 @@ async function accordFeltolt(id) {
                         <label for="sz_utca" class="form-label">Utca és házszám</label>
                         <input type="text" id="sz_utca_${id}" class="form-control" name="sz_utca" value="${item.szamlaz_cim}">
                     </div>
+
                 </div>
                 `
-                betoltve=true
+                    betoltve = true
                 }
             }
-        
+
             let statusSelect = document.getElementById(`status_${id}`);
             if (valasz.length > 0 && valasz[0].statusz) {
                 statusSelect.value = valasz[0].statusz;
@@ -179,7 +186,7 @@ document.addEventListener("click", function (event) {
             }
         });
 
-        let personalDetails={
+        let personalDetails = {
             szallitas: {
                 irsz: document.getElementById(`irsz_${megrendelesId}`).value,
                 telepules: document.getElementById(`telepules_${megrendelesId}`).value,
@@ -216,8 +223,7 @@ document.addEventListener("click", function (event) {
                         input.setAttribute("data-original-value", input.value);
                     });
                 }
-                else
-                {
+                else {
                     showToast(result.messages, "info");
                 }
             })
@@ -261,7 +267,7 @@ document.addEventListener("click", function (event) {
                 if (result.success) {
                     showToast(result.message, "success");
                     rendelesBetolt()
-                    
+
                 } else {
                     showToast(result.message, "danger");
                 }
@@ -330,6 +336,97 @@ document.addEventListener("click", function (event) {
         minusBtn.disabled = input.value <= 1;
     }
 });
+let aktivTorlesAdatok = {};
+
+async function termekTorles(cikkszam, id, db) {
+    try {
+        if (db == 1) {
+            const loadingOverlay = document.getElementById("loading-overlay");
+            let modal = new bootstrap.Modal(document.getElementById("termektorlesModal"));
+            document.getElementById("cikkszam_torol").innerHTML=cikkszam
+            modal.show();
+
+            aktivTorlesAdatok = { id };
+
+            const megerositesBtn = document.getElementById("termekmegerositesTorles");
+            megerositesBtn.removeEventListener("click", torles);
+            megerositesBtn.addEventListener("click", torles);
+
+        } else {
+            let modal = new bootstrap.Modal(document.getElementById("termekModal"));
+            document.getElementById("cikkszam_torol2").innerHTML=cikkszam
+            modal.show();
+
+            aktivTorlesAdatok = { cikkszam, id };
+
+            const megerositesBtn = document.getElementById("termekTorles");
+            megerositesBtn.removeEventListener("click", torlesTermek);
+            megerositesBtn.addEventListener("click", torlesTermek);
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+async function torles() {
+    const loadingOverlay = document.getElementById("loading-overlay");
+    const modal = bootstrap.Modal.getInstance(document.getElementById("termektorlesModal"));
+    loadingOverlay.style.display = "flex";
+
+    let requestBody = {
+        megrendeles_id: aktivTorlesAdatok.id
+    };
+
+    try {
+        let response = await fetch("../php/megrendeles_torles.php", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody)
+        });
+
+        let result = await response.json();
+        loadingOverlay.style.display = "none";
+
+        if (result.success) {
+            showToast(result.message, "success");
+            rendelesBetolt();
+        } else {
+            showToast(result.message, "danger");
+        }
+    } catch (error) {
+        console.log(error);
+        showToast("Hiba történt a törlés során!", "danger");
+        loadingOverlay.style.display = "none";
+    }
+
+    modal.hide();
+}
+
+async function torlesTermek() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById("termekModal"));
+    let keres = await fetch("../php/megrendeles_termekTorles.php", {
+        method: "DELETE",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({
+            cikkszam: aktivTorlesAdatok.cikkszam,
+            megrendeles_id: aktivTorlesAdatok.id
+        })
+    });
+
+    let valasz = await keres.json();
+
+    if (valasz.success) {
+        showToast(valasz.message, "success");
+        document.getElementById(`accord_body_${aktivTorlesAdatok.id}`).innerHTML = "";
+        accordFeltolt(aktivTorlesAdatok.id);
+    } else {
+        showToast(valasz.message, "danger");
+    }
+
+    modal.hide();
+}
 
 function showToast(message, type = "success") {
     let toastContainer = document.getElementById("toast-container");
@@ -356,6 +453,7 @@ function showToast(message, type = "success") {
         toast.remove();
     }, 3000);
 }
+
 
 
 window.addEventListener("load", rendelesBetolt);
