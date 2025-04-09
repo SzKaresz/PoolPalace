@@ -982,6 +982,32 @@ a:hover {
     #gyartok {
         width: 100%;
     }
+
+    #szures_form {
+        flex-grow: 0 !important;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .range_container {
+        gap: 6px;
+        margin-bottom: 5px;
+    }
+
+    #szures_button {
+        margin-top: 10px;
+    }
+
+    #szuro-container {
+        height: auto !important;
+        max-height: none !important;
+        overflow-y: visible !important;
+    }
+
+    .szuroContent {
+        height: auto !important;
+        justify-content: flex-start !important;
+    }
 }
 
 @media (max-width: 600px) {
