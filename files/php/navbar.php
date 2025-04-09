@@ -51,7 +51,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <form id="searchForm" onsubmit="redirectToProducts(event)" method="GET" class="search-container">
             <div class="keresoGroup input-group">
                 <input type="text" name="query" id="keresomezo" placeholder="Keresés..." class="form-control" autocomplete="off" />
-                <button id="remove" type="button" class="btn">x</button>
+                <svg xmlns="http://www.w3.org/2000/svg" id="remove" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                </svg>
                 <div id="search-results-dropdown" class="search-results-list"></div>
             </div>
             <button type="submit" class="btn search-btn" id="kereses_button">
