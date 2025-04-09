@@ -513,16 +513,22 @@
 }
 
 #remove {
-    background-color: white;
-    border-color: lightgray;
-    font-size: larger;
-    border-left: none;
-    border: 0 !important;
+    height: 44px;
+    padding: 8px;
+    margin-left: -1px;
     border-radius: 0px 5px 5px 0px;
+    cursor: pointer;
+    color: #333;
+    background-color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 10px;
+    transition: background-color 0.2s ease;
+}
+
+#remove svg {
+    width: 18px;
+    height: 18px;
 }
 
 #keresomezo:focus {
@@ -659,9 +665,13 @@
 }
 
 .search-result-price {
-    font-size: 14px;
-    color: #1e88e5;
-    font-weight: 600;
+    margin-left: auto;
+    text-align: right;
+    font-size: 1.1rem;
+    font-weight: bold;
+    white-space: nowrap;
+    color: var(--bs-secondary-color) !important;
+    min-width: 80px;
 }
 
 #kereses_button {
@@ -689,5 +699,9 @@
         left: 0;
         border-radius: 5px;
         border-top: 1px solid #ccc;
+    }
+
+    #remove {
+        height: 50px;
     }
 }

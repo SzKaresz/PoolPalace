@@ -51,7 +51,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <form id="searchForm" onsubmit="redirectToProducts(event)" method="GET" class="search-container">
             <div class="keresoGroup input-group">
                 <input type="text" name="query" id="keresomezo" placeholder="Keresés..." class="form-control" autocomplete="off" />
-                <button id="remove" type="button" class="btn">x</button>
+                <svg xmlns="http://www.w3.org/2000/svg" id="remove" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+                </svg>
                 <div id="search-results-dropdown" class="search-results-list"></div>
             </div>
             <button type="submit" class="btn search-btn" id="kereses_button">
@@ -228,15 +230,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
                                     name.classList.add('search-result-name');
                                     name.textContent = item.name;
 
+                                    const cikkszam = document.createElement('div');
+                                    cikkszam.style.fontSize = '0.8rem';
+                                    cikkszam.style.color = '#555';
+                                    cikkszam.textContent = 'Cikkszám: ' + item.id;
+
                                     const price = document.createElement('div');
                                     price.classList.add('search-result-price');
-                                    price.textContent = item.price + ' Ft';
+
+                                    let akcios = parseFloat(item.akcios_ar?.replace(/\s/g, '') || -1);
+                                    let normal = parseFloat(item.price?.replace(/\s/g, '') || 0);
+                                    if (akcios > -1 && akcios < normal) {
+                                        price.innerHTML = `
+                                        <span class="original-price" style="text-decoration: line-through; color: red; margin-right: 5px;">${item.price} Ft</span>
+                                        <span class="discounted-price" style="color: #22ff26; font-weight: bold;">${item.akcios_ar} Ft</span>
+                                    `;
+                                    } else {
+                                        price.textContent = item.price + ' Ft';
+                                    }
 
                                     textWrapper.appendChild(name);
-                                    textWrapper.appendChild(price);
+                                    textWrapper.appendChild(cikkszam);
 
                                     wrapper.appendChild(img);
                                     wrapper.appendChild(textWrapper);
+                                    wrapper.appendChild(price);
 
                                     resultsDropdown.appendChild(wrapper);
                                 });

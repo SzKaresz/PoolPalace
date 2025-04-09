@@ -9,7 +9,7 @@ $searchTerm = isset($_GET['term']) ? trim($_GET['term']) : '';
 
 if (mb_strlen($searchTerm, 'UTF-8') >= 2) {
     if ($db) {
-        $sql = "SELECT cikkszam, nev, egysegar
+        $sql = "SELECT cikkszam, nev, egysegar, akcios_ar
                 FROM termekek
                 WHERE nev LIKE ?
                 ORDER BY nev ASC
@@ -30,6 +30,7 @@ if (mb_strlen($searchTerm, 'UTF-8') >= 2) {
                         'name'  => htmlspecialchars($row['nev'], ENT_QUOTES, 'UTF-8'),
                         'url'   => './termekOldal.php?cikkszam=' . $row['cikkszam'],
                         'img'   => $row['cikkszam'] . '.webp',
+                        'akcios_ar' => $row['akcios_ar'] !== null ? number_format((float)$row['akcios_ar'], 0, ',', ' ') : null,
                         'price' => number_format((int)$row['egysegar'], 0, '', ' ')
                     ];
                 }
