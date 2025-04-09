@@ -228,15 +228,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
                                     name.classList.add('search-result-name');
                                     name.textContent = item.name;
 
+                                    const cikkszam = document.createElement('div');
+                                    cikkszam.style.fontSize = '0.8rem';
+                                    cikkszam.style.color = '#555';
+                                    cikkszam.textContent = 'Cikkszám: ' + item.id;
+
                                     const price = document.createElement('div');
                                     price.classList.add('search-result-price');
-                                    price.textContent = item.price + ' Ft';
+
+                                    let akcios = parseFloat(item.akcios_ar?.replace(/\s/g, '') || -1);
+                                    let normal = parseFloat(item.price?.replace(/\s/g, '') || 0);
+                                    if (akcios > -1 && akcios < normal) {
+                                        price.innerHTML = `
+                                        <span class="original-price" style="text-decoration: line-through; color: red; margin-right: 5px;">${item.price} Ft</span>
+                                        <span class="discounted-price" style="color: #22ff26; font-weight: bold;">${item.akcios_ar} Ft</span>
+                                    `;
+                                    } else {
+                                        price.textContent = item.price + ' Ft';
+                                    }
 
                                     textWrapper.appendChild(name);
-                                    textWrapper.appendChild(price);
+                                    textWrapper.appendChild(cikkszam);
 
                                     wrapper.appendChild(img);
                                     wrapper.appendChild(textWrapper);
+                                    wrapper.appendChild(price);
 
                                     resultsDropdown.appendChild(wrapper);
                                 });
