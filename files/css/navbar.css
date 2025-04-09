@@ -96,7 +96,7 @@
 .search-container .form-control {
     padding: 10px;
     font-size: 16px;
-    border: 1px solid #ccc;
+    border: 0 !important;
     border-radius: 4px;
 }
 
@@ -517,6 +517,7 @@
     border-color: lightgray;
     font-size: larger;
     border-left: none;
+    border: 0 !important;
     border-radius: 0px 5px 5px 0px;
     display: flex;
     align-items: center;
@@ -550,15 +551,16 @@
     max-height: 350px;
     overflow-y: auto;
     background-color: white;
-    border: 1px solid #ccc;
-    border-top: none;
+    border: 0 !important;
+    border-top: 0.5px solid #f7f7f7 !important;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: none;
+    margin-left: 0 !important;
 
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-left-radius: 6px !important;
+    border-bottom-right-radius: 6px !important;
 
     box-sizing: border-box;
 }
@@ -673,6 +675,7 @@
     }
 
     .keresoGroup {
+        height: 50px;
         width: 100%;
         position: relative;
         z-index: 1051;
