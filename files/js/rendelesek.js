@@ -37,6 +37,13 @@ async function rendelesBetolt() {
 
             let osszesTab = document.getElementById("osszes");
             let rendelesAccordion;
+            let rendelesek = {
+                "Feldolgozás alatt": [],
+                "Fizetésre vár": [],
+                "Fizetve": [],
+                "Szállítás alatt": [],
+                "Teljesítve": []
+            };
 
             for (const item of valasz) {
                 let accordionTemplate = document.createElement('div');
@@ -62,7 +69,34 @@ async function rendelesBetolt() {
                 await accordFeltolt(accordionForTab, item.id);
 
                 document.getElementById("osszes").appendChild(accordionForOsszes);
-                addOrderToTab(item.statusz, accordionForTab, item.id);
+
+                if (rendelesek.hasOwnProperty(item.statusz)) {
+                    rendelesek[item.statusz].push({
+                        accordion: accordionForTab,
+                        id: item.id
+                    });
+                }
+            }
+
+            for (const statusz in rendelesek) {
+                if (rendelesek.hasOwnProperty(statusz)) {
+                    let targetTab = getTargetTabId(statusz);
+                    let tabContent = document.getElementById(targetTab);
+
+                    if (rendelesek[statusz].length === 0) {
+                        tabContent.innerHTML = `<h4 class="text-center">Jelenleg nincs ebben a státuszban megrendelés.</h4>`;
+                    } else {
+                        tabContent.innerHTML = ""; // Előző tartalmat töröljük
+                        rendelesek[statusz].forEach(rendeles => {
+                            let existingAccordion = document.querySelector(`#${targetTab} #flush-collapse-${rendeles.id}`);
+                            if (existingAccordion) {
+                                existingAccordion.parentNode.innerHTML = rendeles.accordion.innerHTML;
+                            } else {
+                                tabContent.appendChild(rendeles.accordion);
+                            }
+                        });
+                    }
+                }
             }
 
 
@@ -71,7 +105,6 @@ async function rendelesBetolt() {
         console.log(error);
     }
 }
-
 
 
 function addOrderToTab(statusz, rendelesAccordion, id) {
