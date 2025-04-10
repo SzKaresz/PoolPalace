@@ -55,9 +55,9 @@ async function rendelesBetolt() {
                     </div>
                 `;
 
+                await accordFeltolt(rendelesAccordion, item.id);
                 osszesTab.appendChild(rendelesAccordion.cloneNode(true));
 
-                await accordFeltolt(rendelesAccordion, item.id);
 
                 addOrderToTab(item.statusz, rendelesAccordion, item.id); 
             }
