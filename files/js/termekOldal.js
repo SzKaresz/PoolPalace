@@ -376,10 +376,14 @@ function showToast(message, type = "danger") {
         return;
     }
 
-    const maxToastCount = 3;
-    const currentToasts = toastContainer.querySelectorAll(".toast");
-    if (currentToasts.length >= maxToastCount) {
-        currentToasts[0].remove();
+    // Ne jeleníts meg ugyanazt az üzenetet, bármilyen típusú is
+    const existingToast = Array.from(toastContainer.querySelectorAll(".toast")).find(toast => {
+        const body = toast.querySelector(".toast-body");
+        return body?.textContent === message;
+    });
+
+    if (existingToast) {
+        return; // Ugyanaz az üzenet már megjelenik
     }
 
     let toast = document.createElement("div");
@@ -400,6 +404,11 @@ function showToast(message, type = "danger") {
     try {
         const toastInstance = new bootstrap.Toast(toast, { delay: 5000, autohide: true });
         toastInstance.show();
+
+        toast.addEventListener('hidden.bs.toast', () => {
+            toast.remove();
+        });
+
     } catch (e) {
         console.error("Bootstrap Toast hiba:", e);
         setTimeout(() => toast.remove(), 5000);

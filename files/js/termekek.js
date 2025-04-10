@@ -747,8 +747,16 @@ function showToast(message, type = "danger") {
         document.body.appendChild(toastContainer);
     }
 
-    const maxToastCount = 3;
+    // Ellenőrizd, hogy ugyanez az üzenet már meg van-e jelenítve
     const currentToasts = toastContainer.querySelectorAll(".toast");
+    for (let existingToast of currentToasts) {
+        const body = existingToast.querySelector(".toast-body");
+        if (body && body.textContent === message) {
+            return; // Már létezik ez az üzenet, ne jelenítsd meg újra
+        }
+    }
+
+    const maxToastCount = 3;
     if (currentToasts.length >= maxToastCount) {
         currentToasts[currentToasts.length - 1].remove();
     }
@@ -778,6 +786,7 @@ function showToast(message, type = "danger") {
         }
     }, 6000);
 }
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const storedSort = localStorage.getItem("currentSort") || '';
