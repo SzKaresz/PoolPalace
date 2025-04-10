@@ -36,31 +36,36 @@ async function rendelesBetolt() {
             `;
 
             let osszesTab = document.getElementById("osszes");
-            let rendelesAccordion; 
+            let rendelesAccordion;
 
             for (const item of valasz) {
-                let egyediId = `flush-collapse-${item.id}`;
-                rendelesAccordion = document.createElement('div'); 
-                rendelesAccordion.classList.add('accordion', 'accordion-flush', 'm-4', 'border', 'rounded', 'shadow-sm');
-                rendelesAccordion.innerHTML = `
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="heading-${item.id}">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${egyediId}" aria-expanded="false" aria-controls="${egyediId}">
-                                Megrendelés #${item.id} - ${item.nev}
-                            </button>
-                        </h2>
-                        <div id="${egyediId}" class="accordion-collapse collapse" aria-labelledby="heading-${item.id}" data-bs-parent="#rendelesTabContent">
-                            <div class="accordion-body" id="accord_body_${item.id}"></div>
-                        </div>
-                    </div>
-                `;
+                let accordionTemplate = document.createElement('div');
+                accordionTemplate.classList.add('accordion', 'accordion-flush', 'm-4', 'border', 'rounded', 'shadow-sm');
+                accordionTemplate.innerHTML = `
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading-${item.id}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-${item.id}" aria-expanded="false" aria-controls="flush-collapse-${item.id}">
+                    Megrendelés #${item.id} - ${item.nev}
+                </button>
+            </h2>
+            <div id="flush-collapse-${item.id}" class="accordion-collapse collapse" aria-labelledby="heading-${item.id}" data-bs-parent="#rendelesTabContent">
+                <div class="accordion-body" id="accord_body_${item.id}"></div>
+            </div>
+        </div>
+    `;
 
-                await accordFeltolt(rendelesAccordion, item.id);
-                osszesTab.appendChild(rendelesAccordion.cloneNode(true));
+                // Két külön példány készül: egyik az összeshez, másik a státusz szerintibe
+                const accordionForOsszes = accordionTemplate.cloneNode(true);
+                const accordionForTab = accordionTemplate.cloneNode(true);
 
+                await accordFeltolt(accordionForOsszes, item.id);
+                await accordFeltolt(accordionForTab, item.id);
 
-                addOrderToTab(item.statusz, rendelesAccordion, item.id); 
+                document.getElementById("osszes").appendChild(accordionForOsszes);
+                addOrderToTab(item.statusz, accordionForTab, item.id);
             }
+
+
         }
     } catch (error) {
         console.log(error);
@@ -87,7 +92,7 @@ function getTargetTabId(statusz) {
         case "Teljesítve": return "teljesitve";
         default: return "osszes";
     }
-}async function accordFeltolt(rendelesAccordion, id) {
+} async function accordFeltolt(rendelesAccordion, id) {
     try {
         let keres = await fetch("../php/rendelesek_termekek.php", {
             method: "POST",
@@ -216,16 +221,19 @@ function getTargetTabId(statusz) {
         console.log(error);
     }
 }
-
 document.addEventListener("click", function (event) {
     if (event.target.closest(".save-all-btn")) {
         const loadingOverlay = document.getElementById("loading-overlay");
         loadingOverlay.style.display = "flex";
         let megrendelesId = event.target.closest(".save-all-btn").getAttribute("data-id");
-        let statusSelect = document.getElementById(`status_${megrendelesId}`);
+        // **Megkeressük a megfelelő accordiant a gombhoz legközelebbi .accordion elem segítségével**
+        let accordion = event.target.closest(".accordion");
+
+        // **Azon belül keressük a szükséges inputokat**
+        let statusSelect = accordion.querySelector(`#status_${megrendelesId}`);
         let newStatus = statusSelect.value;
 
-        let rows = document.querySelectorAll(`#accord_body_${megrendelesId} tbody tr`);
+        let rows = accordion.querySelectorAll(`#accord_body_${megrendelesId} tbody tr`);
         let modifiedItems = [];
 
         rows.forEach(row => {
@@ -244,14 +252,14 @@ document.addEventListener("click", function (event) {
 
         let personalDetails = {
             szallitas: {
-                irsz: document.getElementById(`irsz_${megrendelesId}`).value,
-                telepules: document.getElementById(`telepules_${megrendelesId}`).value,
-                utca: document.getElementById(`utca_${megrendelesId}`).value
+                irsz: accordion.querySelector(`#irsz_${megrendelesId}`).value,
+                telepules: accordion.querySelector(`#telepules_${megrendelesId}`).value,
+                utca: accordion.querySelector(`#utca_${megrendelesId}`).value
             },
             szamlazas: {
-                irsz: document.getElementById(`sz_irsz_${megrendelesId}`).value,
-                telepules: document.getElementById(`sz_telepules_${megrendelesId}`).value,
-                utca: document.getElementById(`sz_utca_${megrendelesId}`).value
+                irsz: accordion.querySelector(`#sz_irsz_${megrendelesId}`).value,
+                telepules: accordion.querySelector(`#sz_telepules_${megrendelesId}`).value,
+                utca: accordion.querySelector(`#sz_utca_${megrendelesId}`).value
             }
         }
 
@@ -278,7 +286,7 @@ document.addEventListener("click", function (event) {
                         let input = row.querySelector(".quantity-input");
                         input.setAttribute("data-original-value", input.value);
                     });
-                    rendelesBetolt(); 
+                    rendelesBetolt();
                 }
                 else {
                     showToast(result.messages, "info");
