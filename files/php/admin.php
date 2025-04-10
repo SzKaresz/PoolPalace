@@ -90,9 +90,6 @@
                     <div class="d-flex justify-content-center flex-wrap gap-2 mt-3" id="carouselThumbnails">
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
-                </div>
             </div>
         </div>
     </div>
