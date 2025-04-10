@@ -10,7 +10,6 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
 
 ?>
 
-
 <!DOCTYPE html>
 <html lang="hu">
 
@@ -36,18 +35,6 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
         <img src="../img/login.png" class="login-kep" alt="Bejelentkezés ikon">
         <h3>Jelszó emlékeztető</h3>
 
-        <div id="uzenet-helye">
-            <?php if (!empty($hiba)): ?>
-                <div class="alert alert-danger" role="alert"><?php echo htmlspecialchars($hiba); ?></div>
-            <?php endif; ?>
-            <?php if (!empty($uzenet)): ?>
-                <div id="visszaSzamlalo" class="alert alert-success text-center mt-2">
-                    Sikeres küldés! Átirányítás <span id="visszaSzamlalo-szam">3</span> másodperc múlva...
-                </div>
-            <?php endif; ?>
-        </div>
-
-
         <form id="urlap" method="POST">
             <div class="mb-3">
                 <div class="input-group">
@@ -63,6 +50,8 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
             <button type="submit" class="btn btn-primary">Küldés</button>
         </form>
     </div>
+
+    <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;"></div>
 
     <?php
     include "./email_kuldes.php";
@@ -88,10 +77,11 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                 $user = $result->fetch_assoc();
 
                 if ($user) {
-                    if (elfelejtettEmail($email, $user["nev"])) {
-                        $_SESSION['uzenet'] = 'Sikeres küldés! Átirányítás 5 másodperc múlva.';
+                    $emailHiba = null;
+                    if (elfelejtettEmail($email, $user["nev"], $emailHiba)) {
+                        $_SESSION['uzenet'] = 'Sikeres küldés! Elküldtük a jelszó-visszaállító linket az email címedre.';
                     } else {
-                        $_SESSION["hiba"] = $hiba;
+                        $_SESSION["hiba"] = $emailHiba ?: "Hiba az email küldésekor.";
                     }
                 } else {
                     $_SESSION['hiba'] = "Érvénytelen e-mail cím!";
@@ -105,6 +95,26 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
         header('Location: ' . $_SERVER['PHP_SELF']);
         exit();
     }
+
+    if (!empty($uzenet)): ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                showToast('<?php echo addslashes(htmlspecialchars($uzenet)); ?>', 'success');
+                let visszaSzamlaloElem = document.createElement('div');
+                visszaSzamlaloElem.id = 'visszaSzamlalo';
+                visszaSzamlaloElem.className = 'd-none';
+                document.body.appendChild(visszaSzamlaloElem);
+                szamlaloAtiranyitas();
+            });
+        </script>
+    <?php endif; ?>
+    <?php if (!empty($hiba)): ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                showToast('<?php echo addslashes(htmlspecialchars($hiba)); ?>', 'danger');
+            });
+        </script>
+    <?php endif;
 
     ob_end_flush();
     ?>

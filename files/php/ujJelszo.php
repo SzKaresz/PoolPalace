@@ -25,21 +25,10 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
     <?php include './navbar.php'; ?>
 
     <div class="form-container">
-        <div id="uzenet-helye">
-            <?php if (!empty($hiba)): ?>
-                <div class="alert alert-danger" role="alert"><?php echo htmlspecialchars($hiba); ?></div>
-            <?php endif; ?>
-            <?php if (!empty($uzenet)): ?>
-                <div id="visszaSzamlalo" class="alert alert-success text-center mt-2">
-                    Sikeres jelszómódosítás! Átirányítás <span id="visszaSzamlalo-szam">3</span> másodperc múlva...
-                </div>
-            <?php endif; ?>
-        </div>
-
-        <form method="POST" id="ujJelszo-urlap" class="row g-3">
+         <h4>Új jelszó beállítása</h4>
+        <form method="POST" id="ujJelszo-urlap" class="row g-3 justify-content-center">
             <input type="hidden" name="email" value="<?php echo isset($_REQUEST['email']) ? htmlspecialchars($_REQUEST['email']) : ''; ?>">
-            <div class="col">
-                <h4>Új jelszó</h4>
+            <div class="col-md-8 col-lg-6">
                 <div class="mb-3">
                     <div class="input-group">
                         <span class="input-group-text required-icon"><img src="../img/jelszo.png" class="jelszo-logo" alt="Jelszó"></span>
@@ -52,10 +41,12 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                         <input type="password" class="form-control" id="uj-jelszo-ismet" name="jelszo-ujra" placeholder="Új jelszó megerősítése">
                     </div>
                 </div>
-                <button type="submit" class="mt-3 btn btn-primary">Módosítás</button>
+                <button type="submit" class="mt-3 btn btn-primary w-100">Módosítás</button>
             </div>
         </form>
     </div>
+
+     <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;"></div>
 
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -78,6 +69,13 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
                 exit;
             }
 
+             $jelszoPattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/';
+             if (!preg_match($jelszoPattern, $uj_jelszo)) {
+                 $_SESSION['hiba'] = "Az új jelszónak minimum 8 karakter hosszúnak kell lennie, tartalmaznia kell kis- és nagybetűt, valamint számot!";
+                 header('Location: ' . $_SERVER['PHP_SELF'] . '?email=' . urlencode($email));
+                 exit;
+             }
+
             $jelenlegi_stmt = $db->prepare("SELECT jelszo FROM felhasznalok WHERE email = ?");
             if (!$jelenlegi_stmt) {
                 $_SESSION['hiba'] = "Adatbázis hiba: " . $db->error;
@@ -88,6 +86,14 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
             $jelenlegi_stmt->bind_param("s", $email);
             $jelenlegi_stmt->execute();
             $result = $jelenlegi_stmt->get_result();
+
+            if($result->num_rows === 0) {
+                 $_SESSION['hiba'] = "Nem található felhasználó ezzel az e-mail címmel.";
+                 $jelenlegi_stmt->close();
+                 header('Location: ' . $_SERVER['PHP_SELF'] . '?email=' . urlencode($email));
+                 exit;
+            }
+
             $row = $result->fetch_assoc();
             $jelenlegi_jelszo_hash = $row['jelszo'];
             $jelenlegi_stmt->close();
@@ -117,11 +123,32 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
             header('Location: ' . $_SERVER['PHP_SELF'] . '?email=' . urlencode($email));
             exit;
         } else {
-            $_SESSION['hiba'] = "Minden mezőt ki kell tölteni!";
-            header('Location: ' . $_SERVER['PHP_SELF'] . '?email=' . urlencode($email));
+            $_SESSION['hiba'] = "Minden jelszó mezőt ki kell tölteni!";
+             header('Location: ' . $_SERVER['PHP_SELF'] . '?email=' . urlencode($email));
             exit;
         }
     }
+
+    if (!empty($uzenet)): ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                showToast('<?php echo addslashes(htmlspecialchars($uzenet)); ?>', 'success');
+                 let visszaSzamlaloElemDiv = document.createElement('div');
+                 visszaSzamlaloElemDiv.id = 'visszaSzamlalo';
+                 visszaSzamlaloElemDiv.className = 'd-none';
+                 document.body.appendChild(visszaSzamlaloElemDiv);
+                 szamlaloAtiranyitas();
+            });
+        </script>
+    <?php endif; ?>
+    <?php if (!empty($hiba)): ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                showToast('<?php echo addslashes(htmlspecialchars($hiba)); ?>', 'danger');
+            });
+        </script>
+    <?php endif;
+    ob_end_flush();
     ?>
 
 </body>
