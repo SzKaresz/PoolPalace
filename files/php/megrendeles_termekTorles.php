@@ -48,10 +48,27 @@ if ($eredmeny === "Sikeres művelet!") {
 
     $sql_update_osszeg = "UPDATE megrendeles SET osszeg = $newTotal WHERE id = $megrendelesId";
     adatokValtoztatasa($sql_update_osszeg);
+    $sql_cim_adatok = "SELECT szallit_irsz, szallit_telep, szallit_cim, szamlaz_irsz, szamlaz_telep, szamlaz_cim FROM `megrendeles` WHERE id=$megrendelesId";
+    $cim_adatok_result = adatokLekerdezese($sql_cim_adatok);
+    $szallitasiCim = [];
+    $szamlazasiCim = [];
+    if ($cim_adatok_result !== "Nincs találat!" && isset($cim_adatok_result[0])) {
+        $cim_adatok = $cim_adatok_result[0];
+        $szallitasiCim = [
+            'irsz' => $cim_adatok['szallit_irsz'],
+            'telepules' => $cim_adatok['szallit_telep'],
+            'utca' => $cim_adatok['szallit_cim']
+        ];
+        $szamlazasiCim = [
+            'irsz' => $cim_adatok['szamlaz_irsz'],
+            'telepules' => $cim_adatok['szamlaz_telep'],
+            'utca' => $cim_adatok['szamlaz_cim']
+        ];
+    }
 
-    kuldRendelesModositas($email, $name, $megrendelesId, $maradtCartItems, $newTotal, $currentStatus);
+    kuldRendelesModositas($email, $name, $megrendelesId, $maradtCartItems, $newTotal, $currentStatus, $szallitasiCim, $szamlazasiCim);
 
-    echo json_encode(["success" => true, "message" => "A $cikkszam cikkszámú termék törlése sikeres!"]);
+    echo json_encode(["success" => true, "message" => "A(z) $cikkszam cikkszámú termék törlése sikeres!"]);
 } else {
     echo json_encode(["status" => "error", "message" => "A termék törlése sikertelen!"]);
 }
