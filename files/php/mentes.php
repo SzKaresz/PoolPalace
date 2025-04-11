@@ -41,6 +41,7 @@ if (!empty($input['items']) && is_array($input['items'])) {
 
             if ($result !== "Sikeres művelet!") {
                 $response["messages"][] = "Nem sikerült frissíteni a termék ID: $termekId értékét.";
+                 $response["success"] = false;
             } else {
                 $response["success"] = true;
                 $itemsChanged = true;
@@ -57,6 +58,7 @@ if (isset($input['newStatus'])) {
 
         if ($result !== "Sikeres művelet!") {
             $response["messages"][] = "Nem sikerült frissíteni a rendelés státuszát.";
+             $response["success"] = false;
         } else {
             $response["success"] = true;
             $statusChanged = true;
@@ -73,42 +75,72 @@ if (isset($input["details"]["szallitas"]) && isset($input["details"]["szamlazas"
     $szaml_telepules = $input["details"]["szamlazas"]["telepules"];
     $szaml_utca = $input["details"]["szamlazas"]["utca"];
 
-    $sql = "UPDATE `megrendeles`
-            SET `szallit_irsz`='$irsz', `szallit_telep`='$telepules', `szallit_cim`='$utca',
-                `szamlaz_irsz`='$szaml_irsz', `szamlaz_telep`='$szaml_telepules', `szamlaz_cim`='$szaml_utca'
-            WHERE id=$megrendelesId";
+    $sql_check = "SELECT szallit_irsz, szallit_telep, szallit_cim, szamlaz_irsz, szamlaz_telep, szamlaz_cim FROM `megrendeles` WHERE id=$megrendelesId";
+    $current_details_result = adatokLekerdezese($sql_check);
+    $details_changed_flag = false;
+    if ($current_details_result !== "Nincs találat!") {
+        $current_details = $current_details_result[0];
+        if ($current_details['szallit_irsz'] != $irsz ||
+            $current_details['szallit_telep'] != $telepules ||
+            $current_details['szallit_cim'] != $utca ||
+            $current_details['szamlaz_irsz'] != $szaml_irsz ||
+            $current_details['szamlaz_telep'] != $szaml_telepules ||
+            $current_details['szamlaz_cim'] != $szaml_utca) {
+             $details_changed_flag = true;
+        }
+    }
 
-    $result = adatokValtoztatasa($sql);
+    if ($details_changed_flag) {
+        $sql = "UPDATE `megrendeles`
+                SET `szallit_irsz`='$irsz', `szallit_telep`='$telepules', `szallit_cim`='$utca',
+                    `szamlaz_irsz`='$szaml_irsz', `szamlaz_telep`='$szaml_telepules', `szamlaz_cim`='$szaml_utca'
+                WHERE id=$megrendelesId";
 
-    if ($result == "Sikeres művelet!") {
-        $response["success"] = true;
-        $detailsChanged = true;
-    } else {
-        $response["messages"][] = "Nem sikerült frissíteni a szállítási/számlázási címeket.";
+        $result = adatokValtoztatasa($sql);
+
+        if ($result == "Sikeres művelet!") {
+            $response["success"] = true;
+            $detailsChanged = true;
+        } else {
+            $response["messages"][] = "Nem sikerült frissíteni a szállítási/számlázási címeket.";
+            $response["success"] = false;
+        }
     }
 }
 
 if (!$itemsChanged && !$statusChanged && !$detailsChanged) {
-    $response["messages"][] = "Nem történt változtatás!";
-} else {
-    if ($response["success"] && !$statusChanged) {
-        $response["messages"] = ["Sikeres frissítés!"];
-
-        $sql_tetelek = "SELECT t.cikkszam, t.nev, t.egysegar, t.akcios_ar, tt.darabszam
-                            FROM tetelek tt
-                            JOIN termekek t ON tt.termek_id = t.cikkszam
-                            WHERE tt.megrendeles_id = $megrendelesId";
-        $cartItems = adatokLekerdezese($sql_tetelek);
-        if ($cartItems === "Nincs találat!") $cartItems = [];
-
-        $sql_osszeg = "SELECT osszeg FROM megrendeles WHERE id = $megrendelesId";
-        $osszeg_result = adatokLekerdezese($sql_osszeg);
-        $total = ($osszeg_result !== "Nincs találat!") ? $osszeg_result[0]['osszeg'] : 0;
-
-        kuldRendelesModositas($email, $name, $megrendelesId, $cartItems, $total, $currentStatus);
+    if (empty($response["messages"])){
+         $response["messages"][] = "Nem történt változtatás.";
     }
-    else{
-        kuldRendelesStatuszValtozas($email, $name, $megrendelesId, $newStatus);
+    $response["success"] = $response["success"] && false;
+} else {
+    if ($response["success"]) {
+        if (empty($response["messages"])) {
+            if ($statusChanged && !$itemsChanged && !$detailsChanged) {
+                $response["messages"][] = "A státusz sikeresen frissítve!";
+            } elseif (($itemsChanged || $detailsChanged) && !$statusChanged) {
+                 $response["messages"][] = "A rendelés adatai sikeresen frissítve!";
+             } else {
+                $response["messages"][] = "Sikeres frissítés!";
+            }
+        }
+
+         if ($statusChanged) {
+             kuldRendelesStatuszValtozas($email, $name, $megrendelesId, $newStatus);
+         } elseif ($itemsChanged || $detailsChanged) {
+             $sql_tetelek = "SELECT t.cikkszam, t.nev, t.egysegar, t.akcios_ar, tt.darabszam
+                                 FROM tetelek tt
+                                 JOIN termekek t ON tt.termek_id = t.cikkszam
+                                 WHERE tt.megrendeles_id = $megrendelesId";
+             $cartItems = adatokLekerdezese($sql_tetelek);
+             if ($cartItems === "Nincs találat!") $cartItems = [];
+
+             $sql_osszeg = "SELECT osszeg FROM megrendeles WHERE id = $megrendelesId";
+             $osszeg_result = adatokLekerdezese($sql_osszeg);
+             $total = ($osszeg_result !== "Nincs találat!") ? $osszeg_result[0]['osszeg'] : 0;
+
+             kuldRendelesModositas($email, $name, $megrendelesId, $cartItems, $total, $currentStatus);
+         }
     }
 }
 
