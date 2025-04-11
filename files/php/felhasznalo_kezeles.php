@@ -1,3 +1,6 @@
+<?php
+include "../php/session.php"
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,6 +13,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="../css/admin.css">
     <link rel="icon" href="../img/logo_icon.ico" type="image/x-icon">
+    <script>
+        const bejelentkezett_email = <?php echo isset($_SESSION['user_email']) ? json_encode($_SESSION['user_email']) : 'null'; ?>;
+    </script>
     <script defer src="../js/felhasznalo.js"></script>
 </head>
 
@@ -64,4 +70,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>

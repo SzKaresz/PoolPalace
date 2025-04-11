@@ -13,14 +13,15 @@ async function felhasznaloLeker() {
                 }
             });
             let felhasznaloDiv = document.getElementById("felhasznalok");
-            felhasznaloDiv.innerHTML = ""; // Előző tartalom törlése
+            felhasznaloDiv.innerHTML = ""; 
 
             for (const item of valasz) {
                 let szamlalo = 0
                 let kartya = document.createElement("div");
                 kartya.className = "card mb-3";
                 kartya.style.maxWidth = "100%";
-                kartya.innerHTML = `
+                if(item.email != bejelentkezett_email){                
+                    kartya.innerHTML = `
                     <div class="row g-0">
                         <div class="col-md-1 d-flex align-items-center justify-content-center">
                             <img src="${(item.jogosultsag == "admin" ? "../img/admin.png" : "../img/users.png")}" class="img-fluid rounded-start" alt="Felhasználó ikon">
@@ -96,8 +97,11 @@ async function felhasznaloLeker() {
                         </div>
                     </div>
                 `;
+         
 
                 felhasznaloDiv.appendChild(kartya);
+            
+                    
 
                 let modositasGomb = kartya.querySelector(".modositas-gomb");
                 let mentesGomb = kartya.querySelector(".mentés-gomb");
@@ -182,7 +186,7 @@ async function felhasznaloLeker() {
                 });
 
 
-
+            }
             }
         }
     } catch (error) {
