@@ -21,7 +21,7 @@
             <video autoplay loop muted>
                 <source src="../img/medencevideo.mp4" type="video/mp4">
             </video>
-            <div class="video-caption text-center">Üdvözlünk a Webshopunkban!</div>
+            <div class="video-caption text-center"><p>Üdvözlünk a Webshopunkban!</p><h3>Merüljön el a kínálatunkban!</h3></div>
         </div>
         <section class="products-section mb-5">
             <h2>Népszerű termékek</h2>
