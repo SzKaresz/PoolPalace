@@ -119,28 +119,46 @@ if (!$itemsChanged && !$statusChanged && !$detailsChanged) {
             if ($statusChanged && !$itemsChanged && !$detailsChanged) {
                 $response["messages"][] = "A státusz sikeresen frissítve!";
             } elseif (($itemsChanged || $detailsChanged) && !$statusChanged) {
-                 $response["messages"][] = "A rendelés adatai sikeresen frissítve!";
-             } else {
+                    $response["messages"][] = "A rendelés adatai sikeresen frissítve!";
+                } else {
                 $response["messages"][] = "Sikeres frissítés!";
             }
         }
 
-         if ($statusChanged) {
-             kuldRendelesStatuszValtozas($email, $name, $megrendelesId, $newStatus);
-         } elseif ($itemsChanged || $detailsChanged) {
-             $sql_tetelek = "SELECT t.cikkszam, t.nev, t.egysegar, t.akcios_ar, tt.darabszam
-                                 FROM tetelek tt
-                                 JOIN termekek t ON tt.termek_id = t.cikkszam
-                                 WHERE tt.megrendeles_id = $megrendelesId";
-             $cartItems = adatokLekerdezese($sql_tetelek);
-             if ($cartItems === "Nincs találat!") $cartItems = [];
-
-             $sql_osszeg = "SELECT osszeg FROM megrendeles WHERE id = $megrendelesId";
-             $osszeg_result = adatokLekerdezese($sql_osszeg);
-             $total = ($osszeg_result !== "Nincs találat!") ? $osszeg_result[0]['osszeg'] : 0;
-
-             kuldRendelesModositas($email, $name, $megrendelesId, $cartItems, $total, $currentStatus);
-         }
+        $sql_cim_adatok = "SELECT szallit_irsz, szallit_telep, szallit_cim, szamlaz_irsz, szamlaz_telep, szamlaz_cim FROM `megrendeles` WHERE id=$megrendelesId";
+        $cim_adatok_result = adatokLekerdezese($sql_cim_adatok);
+        $szallitasiCim = [];
+        $szamlazasiCim = [];
+        if ($cim_adatok_result !== "Nincs találat!" && isset($cim_adatok_result[0])) {
+            $cim_adatok = $cim_adatok_result[0];
+            $szallitasiCim = [
+                'irsz' => $cim_adatok['szallit_irsz'],
+                'telepules' => $cim_adatok['szallit_telep'],
+                'utca' => $cim_adatok['szallit_cim']
+            ];
+            $szamlazasiCim = [
+                'irsz' => $cim_adatok['szamlaz_irsz'],
+                'telepules' => $cim_adatok['szamlaz_telep'],
+                'utca' => $cim_adatok['szamlaz_cim']
+            ];
+        }
+    
+        if ($statusChanged) {
+            kuldRendelesStatuszValtozas($email, $name, $megrendelesId, $newStatus, $szallitasiCim);
+        } elseif ($itemsChanged || $detailsChanged) {
+                $sql_tetelek = "SELECT t.cikkszam, t.nev, t.egysegar, t.akcios_ar, tt.darabszam
+                                    FROM tetelek tt
+                                    JOIN termekek t ON tt.termek_id = t.cikkszam
+                                    WHERE tt.megrendeles_id = $megrendelesId";
+                $cartItems = adatokLekerdezese($sql_tetelek);
+                if ($cartItems === "Nincs találat!") $cartItems = [];
+    
+                $sql_osszeg = "SELECT osszeg FROM megrendeles WHERE id = $megrendelesId";
+                $osszeg_result = adatokLekerdezese($sql_osszeg);
+                $total = ($osszeg_result !== "Nincs találat!") ? $osszeg_result[0]['osszeg'] : 0;
+    
+                kuldRendelesModositas($email, $name, $megrendelesId, $cartItems, $total, $currentStatus, $szallitasiCim, $szamlazasiCim);
+        }
     }
 }
 

@@ -201,7 +201,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     echo json_encode(["success" => true, "order_id" => $megrendeles_id]);
     include 'email_kuldes.php';
-    kuldRendelesVisszaigazolas($felhasznalo_email, $data['name'], $megrendeles_id, $termekek, $valodi_total, $data['payment_method']);
+    $szallitasiCim = [
+        'irsz' => $data['shipping_postal_code'],
+        'telepules' => $data['shipping_city'],
+        'utca' => $data['shipping_address']
+    ];
+    $szamlazasiCim = [
+        'irsz' => $data['billing_postal_code'],
+        'telepules' => $data['billing_city'],
+        'utca' => $data['billing_address']
+    ];
+    kuldRendelesVisszaigazolas($felhasznalo_email, $data['name'], $megrendeles_id, $termekek, $valodi_total, $data['payment_method'], $szallitasiCim, $szamlazasiCim);
     exit;
 }
 
