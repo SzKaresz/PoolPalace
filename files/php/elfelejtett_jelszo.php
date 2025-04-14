@@ -4,6 +4,7 @@ include './db.php';
 ob_start();
 
 $recaptcha_secret = '6LeCq3oqAAAAAAjLBjZNWtYsshRzRA1Brd7bw3D7';
+// $recaptcha_secret = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'; TESZTHEZ
 $hiba = isset($_SESSION['hiba']) ? $_SESSION['hiba'] : '';
 $uzenet = isset($_SESSION['uzenet']) ? $_SESSION['uzenet'] : '';
 unset($_SESSION['hiba'], $_SESSION['uzenet']);
@@ -46,8 +47,9 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
             </div>
 
             <div class="nem-robot g-recaptcha" data-sitekey="6LeCq3oqAAAAAAycGrnmZ-Qdcea0CEEACjHyVuVR"></div>
+            <!-- <div class="nem-robot g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div> TESZTHEZ -->
 
-            <button type="submit" class="btn btn-primary">Küldés</button>
+            <button type="submit" class="btn btn-primary" id="kuldes">Küldés</button>
         </form>
     </div>
 

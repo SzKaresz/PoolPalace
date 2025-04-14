@@ -162,7 +162,7 @@
 
                 <span class="error aszf-error">Kérjük, fogadja el az Általános Szerződési Feltételeket!</span> <br>
 
-                <button type="submit" class="mt-3 btn btn-primary">Regisztráció</button>
+                <button type="submit" class="mt-3 btn btn-primary" id="regisztracio">Regisztráció</button>
             </div>
 
             <?php

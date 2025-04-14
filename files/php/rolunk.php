@@ -102,6 +102,7 @@ ob_start();
                 <span class="error adatkez-error">Kérjük, fogadja el az Adatkezelési tájékoztatóban leírtakat!</span>
                 <div id="recaptcha-container">
                     <div class="g-recaptcha nem-robot" data-sitekey="6Lfs-4kqAAAAACPZ6RbVLP0IAz9sBeCZrsYgRzHY"></div>
+                    <!-- <div class="g-recaptcha nem-robot" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div> TESZTHEZ -->
                     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
                 </div>
                 <span class="error recaptcha-error">Kérjük, igazolja, hogy nem robot!</span> <br hidden id="st">

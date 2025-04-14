@@ -9,6 +9,7 @@ $response = ['success' => false, 'message' => 'Ismeretlen hiba történt.'];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $recaptcha_secret = '6Lfs-4kqAAAAAEy4wjpXoGPC3er4FusWos9bVmnh';
+    // $recaptcha_secret = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'; TESZTHEZ
     $recaptcha_response = $_POST['g-recaptcha-response'] ?? '';
 
     if (empty($recaptcha_response)) {

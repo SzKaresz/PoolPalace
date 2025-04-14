@@ -4,6 +4,7 @@ include './db.php';
 ob_start(); 
 
 $recaptcha_secret = '6LeCq3oqAAAAAAjLBjZNWtYsshRzRA1Brd7bw3D7';
+// $recaptcha_secret = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'; teszthez van
 $hibaUzenet = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -103,6 +104,7 @@ ob_end_flush();
             </div>
 
             <div class="nem-robot g-recaptcha" data-sitekey="6LeCq3oqAAAAAAycGrnmZ-Qdcea0CEEACjHyVuVR"></div>
+            <!-- <div class="nem-robot g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div> TESZTHEZ VAN -->
 
             <button type="submit" id="belepes" class="btn btn-primary">Belépés</button>
         </form>
