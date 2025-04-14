@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Ápr 08. 11:39
+-- Létrehozás ideje: 2025. Ápr 14. 12:02
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Adatbázis: `poolpalace`
 --
-CREATE DATABASE IF NOT EXISTS `poolpalace` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `poolpalace`;
 
 -- --------------------------------------------------------
 
@@ -29,7 +27,6 @@ USE `poolpalace`;
 -- Tábla szerkezet ehhez a táblához `felhasznalok`
 --
 
-DROP TABLE IF EXISTS `felhasznalok`;
 CREATE TABLE `felhasznalok` (
   `email` varchar(254) NOT NULL,
   `nev` varchar(255) NOT NULL,
@@ -54,12 +51,10 @@ INSERT INTO `felhasznalok` (`email`, `nev`, `jelszo`, `telefonszam`, `szallitasi
 --
 -- Eseményindítók `felhasznalok`
 --
-DROP TRIGGER IF EXISTS `email_toLower`;
 DELIMITER $$
 CREATE TRIGGER `email_toLower` BEFORE INSERT ON `felhasznalok` FOR EACH ROW SET NEW.email = lower(NEW.email)
 $$
 DELIMITER ;
-DROP TRIGGER IF EXISTS `uj_felhasznalo`;
 DELIMITER $$
 CREATE TRIGGER `uj_felhasznalo` AFTER INSERT ON `felhasznalok` FOR EACH ROW INSERT INTO `log`(`tabla_nev`, `tabla_id`) VALUES ('felhasznalok', new.email)
 $$
@@ -71,7 +66,6 @@ DELIMITER ;
 -- Tábla szerkezet ehhez a táblához `gyarto`
 --
 
-DROP TABLE IF EXISTS `gyarto`;
 CREATE TABLE `gyarto` (
   `id` int(11) NOT NULL,
   `nev` varchar(25) NOT NULL
@@ -110,7 +104,6 @@ INSERT INTO `gyarto` (`id`, `nev`) VALUES
 -- Tábla szerkezet ehhez a táblához `kategoria`
 --
 
-DROP TABLE IF EXISTS `kategoria`;
 CREATE TABLE `kategoria` (
   `id` int(11) NOT NULL,
   `nev` varchar(55) NOT NULL
@@ -149,7 +142,6 @@ INSERT INTO `kategoria` (`id`, `nev`) VALUES
 -- Tábla szerkezet ehhez a táblához `kosar`
 --
 
-DROP TABLE IF EXISTS `kosar`;
 CREATE TABLE `kosar` (
   `id` int(11) NOT NULL,
   `felhasznalo_id` varchar(254) NOT NULL,
@@ -171,7 +163,6 @@ INSERT INTO `kosar` (`id`, `felhasznalo_id`, `termek_id`, `darabszam`) VALUES
 -- Tábla szerkezet ehhez a táblához `log`
 --
 
-DROP TABLE IF EXISTS `log`;
 CREATE TABLE `log` (
   `id` int(10) NOT NULL,
   `datum` datetime NOT NULL DEFAULT current_timestamp(),
@@ -199,7 +190,6 @@ INSERT INTO `log` (`id`, `datum`, `tabla_nev`, `tabla_id`) VALUES
 -- Tábla szerkezet ehhez a táblához `megrendeles`
 --
 
-DROP TABLE IF EXISTS `megrendeles`;
 CREATE TABLE `megrendeles` (
   `id` int(11) NOT NULL,
   `email` varchar(254) NOT NULL,
@@ -213,7 +203,7 @@ CREATE TABLE `megrendeles` (
   `szamlaz_irsz` varchar(10) NOT NULL,
   `szamlaz_telep` varchar(255) NOT NULL,
   `szamlaz_cim` varchar(255) NOT NULL,
-  `statusz` enum('Feldolgozás alatt','Fizetésre vár','Fizetve','Szállítás alatt','Teljesítve','Törölve') NOT NULL DEFAULT 'Feldolgozás alatt'
+  `statusz` enum('Feldolgozás alatt','Fizetésre vár','Fizetve','Szállítás alatt','Teljesítve') NOT NULL DEFAULT 'Feldolgozás alatt'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
@@ -228,7 +218,6 @@ INSERT INTO `megrendeles` (`id`, `email`, `nev`, `telefonszam`, `datum`, `osszeg
 --
 -- Eseményindítók `megrendeles`
 --
-DROP TRIGGER IF EXISTS `megrendeles`;
 DELIMITER $$
 CREATE TRIGGER `megrendeles` AFTER INSERT ON `megrendeles` FOR EACH ROW INSERT INTO `log`(`tabla_nev`, `tabla_id`) VALUES ('megrendeles', new.id)
 $$
@@ -240,7 +229,6 @@ DELIMITER ;
 -- Tábla szerkezet ehhez a táblához `szallitasi_cim`
 --
 
-DROP TABLE IF EXISTS `szallitasi_cim`;
 CREATE TABLE `szallitasi_cim` (
   `id` int(11) NOT NULL,
   `iranyitoszam` varchar(7) NOT NULL,
@@ -265,7 +253,6 @@ INSERT INTO `szallitasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`)
 -- Tábla szerkezet ehhez a táblához `szamlazasi_cim`
 --
 
-DROP TABLE IF EXISTS `szamlazasi_cim`;
 CREATE TABLE `szamlazasi_cim` (
   `id` int(11) NOT NULL,
   `iranyitoszam` varchar(7) NOT NULL,
@@ -290,7 +277,6 @@ INSERT INTO `szamlazasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`)
 -- Tábla szerkezet ehhez a táblához `termekek`
 --
 
-DROP TABLE IF EXISTS `termekek`;
 CREATE TABLE `termekek` (
   `cikkszam` varchar(6) NOT NULL,
   `nev` varchar(70) NOT NULL,
@@ -415,7 +401,6 @@ INSERT INTO `termekek` (`cikkszam`, `nev`, `egysegar`, `akcios_ar`, `leiras`, `g
 -- Tábla szerkezet ehhez a táblához `tetelek`
 --
 
-DROP TABLE IF EXISTS `tetelek`;
 CREATE TABLE `tetelek` (
   `id` int(11) NOT NULL,
   `megrendeles_id` int(11) NOT NULL,
