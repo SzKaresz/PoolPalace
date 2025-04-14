@@ -208,13 +208,6 @@ function loadProducts(page = 1, sortType = '') {
     const limitPerPage = getItemsPerPage();
     let queryParams = new URLSearchParams();
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const kategoriaParam = urlParams.get("kategoria");
-    if (kategoriaParam && kategoriaParam !== "") {
-        queryParams.set("kategoriak", kategoriaParam);
-        kivalasztottSzurok.kategoriak = new Set([kategoriaParam]);
-    }
-
     if (sortType) {
         queryParams.set("sort", sortType);
         localStorage.setItem("currentSort", sortType);
@@ -789,6 +782,14 @@ function showToast(message, type = "danger") {
 
 
 document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const kategoriaParam = urlParams.get("kategoria");
+    if (kategoriaParam && kategoriaParam !== "") {
+        kivalasztottSzurok.kategoriak = new Set([kategoriaParam]);
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('kategoria');
+        history.replaceState({}, '', newUrl);
+    }
     const storedSort = localStorage.getItem("currentSort") || '';
     loadProducts(1, storedSort);
     kategoriaFeltolt();
