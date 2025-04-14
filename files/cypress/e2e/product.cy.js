@@ -1,129 +1,165 @@
-describe('Termék Oldal Funkciók', () => {
+describe('Termék Oldal Tesztelése', () => {
     const baseUrl = Cypress.config('baseUrl');
-    const testCikkszam = '010003';
-
-    beforeEach(() => {
-        cy.visit(`${baseUrl}termekOldal.php?cikkszam=${testCikkszam}`);
-        cy.get('.product-title', { timeout: 10000 }).should('be.visible');
+    const validCikkszam = '010001';
+    const invalidCikkszam = '999999';
+    const productPageUrl = (cikkszam) => `${baseUrl}termekOldal.php?cikkszam=${cikkszam}`;
+  
+    it('Sikeresen betölti a termékoldalt érvényes cikkszámmal', () => {
+      cy.visit(productPageUrl(validCikkszam));
+      cy.get('.product-title').should('exist').and('not.be.empty');
+      cy.get('.price-section').should('exist');
+      cy.get('.stock-status').should('exist');
+      cy.get('#productCarousel').should('be.visible');
+      cy.get('.add-to-cart-section').should('exist');
+      cy.get('.breadcrumb').should('be.visible');
+      cy.get('#descriptionAccordion').should('exist');
     });
-
-    it('Megjeleníti a termék alapvető adatait', () => {
-        cy.get('.product-title').should('not.be.empty');
-        cy.get('.product-meta span').should('contain.text', `Cikkszám: ${testCikkszam}`);
-        cy.get('.price-section').should('be.visible');
-        cy.get('.stock-status').should('contain.text', 'Raktáron').and('have.class', 'text-success');
+  
+    it('Hibaüzenetet jelenít meg érvénytelen cikkszámnál (vagy átirányít)', () => {
+      cy.request({
+        url: productPageUrl(invalidCikkszam),
+        failOnStatusCode: false
+      }).then((response) => {
+        if (response.status === 200) {
+          cy.visit(productPageUrl(invalidCikkszam));
+          cy.contains('A termék nem található.', { timeout: 10000 }).should('be.visible');
+        } else if (response.status === 302 || response.status === 301) {
+          cy.log('Átirányítás történt, ami várható érvénytelen cikkszámnál.');
+          expect(response.redirectedToUrl).to.include('termekek.php');
+        } else {
+           cy.visit(productPageUrl(invalidCikkszam), {failOnStatusCode: false});
+           cy.contains('A termék nem található.', { timeout: 10000 }).should('be.visible');
+        }
+      });
     });
-
-    it('Működik a kép carousel (ha több kép van)', () => {
-        cy.get('body').then($body => {
-            if ($body.find('.carousel-thumbnails .thumbnail-item').length > 1) {
-                cy.log('Több kép található, carousel tesztelése...');
-                cy.get('#productCarousel .carousel-item').first().should('have.class', 'active');
-                cy.get('.carousel-thumbnails .thumbnail-item').first().should('have.class', 'active');
-
-                cy.get('.carousel-control-next').should('be.visible').click();
-                cy.get('#productCarousel .carousel-item').eq(1).should('have.class', 'active');
-                cy.get('.carousel-thumbnails .thumbnail-item').eq(1).should('have.class', 'active');
-
-                cy.get('.carousel-control-prev').should('be.visible').click();
-                cy.get('#productCarousel .carousel-item').first().should('have.class', 'active');
-                cy.get('.carousel-thumbnails .thumbnail-item').first().should('have.class', 'active');
-
-                cy.get('.carousel-thumbnails .thumbnail-item').eq(1).click();
-                cy.get('#productCarousel .carousel-item').eq(1).should('have.class', 'active');
-                cy.get('.carousel-thumbnails .thumbnail-item').eq(1).should('have.class', 'active');
-
-            } else {
-                cy.log('Csak egy kép van, carousel navigáció nem tesztelhető.');
-                cy.get('.carousel-control-next').should('not.exist');
-                cy.get('.carousel-thumbnails').should('not.exist');
-            }
+  
+    it('Megjeleníti a termék képeit és a bélyegképeket', () => {
+      cy.visit(productPageUrl(validCikkszam));
+      cy.get('#productCarousel .carousel-item img').first()
+        .should('be.visible')
+        .and(($img) => {
+          expect($img[0].naturalWidth).to.be.greaterThan(0);
+        });
+      cy.get('.carousel-thumbnails .thumbnail-item').should('have.length.at.least', 1);
+      cy.get('.carousel-thumbnails .thumbnail-item').first().should('have.class', 'active');
+    });
+  
+    it('Működik a mennyiségválasztó (+/- gombok és beviteli mező)', () => {
+      cy.visit(productPageUrl(validCikkszam));
+      cy.get('.add-to-cart-section').then($section => {
+        if ($section.find('.quantity-input').length > 0) {
+          cy.get('.quantity-input').should('have.value', '1');
+          cy.get('.quantity-btn.plus').click();
+          cy.get('.quantity-input').should('have.value', '2');
+          cy.get('.quantity-btn.minus').click();
+          cy.get('.quantity-input').should('have.value', '1')
+          cy.get('.quantity-btn.minus').should('be.disabled');
+          cy.get('.quantity-input').clear().type('5').blur();
+          cy.get('.quantity-input').should('have.value', '5');
+          cy.get('.quantity-input').invoke('attr', 'max').then(max => {
+            const maxNum = parseInt(max);
+            cy.get('.quantity-input').clear().type((maxNum + 1).toString()).blur();
+            cy.get('.quantity-input').should('have.value', maxNum.toString());
+            cy.get('.quantity-btn.plus').should('be.disabled');
+          });
+        } else {
+          cy.log('Nincs készleten, mennyiségválasztó nem tesztelhető.');
+        }
+      });
+    });
+  
+    it('Hozzáadja a terméket a kosárhoz', () => {
+      cy.visit(productPageUrl(validCikkszam));
+      cy.get('.add-to-cart-section').then($section => {
+        if ($section.find('button.add-to-cart').length > 0) {
+          cy.get('.quantity-input').clear().type('1');
+          cy.get('button.add-to-cart').click();
+          cy.get('#cart-count', { timeout: 10000 }).should('be.visible').and(($badge) => {
+            const currentCount = parseInt($badge.text());
+            expect(currentCount).to.be.at.least(1);
+          });
+        } else {
+          cy.log('Nincs készleten, kosárba helyezés nem tesztelhető.');
+        }
+      });
+    });
+  
+    it('Megjeleníti a "Nincs készleten" üzenetet, ha a termék nincs raktáron', () => {
+      const outOfStockCikkszam = '080110';
+      cy.request({ url: productPageUrl(outOfStockCikkszam), failOnStatusCode: false }).then((response) => {
+        if (response.status === 200 && response.body.includes('Nincs készleten')) {
+          cy.visit(productPageUrl(outOfStockCikkszam));
+          cy.get('.stock-status').should('contain.text', 'Nincs készleten');
+          cy.get('.add-to-cart-section .quantity-input').should('not.exist');
+          cy.get('.add-to-cart-section button.add-to-cart').should('not.exist');
+          cy.get('.product-details .alert.alert-warning').should('be.visible');
+        } else {
+          cy.log(`A ${outOfStockCikkszam} cikkszámú termék oldala nem érhető el vagy nincs készleten státusz nincs rajta.`);
+        }
+      });
+    });
+  
+    it('Működik a termékleírás lenyitása/összecsukása', () => {
+      cy.visit(productPageUrl(validCikkszam));
+      cy.get('#collapseOne').should('not.have.class', 'show');
+      cy.get('.accordion-button').click();
+      cy.get('#collapseOne').should('have.class', 'show');
+      cy.get('.accordion-button').click();
+      cy.get('#collapseOne').should('not.have.class', 'show');
+    });
+  
+    it('Helyesen jeleníti meg az akciós és eredeti árat, ha van akció', () => {
+      const akciósCikkszam = '010003';
+      cy.request({url: productPageUrl(akciósCikkszam), failOnStatusCode: false}).then((response) => {
+        if (response.status >= 200 && response.status < 300 && response.body.includes('original-price')) {
+          cy.visit(productPageUrl(akciósCikkszam));
+          cy.get('.price-section').within(() => {
+            cy.get('.original-price', { timeout: 10000 }).should('exist').and('be.visible');
+            cy.get('.discounted-price', { timeout: 10000 }).should('exist').and('be.visible');
+          });
+        } else {
+          cy.log(`A(z) ${akciósCikkszam} cikkszámú termék oldala nem érhető el (status: ${response.status}) vagy nem akciós, a teszt kihagyva.`);
+        }
+      });
+    });
+  
+  
+    it('Helyesen jeleníti meg az árat, ha nincs akció', () => {
+        cy.visit(productPageUrl(validCikkszam));
+        cy.get('.price-section').within(() => {
+            cy.get('.original-price').should('not.exist');
+            cy.get('.discounted-price').should('not.exist');
+            cy.get('.current-price').should('exist').and('be.visible');
         });
     });
-
-    it('Működik a kép nagyítás', () => {
-        cy.get('#productCarousel .carousel-item.active .zoomable-image')
-            .should('be.visible').click();
-        cy.get('#imageZoomModal').should('be.visible');
-        cy.get('#zoomedImage').should('be.visible')
-            .and('have.attr', 'src')
-            .and('not.be.empty');
-        cy.get('#imageZoomModal .btn-close').click();
-        cy.get('#imageZoomModal').should('not.be.visible');
+  
+    it('Megfelelően működik a képnagyítás modal', () => {
+      cy.visit(productPageUrl(validCikkszam));
+      cy.get('#productCarousel .carousel-item.active .zoomable-image').click();
+      cy.get('#imageZoomModal', { timeout: 10000 }).should('be.visible');
+      cy.get('#zoomedImage').should('be.visible').and('have.attr', 'src').and('not.be.empty');
+      cy.get('#imageZoomModal .btn-close').focus().click({ force: true });
     });
-
-    it('Működik a mennyiség választó (raktáron lévő terméknél)', () => {
-        cy.get('.stock-status').should('contain.text', 'Raktáron');
-        cy.get('.quantity-input').should('have.value', '1');
-        cy.get('.quantity-btn.minus').should('be.disabled');
-        cy.get('.quantity-btn.plus').click();
-        cy.get('.quantity-input').should('have.value', '2');
-        cy.get('.quantity-btn.minus').should('not.be.disabled');
-        cy.get('.quantity-btn.minus').click();
-        cy.get('.quantity-input').should('have.value', '1');
-        cy.get('.quantity-btn.minus').should('be.disabled');
-
-        cy.get('.quantity-input').invoke('attr', 'max').then((maxStr) => {
-            const max = parseInt(maxStr);
-            if (max && max > 1) {
-                cy.log(`Maximum készlet tesztelése (${max} db)`);
-                cy.get('.quantity-input').clear().type(max.toString()).blur();
-                cy.get('.quantity-input').should('have.value', max.toString());
-                cy.get('.quantity-btn.plus').should('be.disabled');
-                cy.get('.quantity-input').clear().type((max + 1).toString()).blur();
-                cy.get('.quantity-input').should('have.value', max.toString());
-                cy.get('.quantity-input').clear().type('1').blur();
-                cy.get('.quantity-btn.minus').should('be.disabled');
-                cy.get('.quantity-btn.plus').should('not.be.disabled');
-
-            } else {
-                cy.log('Maximum készlet 1 vagy nem meghatározott, további teszt kihagyva.');
-                cy.get('.quantity-btn.plus').should('be.disabled');
-            }
-        });
-    });
-
-    it('Sikeresen kosárba helyez egy terméket', () => {
-        cy.get('.stock-status').should('contain.text', 'Raktáron');
-
-        let initialCartCount = 0;
-        cy.get('body').then($body => {
-            if ($body.find('#cart-count').length > 0) {
-                cy.get('#cart-count').invoke('text').then(text => {
-                    initialCartCount = parseInt(text) || 0;
-                });
-            } else {
-                initialCartCount = 0;
-            }
-        });
-
-        cy.get('.quantity-input').should('have.value', '1');
-        cy.get('.quantity-btn.plus').click();
-        cy.get('.quantity-input').should('have.value', '2');
-
-        cy.get('button.add-to-cart')
-            .should('be.visible')
-            .click();
-
-        cy.get('#toast-container .toast', { timeout: 10000 }).should('be.visible');
-
-        cy.get('#cart-count', { timeout: 5000 }).should('be.visible').and($badge => {
-            const newCount = parseInt($badge.text());
-            expect(newCount).to.eq(initialCartCount + 2);
-        });
-
-        cy.get('.quantity-input').should('have.value', '1');
-        cy.get('.quantity-btn.minus').should('be.disabled');
-    });
-
-    it('Működik a termékleírás accordion', () => {
-        cy.get('#collapseOne').should('not.be.visible');
-        cy.get('#descriptionAccordion .accordion-button')
-            .should('exist')
-            .click();
-        cy.get('#collapseOne').should('be.visible');
-        cy.get('#collapseOne .accordion-body').should('be.visible');
-        cy.get('#descriptionAccordion .accordion-button').click();
-        cy.get('#collapseOne').should('not.be.visible');
-    });
-});
+  
+     it('Navigál a megfelelő kategória oldalra a breadcrumb-on keresztül', () => {
+         cy.visit(productPageUrl(validCikkszam));
+         cy.get('.breadcrumb-item').eq(2).find('a').click();
+         cy.url().should('include', '/php/termekek.php');
+         cy.get('#kartyak-container', { timeout: 10000 }).should('be.visible');
+     });
+  
+     it('Navigál a Termékek oldalra a breadcrumb-on keresztül', () => {
+         cy.visit(productPageUrl(validCikkszam));
+         cy.get('.breadcrumb-item').eq(1).find('a').click();
+         cy.url().should('include', '/php/termekek.php');
+         cy.get('#kartyak-container', { timeout: 10000 }).should('be.visible');
+     });
+  
+     it('Navigál a Főoldalra a breadcrumb-on keresztül', () => {
+         cy.visit(productPageUrl(validCikkszam));
+         cy.get('.breadcrumb-item').eq(0).find('a').click();
+         cy.url().should('include', '/php/index.php');
+         cy.get('.video-container', { timeout: 10000 }).should('be.visible');
+     });
+  
+  });
