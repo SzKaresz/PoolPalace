@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Ápr 15. 09:25
+-- Létrehozás ideje: 2025. Ápr 15. 10:11
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -29,17 +29,14 @@ USE `poolpalace`;
 -- Tábla szerkezet ehhez a táblához `felhasznalok`
 --
 
-CREATE TABLE IF NOT EXISTS `felhasznalok` (
+CREATE TABLE `felhasznalok` (
   `email` varchar(254) NOT NULL,
   `nev` varchar(255) NOT NULL,
   `jelszo` varchar(255) NOT NULL,
   `telefonszam` varchar(15) NOT NULL,
   `szallitasi_cim_id` int(11) NOT NULL,
   `szamlazasi_cim_id` int(11) NOT NULL,
-  `jogosultsag` enum('felhasználó','admin') NOT NULL DEFAULT 'felhasználó',
-  PRIMARY KEY (`email`),
-  KEY `szallitasi_cim_id` (`szallitasi_cim_id`),
-  KEY `szamlazasi_cim_id` (`szamlazasi_cim_id`)
+  `jogosultsag` enum('felhasználó','admin') NOT NULL DEFAULT 'felhasználó'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
@@ -51,7 +48,7 @@ INSERT INTO `felhasznalok` (`email`, `nev`, `jelszo`, `telefonszam`, `szallitasi
 ('info.poolpalace@gmail.com', 'Admin', '$2y$10$GAVPPqKoVgFkV5kMgn/8ROKu2LNiYTCen0PSCcPo3jDf79UyiAdF6', '', 1, 1, 'admin'),
 ('marcifiola66@gmail.com', 'Fiola Marcell Gyula', '$2y$10$CXYg5Bw12VLT0CB1I/ownuxgdVzrilym4tWcDI/f.6.uTHygxTWKi', '+36702070462', 3, 3, 'felhasználó'),
 ('szautnerkaroly@gmail.com', 'Szautner Károly', '$2y$10$tFcF/x0yN.1ZPDwcg4kXfeEjZqeP6wuZxyzxQ0aOOTZdgUckHUKy2', '+36305198474', 2, 2, 'felhasználó'),
-('teszt.ember@gmail.com', 'Teszt Ember', '$2y$10$d4fkOPqwGdAWukU2RIHk/.LKjvSfOH8Uq6JIw1DpcOV1slejTiIJq', '', 4, 4, 'felhasználó');
+('teszt.ember@gmail.com', 'Teszt Ember', '$2y$10$d4fkOPqwGdAWukU2RIHk/.LKjvSfOH8Uq6JIw1DpcOV1slejTiIJq', '+36991234567', 4, 4, 'felhasználó');
 
 --
 -- Eseményindítók `felhasznalok`
@@ -71,11 +68,10 @@ DELIMITER ;
 -- Tábla szerkezet ehhez a táblához `gyarto`
 --
 
-CREATE TABLE IF NOT EXISTS `gyarto` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nev` varchar(25) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+CREATE TABLE `gyarto` (
+  `id` int(11) NOT NULL,
+  `nev` varchar(25) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `gyarto`
@@ -110,11 +106,10 @@ INSERT INTO `gyarto` (`id`, `nev`) VALUES
 -- Tábla szerkezet ehhez a táblához `kategoria`
 --
 
-CREATE TABLE IF NOT EXISTS `kategoria` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nev` varchar(55) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+CREATE TABLE `kategoria` (
+  `id` int(11) NOT NULL,
+  `nev` varchar(55) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `kategoria`
@@ -149,15 +144,12 @@ INSERT INTO `kategoria` (`id`, `nev`) VALUES
 -- Tábla szerkezet ehhez a táblához `kosar`
 --
 
-CREATE TABLE IF NOT EXISTS `kosar` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `kosar` (
+  `id` int(11) NOT NULL,
   `felhasznalo_id` varchar(254) NOT NULL,
   `termek_id` varchar(6) NOT NULL,
-  `darabszam` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `felhasznalo_id` (`felhasznalo_id`),
-  KEY `termek_id` (`termek_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `darabszam` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `kosar`
@@ -173,13 +165,12 @@ INSERT INTO `kosar` (`id`, `felhasznalo_id`, `termek_id`, `darabszam`) VALUES
 -- Tábla szerkezet ehhez a táblához `log`
 --
 
-CREATE TABLE IF NOT EXISTS `log` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `log` (
+  `id` int(10) NOT NULL,
   `datum` datetime NOT NULL DEFAULT current_timestamp(),
   `tabla_nev` varchar(15) NOT NULL,
-  `tabla_id` varchar(254) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `tabla_id` varchar(254) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `log`
@@ -201,8 +192,8 @@ INSERT INTO `log` (`id`, `datum`, `tabla_nev`, `tabla_id`) VALUES
 -- Tábla szerkezet ehhez a táblához `megrendeles`
 --
 
-CREATE TABLE IF NOT EXISTS `megrendeles` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `megrendeles` (
+  `id` int(11) NOT NULL,
   `email` varchar(254) NOT NULL,
   `nev` varchar(255) NOT NULL,
   `telefonszam` varchar(15) NOT NULL,
@@ -214,9 +205,8 @@ CREATE TABLE IF NOT EXISTS `megrendeles` (
   `szamlaz_irsz` varchar(10) NOT NULL,
   `szamlaz_telep` varchar(255) NOT NULL,
   `szamlaz_cim` varchar(255) NOT NULL,
-  `statusz` enum('Feldolgozás alatt','Fizetésre vár','Fizetve','Szállítás alatt','Teljesítve') NOT NULL DEFAULT 'Feldolgozás alatt',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `statusz` enum('Feldolgozás alatt','Fizetésre vár','Fizetve','Szállítás alatt','Teljesítve') NOT NULL DEFAULT 'Feldolgozás alatt'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `megrendeles`
@@ -241,13 +231,12 @@ DELIMITER ;
 -- Tábla szerkezet ehhez a táblához `szallitasi_cim`
 --
 
-CREATE TABLE IF NOT EXISTS `szallitasi_cim` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `szallitasi_cim` (
+  `id` int(11) NOT NULL,
   `iranyitoszam` varchar(7) NOT NULL,
   `telepules` varchar(58) NOT NULL,
-  `utca_hazszam` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `utca_hazszam` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `szallitasi_cim`
@@ -257,7 +246,7 @@ INSERT INTO `szallitasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`)
 (1, '', '', ''),
 (2, '8200', 'Veszprém', 'Muskátli utca 18/C'),
 (3, '8200', 'Veszprém', 'Ádám Iván utca 24.'),
-(4, '', '', ''),
+(4, '8200', 'Veszprém', 'Teszt utca 1.'),
 (5, '8105', 'Pétfürdő', 'Kazinczy utca 27.');
 
 -- --------------------------------------------------------
@@ -266,13 +255,12 @@ INSERT INTO `szallitasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`)
 -- Tábla szerkezet ehhez a táblához `szamlazasi_cim`
 --
 
-CREATE TABLE IF NOT EXISTS `szamlazasi_cim` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `szamlazasi_cim` (
+  `id` int(11) NOT NULL,
   `iranyitoszam` varchar(7) NOT NULL,
   `telepules` varchar(58) NOT NULL,
-  `utca_hazszam` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `utca_hazszam` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `szamlazasi_cim`
@@ -282,7 +270,7 @@ INSERT INTO `szamlazasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`)
 (1, '', '', ''),
 (2, '8200', 'Veszprém', 'Muskátli utca 18/C'),
 (3, '8200', 'Veszprém', 'Ádám Iván utca 24.'),
-(4, '', '', ''),
+(4, '8200', 'Veszprém', 'Tesztelés útja 26.'),
 (5, '8105', 'Pétfürdő', 'Kazinczy utca 27.');
 
 -- --------------------------------------------------------
@@ -291,7 +279,7 @@ INSERT INTO `szamlazasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`)
 -- Tábla szerkezet ehhez a táblához `termekek`
 --
 
-CREATE TABLE IF NOT EXISTS `termekek` (
+CREATE TABLE `termekek` (
   `cikkszam` varchar(6) NOT NULL,
   `nev` varchar(70) NOT NULL,
   `egysegar` double NOT NULL,
@@ -299,10 +287,7 @@ CREATE TABLE IF NOT EXISTS `termekek` (
   `leiras` text NOT NULL,
   `gyarto_id` int(11) DEFAULT NULL,
   `kategoria_id` int(11) NOT NULL,
-  `darabszam` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`cikkszam`),
-  KEY `kategoria_id` (`kategoria_id`),
-  KEY `fk_gyarto` (`gyarto_id`)
+  `darabszam` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
@@ -418,16 +403,13 @@ INSERT INTO `termekek` (`cikkszam`, `nev`, `egysegar`, `akcios_ar`, `leiras`, `g
 -- Tábla szerkezet ehhez a táblához `tetelek`
 --
 
-CREATE TABLE IF NOT EXISTS `tetelek` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `tetelek` (
+  `id` int(11) NOT NULL,
   `megrendeles_id` int(11) NOT NULL,
   `termek_id` varchar(6) NOT NULL,
   `darabszam` int(11) NOT NULL,
-  `egysegar` double NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `megrendeles_id` (`megrendeles_id`),
-  KEY `termek_id` (`termek_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `egysegar` double NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `tetelek`
@@ -447,6 +429,130 @@ INSERT INTO `tetelek` (`id`, `megrendeles_id`, `termek_id`, `darabszam`, `egyseg
 (11, 3, '054023', 1, 436000),
 (12, 3, '037111', 1, 1450000),
 (13, 3, '037101', 1, 705999);
+
+--
+-- Indexek a kiírt táblákhoz
+--
+
+--
+-- A tábla indexei `felhasznalok`
+--
+ALTER TABLE `felhasznalok`
+  ADD PRIMARY KEY (`email`),
+  ADD KEY `szallitasi_cim_id` (`szallitasi_cim_id`),
+  ADD KEY `szamlazasi_cim_id` (`szamlazasi_cim_id`);
+
+--
+-- A tábla indexei `gyarto`
+--
+ALTER TABLE `gyarto`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `kategoria`
+--
+ALTER TABLE `kategoria`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `kosar`
+--
+ALTER TABLE `kosar`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `felhasznalo_id` (`felhasznalo_id`),
+  ADD KEY `termek_id` (`termek_id`);
+
+--
+-- A tábla indexei `log`
+--
+ALTER TABLE `log`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `megrendeles`
+--
+ALTER TABLE `megrendeles`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `szallitasi_cim`
+--
+ALTER TABLE `szallitasi_cim`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `szamlazasi_cim`
+--
+ALTER TABLE `szamlazasi_cim`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `termekek`
+--
+ALTER TABLE `termekek`
+  ADD PRIMARY KEY (`cikkszam`),
+  ADD KEY `kategoria_id` (`kategoria_id`),
+  ADD KEY `fk_gyarto` (`gyarto_id`);
+
+--
+-- A tábla indexei `tetelek`
+--
+ALTER TABLE `tetelek`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `megrendeles_id` (`megrendeles_id`),
+  ADD KEY `termek_id` (`termek_id`);
+
+--
+-- A kiírt táblák AUTO_INCREMENT értéke
+--
+
+--
+-- AUTO_INCREMENT a táblához `gyarto`
+--
+ALTER TABLE `gyarto`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT a táblához `kategoria`
+--
+ALTER TABLE `kategoria`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT a táblához `kosar`
+--
+ALTER TABLE `kosar`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT a táblához `log`
+--
+ALTER TABLE `log`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT a táblához `megrendeles`
+--
+ALTER TABLE `megrendeles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT a táblához `szallitasi_cim`
+--
+ALTER TABLE `szallitasi_cim`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT a táblához `szamlazasi_cim`
+--
+ALTER TABLE `szamlazasi_cim`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT a táblához `tetelek`
+--
+ALTER TABLE `tetelek`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- Megkötések a kiírt táblákhoz
