@@ -73,8 +73,10 @@ async function rendelesBetolt() {
                 await accordFeltolt(accordionForOsszes, item.id);
                 await accordFeltolt(accordionForTab, item.id);
 
-                document.getElementById("osszes").appendChild(accordionForOsszes);
-
+                if (item.statusz !== "Törölve") {
+                    document.getElementById("osszes").appendChild(accordionForOsszes);
+                }
+                
                 if (rendelesek.hasOwnProperty(item.statusz)) {
                     rendelesek[item.statusz].push({
                         accordion: accordionForTab,

@@ -83,9 +83,13 @@ input.leiras-input[readonly]:hover {
   padding: 10px;
 }
 
-.navbar-nav .nav-link.active,
 .navbar-nav .nav-link:hover {
+  font-weight: bold;
+}
+
+.navbar-nav .nav-link.active{
   color: var(--white-color);
+  text-decoration: underline;
   font-weight: bold;
 }
 
