@@ -710,3 +710,8 @@
         margin-left: 5px !important;
     }
 }
+
+.dropdown-item:active{
+    background-color: white;
+    color: black;
+}
