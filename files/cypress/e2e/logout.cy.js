@@ -2,8 +2,8 @@ describe('Kijelentkezési Folyamat Tesztelése Több Oldalról (Teljes Login Min
     const baseUrl = 'http://localhost/PoolPalace/files/php/';
     const loginPagePath = 'bejelentkezes.php';
     const indexPagePath = 'index.php';
-    const userEmail = 'info.poolpalace@gmail.com';
-    const userPassword = 'Admin123';
+    const userEmail = 'teszt.ember@gmail.com';
+    const userPassword = 'Teszt123';
 
     const pagesToTestLogoutFrom = [
         'index.php',
