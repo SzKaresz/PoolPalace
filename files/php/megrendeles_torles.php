@@ -8,26 +8,7 @@ if (isset($input['megrendeles_id'])) {
     $megrendeles_id = intval($input['megrendeles_id']);
     $sql_adatok = "SELECT email, nev FROM `megrendeles` WHERE id=$megrendeles_id";
     $ered = adatokLekerdezese($sql_adatok);
-    $sql_leker = "DELETE FROM `tetelek` WHERE megrendeles_id=$megrendeles_id";
-
-    $dropTrigger = "DROP TRIGGER IF EXISTS megrendeles_torles";
-
-    $createTrigger = "CREATE TRIGGER megrendeles_torles
-AFTER DELETE ON tetelek
-FOR EACH ROW
-BEGIN
-    
-    DECLARE itemCount INT;
-    
-    SELECT COUNT(*) INTO itemCount FROM tetelek WHERE megrendeles_id = $megrendeles_id;
-    
-    IF itemCount = 0 THEN
-        DELETE FROM megrendeles WHERE id = $megrendeles_id;
-    END IF;
-END;";
-
-    adatokValtoztatasa($dropTrigger);
-    adatokValtoztatasa($createTrigger);
+    $sql_leker = "UPDATE `megrendeles` SET `statusz`='Törölve' WHERE megrendeles.id=$megrendeles_id";
 
     $eredmeny = adatokValtoztatasa($sql_leker);
     if ($eredmeny === "Sikeres művelet!") {

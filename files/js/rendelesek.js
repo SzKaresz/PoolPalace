@@ -6,33 +6,37 @@ async function rendelesBetolt() {
             let tartalom = document.getElementById("tartalom");
             tartalom.innerHTML = `
             <ul class="nav nav-tabs" id="rendelesTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="osszes-tab" data-bs-toggle="tab" data-bs-target="#osszes" type="button" role="tab" aria-controls="osszes" aria-selected="true">Összes</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="feldolgozas-tab" data-bs-toggle="tab" data-bs-target="#feldolgozas" type="button" role="tab" aria-controls="feldolgozas" aria-selected="false">Feldolgozás alatt</button>
-                </li>
-                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="fizetesre-var-tab" data-bs-toggle="tab" data-bs-target="#fizetesre-var" type="button" role="tab" aria-controls="fizetesre-var" aria-selected="false">Fizetésre vár</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="fizetve-tab" data-bs-toggle="tab" data-bs-target="#fizetve" type="button" role="tab" aria-controls="fizetve" aria-selected="false">Fizetve</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="szallitas-alatt-tab" data-bs-toggle="tab" data-bs-target="#szallitas-alatt" type="button" role="tab" aria-controls="szallitas-alatt" aria-selected="false">Szállítás alatt</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="teljesitve-tab" data-bs-toggle="tab" data-bs-target="#teljesitve" type="button" role="tab" aria-controls="teljesitve" aria-selected="false">Teljesítve</button>
-                </li>
-            </ul>
-            <div class="tab-content" id="rendelesTabContent">
-                <div class="tab-pane fade show active" id="osszes" role="tabpanel" aria-labelledby="osszes-tab"></div>
-                <div class="tab-pane fade" id="feldolgozas" role="tabpanel" aria-labelledby="feldolgozas-tab"></div>
-                <div class="tab-pane fade" id="fizetesre-var" role="tabpanel" aria-labelledby="fizetesre-var-tab"></div>
-                <div class="tab-pane fade" id="fizetve" role="tabpanel" aria-labelledby="fizetve-tab"></div>
-                 <div class="tab-pane fade" id="szallitas-alatt" role="tabpanel" aria-labelledby="szallitas-alatt-tab"></div>
-                 <div class="tab-pane fade" id="teljesitve" role="tabpanel" aria-labelledby="teljesitve-tab"></div>
-            </div>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="osszes-tab" data-bs-toggle="tab" data-bs-target="#osszes" type="button" role="tab" aria-controls="osszes" aria-selected="true">Összes</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="feldolgozas-tab" data-bs-toggle="tab" data-bs-target="#feldolgozas" type="button" role="tab" aria-controls="feldolgozas" aria-selected="false">Feldolgozás alatt</button>
+        </li>
+        <li class="nav-item" role="presentation">
+             <button class="nav-link" id="fizetesre-var-tab" data-bs-toggle="tab" data-bs-target="#fizetesre-var" type="button" role="tab" aria-controls="fizetesre-var" aria-selected="false">Fizetésre vár</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="fizetve-tab" data-bs-toggle="tab" data-bs-target="#fizetve" type="button" role="tab" aria-controls="fizetve" aria-selected="false">Fizetve</button>
+        </li>
+         <li class="nav-item" role="presentation">
+            <button class="nav-link" id="szallitas-alatt-tab" data-bs-toggle="tab" data-bs-target="#szallitas-alatt" type="button" role="tab" aria-controls="szallitas-alatt" aria-selected="false">Szállítás alatt</button>
+        </li>
+         <li class="nav-item" role="presentation">
+            <button class="nav-link" id="teljesitve-tab" data-bs-toggle="tab" data-bs-target="#teljesitve" type="button" role="tab" aria-controls="teljesitve" aria-selected="false">Teljesítve</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="torolve-tab" data-bs-toggle="tab" data-bs-target="#torolve" type="button" role="tab" aria-controls="torolve" aria-selected="false">Törölve</button>
+        </li>
+    </ul>
+    <div class="tab-content" id="rendelesTabContent">
+        <div class="tab-pane fade show active" id="osszes" role="tabpanel" aria-labelledby="osszes-tab"></div>
+        <div class="tab-pane fade" id="feldolgozas" role="tabpanel" aria-labelledby="feldolgozas-tab"></div>
+        <div class="tab-pane fade" id="fizetesre-var" role="tabpanel" aria-labelledby="fizetesre-var-tab"></div>
+        <div class="tab-pane fade" id="fizetve" role="tabpanel" aria-labelledby="fizetve-tab"></div>
+         <div class="tab-pane fade" id="szallitas-alatt" role="tabpanel" aria-labelledby="szallitas-alatt-tab"></div>
+         <div class="tab-pane fade" id="teljesitve" role="tabpanel" aria-labelledby="teljesitve-tab"></div>
+         <div class="tab-pane fade" id="torolve" role="tabpanel" aria-labelledby="torolve-tab"></div>
+    </div>
             `;
 
             let osszesTab = document.getElementById("osszes");
@@ -42,7 +46,8 @@ async function rendelesBetolt() {
                 "Fizetésre vár": [],
                 "Fizetve": [],
                 "Szállítás alatt": [],
-                "Teljesítve": []
+                "Teljesítve": [],
+                "Törölve":[]
             };
 
             for (const item of valasz) {
@@ -123,6 +128,7 @@ function getTargetTabId(statusz) {
         case "Fizetve": return "fizetve";
         case "Szállítás alatt": return "szallitas-alatt";
         case "Teljesítve": return "teljesitve";
+        case "Törölve": return "torolve";
         default: return "osszes";
     }
 } async function accordFeltolt(rendelesAccordion, id) {
@@ -186,15 +192,22 @@ function getTargetTabId(statusz) {
                         <option value="Fizetve">Fizetve</option>
                         <option value="Szállítás alatt">Szállítás alatt</option>
                         <option value="Teljesítve">Teljesítve</option>
+                        <option value="Törölve">Törölve</option>
                     </select>
                 </div>
             </div>
             <hr class="my-5">
             <div class="row" id="adatok_${id}"></div>
             <div class="mt-5">
-                <button class="btn btn-outline-danger torles-gomb delete-all-btn" style="float: right;" data-id="${id}"><img src="../img/delete.png" alt="Törlés" width="30"></button>
-                <button class="btn btn-outline-success mentes-gomb save-all-btn" style="float: right;" data-id="${id}"><img src="../img/save.png" alt="Mentés" width="30"></button>
+                ${valasz[0].statusz !== "Törölve" ? `
+                <button class="btn btn-outline-danger torles-gomb delete-all-btn" style="float: right;" data-id="${id}">
+                    <img src="../img/delete.png" alt="Törlés" width="30">
+                </button>` : ""}
+                <button class="btn btn-outline-success mentes-gomb save-all-btn" style="float: right;" data-id="${id}">
+                    <img src="../img/save.png" alt="Mentés" width="30">
+                </button>
             </div>
+
 
                     `;
 
@@ -353,7 +366,7 @@ document.addEventListener("click", function (event) {
 
             try {
                 let response = await fetch("../php/megrendeles_torles.php", {
-                    method: "DELETE",
+                    method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(requestBody)
                 });

@@ -63,6 +63,9 @@
          <li class="nav-item" role="presentation">
             <button class="nav-link" id="teljesitve-tab" data-bs-toggle="tab" data-bs-target="#teljesitve" type="button" role="tab" aria-controls="teljesitve" aria-selected="false">Teljesítve</button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="torolve-tab" data-bs-toggle="tab" data-bs-target="#torolve" type="button" role="tab" aria-controls="torolve" aria-selected="false">Törölve</button>
+        </li>
     </ul>
     <div class="tab-content" id="rendelesTabContent">
         <div class="tab-pane fade show active" id="osszes" role="tabpanel" aria-labelledby="osszes-tab"></div>
@@ -71,6 +74,7 @@
         <div class="tab-pane fade" id="fizetve" role="tabpanel" aria-labelledby="fizetve-tab"></div>
          <div class="tab-pane fade" id="szallitas-alatt" role="tabpanel" aria-labelledby="szallitas-alatt-tab"></div>
          <div class="tab-pane fade" id="teljesitve" role="tabpanel" aria-labelledby="teljesitve-tab"></div>
+         <div class="tab-pane fade" id="torolve" role="tabpanel" aria-labelledby="torolve-tab"></div>
     </div>
 </div>
     <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;"></div>
