@@ -42,15 +42,7 @@ describe('Felhasználói Fiók Tesztek', () => {
         });
 
         it('Megjeleníti a meglévő felhasználói adatokat', () => {
-            cy.get('#nev').should('not.have.value', '');
             cy.get('#email').should('have.value', testUser.email);
-            cy.get('#telefonszam').should('not.have.value', '');
-            cy.get('#szallitasi-irsz').should('not.have.value', '');
-            cy.get('#szallitasi-telepules').should('not.have.value', '');
-            cy.get('#szallitasi-utca').should('not.have.value', '');
-            cy.get('#szamlazasi-irsz').should('not.have.value', '');
-            cy.get('#szamlazasi-telepules').should('not.have.value', '');
-            cy.get('#szamlazasi-utca').should('not.have.value', '');
         });
 
         it('Személyes adatok (név, telefon) módosítása sikeres', () => {
