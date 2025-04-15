@@ -1,74 +1,3 @@
-function updateQuantity(termekId, change) {
-    fetch('../php/kosarMuvelet.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            action: 'getStock',
-            termek_id: termekId
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.success) {
-                console.error("Hiba történt a készlet lekérdezésekor:", data.error);
-                return;
-            }
-
-            const row = document.querySelector(`tr[data-id='${termekId}']`);
-            const quantityElement = row?.querySelector(".quantity-input");
-
-            if (!row || !quantityElement) {
-                console.error("A quantity vagy a sor nem található a DOM-ban.");
-                return;
-            }
-
-            let currentQuantity = parseInt(quantityElement.value, 10);
-            let newQuantity = currentQuantity + change;
-
-            if (newQuantity < 1) newQuantity = 1;
-
-            let maxStock = data.raktar_keszlet;
-            if (newQuantity > maxStock) newQuantity = maxStock;
-
-            fetch('../php/kosarMuvelet.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'update',
-                    termek_id: termekId,
-                    mennyiseg: newQuantity
-                })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const row = document.querySelector(`tr[data-id='${termekId}']`);
-                        const quantityElement = row?.querySelector(".quantity-input");
-
-                        if (!row || !quantityElement) {
-                            console.error("A frissített sor vagy quantity nem található.");
-                            return;
-                        }
-
-                        quantityElement.value = newQuantity;
-                        quantityElement.dataset.currentValue = newQuantity;
-                        updateRowTotal(row, newQuantity);
-                        updateCartTotal();
-                        updateCartCount();
-
-                        const plusButton = row.querySelector(".quantity-btn.plus");
-                        const minusButton = row.querySelector(".quantity-btn.minus");
-
-                        if (plusButton) plusButton.disabled = (newQuantity >= maxStock);
-                        if (minusButton) minusButton.disabled = (newQuantity <= 1);
-                    } else {
-                        console.error("Hiba történt a mennyiség frissítésekor:", data.error);
-                    }
-                });
-        })
-        .catch(error => console.error("Hiba:", error));
-}
-
 function disableCartButtons() {
     document.querySelectorAll(".cart-table tbody tr").forEach(row => {
         let termekId = row.dataset.id;
@@ -125,32 +54,6 @@ function removeItem(termekId) {
         .catch(error => {
             console.error("Hiba:", error);
         });
-}
-
-function updateCartItem(termekId, change) {
-    fetch("../php/kosarMuvelet.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "update", termek_id: termekId, mennyiseg: change })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                updateCartCount();
-                let productCard = document.querySelector(`tr[data-id='${termekId}`);
-                let quantityInput = productCard.querySelector(".quantity-input");
-                let newValue = parseInt(quantityInput.value) + change;
-
-                if (newValue < 1) {
-                    newValue = 1;
-                }
-                quantityInput.value = newValue;
-                quantityInput.dataset.currentValue = newValue;
-            } else {
-                alert(data.error);
-            }
-        })
-        .catch(error => console.error("Hiba:", error));
 }
 
 function removeAllItems() {
@@ -264,6 +167,49 @@ function updateCartCount() {
         .catch(error => console.error("Hiba a kosár frissítésében:", error));
 }
 
+function setQuantity(termekId, newQuantity) {
+    fetch('../php/kosarMuvelet.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            action: 'getStock',
+            termek_id: termekId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) return;
+
+        let maxStock = data.raktar_keszlet;
+        if (newQuantity > maxStock) newQuantity = maxStock;
+        if (newQuantity < 1) newQuantity = 1;
+
+        fetch('../php/kosarMuvelet.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'update',
+                termek_id: termekId,
+                mennyiseg: newQuantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const row = document.querySelector(`tr[data-id='${termekId}']`);
+                const input = row.querySelector(".quantity-input");
+                input.value = newQuantity;
+                input.dataset.currentValue = newQuantity;
+
+                updateRowTotal(row, newQuantity);
+                updateCartTotal();
+                updateCartCount();
+                disableCartButtons();
+            }
+        });
+    });
+}
+
 function initQuantityInputs() {
     document.querySelectorAll(".cart-table tbody tr").forEach(row => {
         const termekId = row.dataset.id;
@@ -275,13 +221,19 @@ function initQuantityInputs() {
 
         input.addEventListener("change", () => {
             const newVal = parseInt(input.value);
-            const current = parseInt(input.dataset.currentValue || input.value);
-            const diff = newVal - current;
-            updateQuantity(termekId, diff);
-        });
+            if (!isNaN(newVal)) {
+                setQuantity(termekId, newVal);
+            }
+        });        
 
-        plus.addEventListener("click", () => updateQuantity(termekId, 1));
-        minus.addEventListener("click", () => updateQuantity(termekId, -1));
+        plus.addEventListener("click", () => {
+            const current = parseInt(input.value) || 1;
+            setQuantity(termekId, current + 1);
+        });
+        minus.addEventListener("click", () => {
+            const current = parseInt(input.value) || 1;
+            setQuantity(termekId, current - 1);
+        });        
     });
 }
 
@@ -290,14 +242,6 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCartCount();
     disableCartButtons();
     initQuantityInputs();
-
-    document.querySelectorAll(".quantity-btn").forEach(button => {
-        button.addEventListener("click", function () {
-            const termekId = this.closest("tr").dataset.id;
-            const change = this.classList.contains("plus") ? 1 : -1;
-            updateQuantity(termekId, change);
-        });
-    });
 
     document.querySelectorAll(".remove-btn").forEach(button => {
         button.addEventListener("click", function () {
