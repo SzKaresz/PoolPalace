@@ -192,7 +192,7 @@ function getTargetTabId(statusz) {
                         <option value="Fizetve">Fizetve</option>
                         <option value="Szállítás alatt">Szállítás alatt</option>
                         <option value="Teljesítve">Teljesítve</option>
-                        <option value="Törölve">Törölve</option>
+                        ${valasz[0].statusz=="Törölve"?`<option value="Törölve">Törölve</option>`:""}
                     </select>
                 </div>
             </div>
