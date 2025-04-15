@@ -82,7 +82,7 @@ ob_start();
                         <span class="input-group-text">
                             <img src="../img/email_targy.png" alt="E-mail tárgya">
                         </span>
-                        <input type="text" class="form-control mezo" name="email_targya" placeholder="E-mail tárgya">
+                        <input type="text" class="form-control mezo" name="email_targya" id="email_targya" placeholder="E-mail tárgya">
                     </div>
                 </div>
                 <div class="mb-3">
@@ -90,7 +90,7 @@ ob_start();
                         <span class="input-group-text">
                             <img src="../img/email_szoveg.png" alt="E-mail szövege">
                         </span>
-                        <textarea class="form-control mezo" name="email_szovege" placeholder="E-mail szövege" rows="5"></textarea>
+                        <textarea class="form-control mezo" name="email_szovege" id="email_szovege" placeholder="E-mail szövege" rows="5"></textarea>
                     </div>
                 </div>
                 <div class="form-check d-flex align-items-center justify-content-center">
