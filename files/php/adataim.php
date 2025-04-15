@@ -165,21 +165,21 @@ unset($_SESSION['error_message']);
             <div class="col-md-6">
                 <h4>Felhasználói adatok</h4>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/felhasznalo.png" alt="Név ikon"></span>
                         <input type="text" id="nev" name="nev" class="form-control" value="<?php echo htmlspecialchars($user['nev']); ?>" placeholder="Név">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/email.png" alt="E-mail ikon"></span>
                         <input type="email" id="email" name="email" class="form-control" value="<?php echo htmlspecialchars($user['email']); ?>" placeholder="E-mail cím">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/telefon.png" alt="Telefonszám ikon"></span>
                         <input type="text" id="telefonszam" name="telefonszam" class="form-control" value="<?php echo htmlspecialchars($user['telefonszam']); ?>" placeholder="Telefonszám">
                         <span class="error"></span>
@@ -187,21 +187,21 @@ unset($_SESSION['error_message']);
                 </div>
                 <h4>Jelszó módosítása</h4>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/jelszo.png" alt="Jelszó ikon"></span>
                         <input type="password" id="regi-jelszo" name="regi-jelszo" class="form-control" placeholder="Régi jelszó">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/jelszo.png" alt="Jelszó ikon"></span>
                         <input type="password" id="uj-jelszo" name="uj-jelszo" class="form-control" placeholder="Új jelszó">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/jelszo_ujra.png" alt="Jelszó megerősítése ikon"></span>
                         <input type="password" id="uj-jelszo-ismet" name="uj-jelszo-ismet" class="form-control" placeholder="Új jelszó mégegyszer">
                         <span class="error"></span>
@@ -212,21 +212,21 @@ unset($_SESSION['error_message']);
             <div class="col-md-6">
                 <h4>Szállítási adatok</h4>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/iranyitoszam.png" alt="Irányítószám ikon"></span>
                         <input type="text" id="szallitasi-irsz" name="szallitasi-irsz" class="form-control" value="<?php echo htmlspecialchars($user['szallitasi_irsz']); ?>" placeholder="Irányítószám">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/telepules.png" alt="Település ikon"></span>
                         <input type="text" id="szallitasi-telepules" name="szallitasi-telepules" class="form-control" value="<?php echo htmlspecialchars($user['szallitasi_telepules']); ?>" placeholder="Település">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/hazszam.png" alt="Házszám ikon"></span>
                         <input type="text" id="szallitasi-utca" name="szallitasi-utca" class="form-control" value="<?php echo htmlspecialchars($user['szallitasi_utca']); ?>" placeholder="Utca és házszám">
                         <span class="error"></span>
@@ -235,21 +235,21 @@ unset($_SESSION['error_message']);
 
                 <h4>Számlázási adatok</h4>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/iranyitoszam.png" alt="Irányítószám ikon"></span>
                         <input type="text" id="szamlazasi-irsz" name="szamlazasi-irsz" name="szamlazasi-irsz" class="form-control" value="<?php echo htmlspecialchars($user['szamlazasi_irsz']); ?>" placeholder="Irányítószám">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/telepules.png" alt="Település ikon"></span>
                         <input type="text" id="szamlazasi-telepules" name="szamlazasi-telepules" class="form-control" value="<?php echo htmlspecialchars($user['szamlazasi_telepules']); ?>" placeholder="Település">
                         <span class="error"></span>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="input-group">
+                    <div class="inputMezo input-group">
                         <span class="input-group-text"><img src="../img/hazszam.png" alt="Házszám ikon"></span>
                         <input type="text" id="szamlazasi-utca" name="szamlazasi-utca" class="form-control" value="<?php echo htmlspecialchars($user['szamlazasi_utca']); ?>" placeholder="Utca és házszám">
                         <span class="error"></span>
