@@ -128,14 +128,14 @@ if (isset($_SESSION['user_email'])) {
                             </td>
                             <td id="mennyiseg">
                                 <div class="quantity-control">
-                                    <button class="quantity-btn minus" onclick="updateQuantity('<?= str_pad($termek['cikkszam'], 6, '0', STR_PAD_LEFT) ?>', -1)">-</button>
+                                    <button class="quantity-btn minus">-</button>
                                     <input type="number"
                                         class="quantity-input"
                                         min="1"
                                         max="<?= $termek['raktar_keszlet'] ?>"
                                         value="<?= $termek['darabszam'] ?>"
                                         data-current-value="<?= $termek['darabszam'] ?>">
-                                    <button class="quantity-btn plus" onclick="updateQuantity('<?= str_pad($termek['cikkszam'], 6, '0', STR_PAD_LEFT) ?>', 1)">+</button>
+                                    <button class="quantity-btn plus">+</button>
                                 </div>
                             </td>
                             <td><?= number_format($termek['darabszam'] * $termek['ar'], 0, ',', ' ') ?> Ft</td>
