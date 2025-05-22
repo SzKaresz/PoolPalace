@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_email'])) {
 
 $user_email = $_SESSION['user_email'];
 
-$stmt = $db->prepare("SELECT id, datum, osszeg, szallit_irsz, szallit_telep, szallit_cim, statusz FROM megrendeles WHERE email = ? ORDER BY datum DESC");
+$stmt = $db->prepare("SELECT id, datum, osszeg, szallit_irsz, szallit_telep, szallit_cim, statusz, fiz_mod FROM megrendeles WHERE email = ? ORDER BY datum DESC");
 $stmt->bind_param("s", $user_email);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -57,6 +57,7 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
                     <div id="collapse<?= $order['id'] ?>" class="accordion-collapse collapse" data-bs-parent="#orderAccordion">
                         <div class="accordion-body">
                             <p><strong>Státusz:</strong> <?= htmlspecialchars($order['statusz']) ?></p>
+                            <p><strong>Fizetési mód:</strong> <?= htmlspecialchars($order['fiz_mod']) ?></p>
                             <p><strong>Szállítási cím:</strong> <?= htmlspecialchars($order['szallit_irsz'] . " " . $order['szallit_telep'] . ", " . $order["szallit_cim"]) ?></p>
 
                             <?php

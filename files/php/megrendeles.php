@@ -154,11 +154,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $db->prepare("INSERT INTO megrendeles (
         email, nev, telefonszam, osszeg, 
         szallit_irsz, szallit_telep, szallit_cim, 
-        szamlaz_irsz, szamlaz_telep, szamlaz_cim, statusz
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Feldolgozás alatt')");
+        szamlaz_irsz, szamlaz_telep, szamlaz_cim, statusz, fiz_mod
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Feldolgozás alatt', ?)");
 
     $stmt->bind_param(
-        "sssdssssss",
+        "sssdsssssss",
         $data['email'],
         $data['name'],
         $data['phone'],
@@ -168,7 +168,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data['shipping_address'],
         $data['billing_postal_code'],
         $data['billing_city'],
-        $data['billing_address']
+        $data['billing_address'],
+        $data['payment_method']
     );
     $stmt->execute();
     $megrendeles_id = $stmt->insert_id;

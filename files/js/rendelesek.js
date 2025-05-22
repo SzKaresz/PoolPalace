@@ -197,6 +197,14 @@ function getTargetTabId(statusz) {
                         ${valasz[0].statusz=="Törölve"?`<option value="Törölve">Törölve</option>`:""}
                     </select>
                 </div>
+                <div class="mt-3">
+                    <label for="fiz_mod_${id}">Fizetési mód:</label>
+                    <select id="fiz_mod_${id}" class="form-select">
+                        <option value="Bankkártyás fizetés">Bankkártyás fizetés</option>
+                        <option value="Utánvét (készpénz)">Utánvét (készpénz)</option>
+                        <option value="Banki átutalás">Banki átutalás</option>
+                    </select>
+                </div>
             </div>
             <hr class="my-5">
             <div class="row" id="adatok_${id}"></div>
@@ -262,6 +270,11 @@ function getTargetTabId(statusz) {
                 statusSelect.value = valasz[0].statusz;
             }
 
+            let fizModSelect = rendelesAccordion.querySelector(`#fiz_mod_${id}`);
+            if (valasz.length > 0 && valasz[0].fiz_mod) {
+                fizModSelect.value = valasz[0].fiz_mod;
+            }
+
         } else {
             console.log("Hiba történt a lekérdezés során.");
         }
@@ -280,6 +293,9 @@ document.addEventListener("click", function (event) {
         // **Azon belül keressük a szükséges inputokat**
         let statusSelect = accordion.querySelector(`#status_${megrendelesId}`);
         let newStatus = statusSelect.value;
+
+        let fizModSelect = accordion.querySelector(`#fiz_mod_${megrendelesId}`);
+        let newFizMod = fizModSelect.value;
 
         let rows = accordion.querySelectorAll(`#accord_body_${megrendelesId} tbody tr`);
         let modifiedItems = [];
@@ -315,6 +331,7 @@ document.addEventListener("click", function (event) {
         let requestBody = {
             megrendelesId: megrendelesId,
             newStatus: newStatus,
+            newFizMod: newFizMod,
             items: modifiedItems,
             details: personalDetails
         };
