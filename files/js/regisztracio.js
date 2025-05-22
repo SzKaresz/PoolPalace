@@ -205,6 +205,32 @@ function szamlaloAtiranyitas() {
     }
 }
 
+const capsIcon1 = document.getElementById("caps-icon-1");
+const capsIcon2 = document.getElementById("caps-icon-2");
+
+function updateCapsLockState(e) {
+    const capsOn = e.getModifierState && e.getModifierState("CapsLock");
+    if (capsOn) {
+        capsIcon1.style.display = "block";
+        capsIcon2.style.display = "block";
+    } else {
+        capsIcon1.style.display = "none";
+        capsIcon2.style.display = "none";
+    }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+        const testEvent = new KeyboardEvent("keydown", { key: "Shift" });
+        if (testEvent.getModifierState && testEvent.getModifierState("CapsLock")) {
+            capsIcon1.style.display = "block";
+            capsIcon2.style.display = "block";
+        }
+    }, 100);
+});
+
+window.addEventListener("keydown", updateCapsLockState);
+window.addEventListener("keyup", updateCapsLockState);
 form.addEventListener('submit', urlapValidalas);
 egyezoAdatokCheckbox.addEventListener('change', szamlazasSzallitashozIgazitas);
 window.addEventListener('resize', helyValtoztatas);
