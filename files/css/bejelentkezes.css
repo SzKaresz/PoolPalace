@@ -102,3 +102,16 @@ h3 {
     font-size: large;
     font-weight: bold;
 }
+
+.caps-lock-icon {
+    display: none;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 25px;
+    width: 25px;
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0.8;
+}
