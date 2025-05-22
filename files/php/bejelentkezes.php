@@ -1,7 +1,7 @@
 <?php
-include './session.php'; 
+include './session.php';
 include './db.php';
-ob_start(); 
+ob_start();
 
 $recaptcha_secret = '6LeCq3oqAAAAAAjLBjZNWtYsshRzRA1Brd7bw3D7';
 // $recaptcha_secret = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'; teszthez van
@@ -22,28 +22,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $recaptcha_verify = file_get_contents($recaptcha_url . '?' . http_build_query($recaptcha_data));
         $recaptcha_result = json_decode($recaptcha_verify);
 
-        if ($recaptcha_result -> success) {
-            $stmt = $db -> prepare("SELECT * FROM felhasznalok WHERE email = ?");
-            $stmt -> bind_param("s", $email);
-            $stmt -> execute();
-            $result = $stmt -> get_result();
-            $user = $result -> fetch_assoc();
+        if ($recaptcha_result->success) {
+            $stmt = $db->prepare("SELECT * FROM felhasznalok WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $user = $result->fetch_assoc();
 
             if ($user && password_verify($password, $user['jelszo'])) {
                 $_SESSION['user_email'] = $user['email'];
                 $_SESSION['user_jog'] = $user['jogosultsag'];
                 header('Location: index.php');
                 exit;
-            }
-            else {
+            } else {
                 $hibaUzenet = "Érvénytelen e-mail cím vagy jelszó!";
             }
-        }
-        else {
+        } else {
             $hibaUzenet = "Kérjük, igazolja, hogy nem robot!";
         }
-    }
-    else {
+    } else {
         $hibaUzenet = "Kérjük töltse ki az összes mezőt, az ellenőrzéssel együtt!";
     }
 }
@@ -54,6 +51,7 @@ ob_end_flush();
 
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,10 +62,11 @@ ob_end_flush();
     <link rel="icon" href="../img/logo_icon.ico" type="image/x-icon">
     <title>PoolPalace - Bejelentkezés</title>
 </head>
+
 <body>
 
     <?php
-        include './navbar.php';
+    include './navbar.php';
     ?>
 
     <div class="form-container">
@@ -91,11 +90,14 @@ ob_end_flush();
             </div>
 
             <div class="mb-3">
-                <div class="inputMezo input-group">
-                    <span class="input-group-text required-icon">
-                        <img src="../img/jelszo.png" alt="Jelszó">
-                    </span>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Jelszó">
+                <div class="position-relative">
+                    <div class="inputMezo input-group">
+                        <span class="input-group-text required-icon">
+                            <img src="../img/jelszo.png" alt="Jelszó">
+                        </span>
+                        <input type="password" class="form-control pe-5" id="password" name="password" placeholder="Jelszó">
+                    </div>
+                    <img src="../img/caps_on.png" id="caps-icon" alt="Caps Lock aktív" class="caps-lock-icon">
                 </div>
             </div>
 
@@ -113,5 +115,34 @@ ob_end_flush();
             <p class="eloszor-jar">Először jár nálunk? <button type="button" onclick="location.href='./regisztracio.php'" class="btn btn-outline-secondary">Fiók létrehozása</button></p>
         </div>
     </div>
+
+    <script>
+        const capsIcon = document.getElementById("caps-icon");
+
+        window.addEventListener("keydown", (e) => {
+            if (e.getModifierState && e.getModifierState("CapsLock")) {
+                capsIcon.style.display = "block";
+            } else {
+                capsIcon.style.display = "none";
+            }
+        });
+
+        window.addEventListener("keyup", (e) => {
+            if (e.getModifierState && e.getModifierState("CapsLock")) {
+                capsIcon.style.display = "block";
+            } else {
+                capsIcon.style.display = "none";
+            }
+        });
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const testEvent = new KeyboardEvent("keydown", {
+                key: "Shift"
+            });
+            if (testEvent.getModifierState && testEvent.getModifierState("CapsLock")) {
+                capsIcon.style.display = "block";
+            }
+        });
+    </script>
 </body>
 </html>

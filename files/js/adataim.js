@@ -172,7 +172,33 @@ function initInputEllenorzes() {
     });
 }
 
+const capsIcons = [
+    document.getElementById("caps-icon-1"),
+    document.getElementById("caps-icon-2"),
+    document.getElementById("caps-icon-3")
+];
 
+function frissitCapsLock(e) {
+    const aktiv = e.getModifierState && e.getModifierState("CapsLock");
+    capsIcons.forEach(icon => {
+        icon.style.display = aktiv ? "block" : "none";
+    });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+        const teszt = new KeyboardEvent("keydown", { key: "Shift" });
+        if (teszt.getModifierState && teszt.getModifierState("CapsLock")) {
+            capsIcons.forEach(icon => {
+                icon.style.display = "block";
+            });
+        }
+    }, 100);
+});
+
+
+window.addEventListener("keydown", frissitCapsLock);
+window.addEventListener("keyup", frissitCapsLock);
 urlap.addEventListener('submit', urlapValidalas);
 document.addEventListener('DOMContentLoaded', szamlaloAtiranyitas);
 document.addEventListener('DOMContentLoaded', initInputEllenorzes);

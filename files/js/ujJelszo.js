@@ -63,4 +63,35 @@ function showToast(message, type = "success") {
     }
 }
 
+function updateCapsLockIndicators(event) {
+    const capsLockOn = event.getModifierState && event.getModifierState("CapsLock");
+
+    const capsIcons = [
+        document.getElementById("caps-icon-uj"),
+        document.getElementById("caps-icon-uj-ismet")
+    ];
+
+    capsIcons.forEach((icon) => {
+        if (icon) {
+            icon.style.display = capsLockOn ? "block" : "none";
+        }
+    });
+}
+
+window.addEventListener("keydown", updateCapsLockIndicators);
+window.addEventListener("keyup", updateCapsLockIndicators);
+window.addEventListener("DOMContentLoaded", () => {
+    const testEvent = new KeyboardEvent("keydown", { key: "Shift" });
+    if (testEvent.getModifierState && testEvent.getModifierState("CapsLock")) {
+        const capsIcons = [
+            document.getElementById("caps-icon-uj"),
+            document.getElementById("caps-icon-uj-ismet")
+        ];
+        capsIcons.forEach((icon) => {
+            if (icon) {
+                icon.style.display = "block";
+            }
+        });
+    }
+});
 document.addEventListener('DOMContentLoaded', szamlaloAtiranyitas);

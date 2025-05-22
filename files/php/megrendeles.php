@@ -379,13 +379,15 @@ ob_end_flush();
                 <div class="modal-body">
                     <p>Szeretné elmenteni adatait a későbbi vásárlásokhoz?</p>
                     <div id="password-alert"></div>
-                    <div class="mb-2">
+                    <div class="mb-2 position-relative">
                         <label for="modal-password">Jelszó</label>
                         <input type="password" class="form-control" id="modal-password" placeholder="Jelszó">
+                        <img src="../img/caps_on.png" id="caps-icon-modal-1" class="caps-lock-icon" alt="Caps Lock aktív">
                     </div>
-                    <div class="mb-2">
+                    <div class="mb-2 position-relative">
                         <label for="modal-password-confirm">Jelszó újra</label>
                         <input type="password" class="form-control" id="modal-password-confirm" placeholder="Jelszó újra">
+                        <img src="../img/caps_on.png" id="caps-icon-modal-2" class="caps-lock-icon" alt="Caps Lock aktív">
                     </div>
                 </div>
                 <div class="modal-footer">

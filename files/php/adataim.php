@@ -187,24 +187,33 @@ unset($_SESSION['error_message']);
                 </div>
                 <h4>Jelszó módosítása</h4>
                 <div class="mb-3">
-                    <div class="inputMezo input-group">
-                        <span class="input-group-text"><img src="../img/jelszo.png" alt="Jelszó ikon"></span>
-                        <input type="password" id="regi-jelszo" name="regi-jelszo" class="form-control" placeholder="Régi jelszó">
-                        <span class="error"></span>
+                    <div class="position-relative">
+                        <div class="inputMezo input-group">
+                            <span class="input-group-text"><img src="../img/jelszo.png" alt="Jelszó ikon"></span>
+                            <input type="password" id="regi-jelszo" name="regi-jelszo" class="form-control" placeholder="Régi jelszó">
+                            <span class="error"></span>
+                        </div>
+                        <img src="../img/caps_on.png" id="caps-icon-1" alt="Caps Lock aktív" class="caps-lock-icon">
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="inputMezo input-group">
-                        <span class="input-group-text"><img src="../img/jelszo.png" alt="Jelszó ikon"></span>
-                        <input type="password" id="uj-jelszo" name="uj-jelszo" class="form-control" placeholder="Új jelszó">
-                        <span class="error"></span>
+                    <div class="position-relative">
+                        <div class="inputMezo input-group">
+                            <span class="input-group-text"><img src="../img/jelszo.png" alt="Jelszó ikon"></span>
+                            <input type="password" id="uj-jelszo" name="uj-jelszo" class="form-control" placeholder="Új jelszó">
+                            <span class="error"></span>
+                        </div>
+                        <img src="../img/caps_on.png" id="caps-icon-2" alt="Caps Lock aktív" class="caps-lock-icon">
                     </div>
                 </div>
                 <div class="mb-3">
-                    <div class="inputMezo input-group">
-                        <span class="input-group-text"><img src="../img/jelszo_ujra.png" alt="Jelszó megerősítése ikon"></span>
-                        <input type="password" id="uj-jelszo-ismet" name="uj-jelszo-ismet" class="form-control" placeholder="Új jelszó mégegyszer">
-                        <span class="error"></span>
+                    <div class="position-relative">
+                        <div class="inputMezo input-group">
+                            <span class="input-group-text"><img src="../img/jelszo_ujra.png" alt="Jelszó megerősítése ikon"></span>
+                            <input type="password" id="uj-jelszo-ismet" name="uj-jelszo-ismet" class="form-control" placeholder="Új jelszó mégegyszer">
+                            <span class="error"></span>
+                        </div>
+                        <img src="../img/caps_on.png" id="caps-icon-3" alt="Caps Lock aktív" class="caps-lock-icon">
                     </div>
                 </div>
             </div>
@@ -263,4 +272,5 @@ unset($_SESSION['error_message']);
         </form>
     </div>
 </body>
+
 </html>

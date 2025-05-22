@@ -331,3 +331,29 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 });
+
+const modalCapsIcons = [
+    document.getElementById("caps-icon-modal-1"),
+    document.getElementById("caps-icon-modal-2")
+];
+
+function updateModalCapsLock(e) {
+    const capsOn = e.getModifierState && e.getModifierState("CapsLock");
+    modalCapsIcons.forEach(icon => {
+        icon.style.display = capsOn ? "block" : "none";
+    });
+}
+
+
+window.addEventListener("keydown", updateModalCapsLock);
+window.addEventListener("keyup", updateModalCapsLock);
+window.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+        const test = new KeyboardEvent("keydown", { key: "Shift" });
+        if (test.getModifierState && test.getModifierState("CapsLock")) {
+            modalCapsIcons.forEach(icon => {
+                icon.style.display = "block";
+            });
+        }
+    }, 100);
+});

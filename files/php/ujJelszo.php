@@ -29,16 +29,18 @@ unset($_SESSION['hiba'], $_SESSION['uzenet']);
         <form method="POST" id="ujJelszo-urlap" class="row g-3 justify-content-center">
             <input type="hidden" name="email" value="<?php echo isset($_REQUEST['email']) ? htmlspecialchars($_REQUEST['email']) : ''; ?>">
             <div class="col-md-8 col-lg-6">
-                <div class="mb-3">
+                <div class="mb-3 position-relative">
                     <div class="input-group">
                         <span class="input-group-text required-icon"><img src="../img/jelszo.png" class="jelszo-logo" alt="Jelszó"></span>
                         <input type="password" class="form-control" id="uj-jelszo" name="jelszo" placeholder="Új jelszó">
+                        <img src="../img/caps_on.png" id="caps-icon-uj" class="caps-lock-icon" alt="Caps Lock aktív">
                     </div>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3 position-relative">
                     <div class="input-group">
                         <span class="input-group-text required-icon"><img src="../img/jelszo_ujra.png" class="jelszo-ujra-logo" alt="Jelszó megerősítése"></span>
                         <input type="password" class="form-control" id="uj-jelszo-ismet" name="jelszo-ujra" placeholder="Új jelszó megerősítése">
+                        <img src="../img/caps_on.png" id="caps-icon-uj-ismet" class="caps-lock-icon" alt="Caps Lock aktív">
                     </div>
                 </div>
                 <button type="submit" class="mt-3 btn btn-primary w-100">Módosítás</button>
