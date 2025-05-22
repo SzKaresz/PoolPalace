@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Ápr 15. 10:36
+-- Létrehozás ideje: 2025. Máj 22. 23:05
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -29,17 +29,14 @@ USE `poolpalace`;
 -- Tábla szerkezet ehhez a táblához `felhasznalok`
 --
 
-CREATE TABLE IF NOT EXISTS `felhasznalok` (
+CREATE TABLE `felhasznalok` (
   `email` varchar(254) NOT NULL,
   `nev` varchar(255) NOT NULL,
   `jelszo` varchar(255) NOT NULL,
   `telefonszam` varchar(15) NOT NULL,
   `szallitasi_cim_id` int(11) NOT NULL,
   `szamlazasi_cim_id` int(11) NOT NULL,
-  `jogosultsag` enum('felhasználó','admin') NOT NULL DEFAULT 'felhasználó',
-  PRIMARY KEY (`email`),
-  KEY `szallitasi_cim_id` (`szallitasi_cim_id`),
-  KEY `szamlazasi_cim_id` (`szamlazasi_cim_id`)
+  `jogosultsag` enum('felhasználó','admin') NOT NULL DEFAULT 'felhasználó'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
@@ -71,11 +68,10 @@ DELIMITER ;
 -- Tábla szerkezet ehhez a táblához `gyarto`
 --
 
-CREATE TABLE IF NOT EXISTS `gyarto` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nev` varchar(25) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+CREATE TABLE `gyarto` (
+  `id` int(11) NOT NULL,
+  `nev` varchar(25) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `gyarto`
@@ -110,11 +106,10 @@ INSERT INTO `gyarto` (`id`, `nev`) VALUES
 -- Tábla szerkezet ehhez a táblához `kategoria`
 --
 
-CREATE TABLE IF NOT EXISTS `kategoria` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nev` varchar(55) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+CREATE TABLE `kategoria` (
+  `id` int(11) NOT NULL,
+  `nev` varchar(55) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `kategoria`
@@ -149,15 +144,12 @@ INSERT INTO `kategoria` (`id`, `nev`) VALUES
 -- Tábla szerkezet ehhez a táblához `kosar`
 --
 
-CREATE TABLE IF NOT EXISTS `kosar` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `kosar` (
+  `id` int(11) NOT NULL,
   `felhasznalo_id` varchar(254) NOT NULL,
   `termek_id` varchar(6) NOT NULL,
-  `darabszam` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `felhasznalo_id` (`felhasznalo_id`),
-  KEY `termek_id` (`termek_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `darabszam` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `kosar`
@@ -173,13 +165,12 @@ INSERT INTO `kosar` (`id`, `felhasznalo_id`, `termek_id`, `darabszam`) VALUES
 -- Tábla szerkezet ehhez a táblához `log`
 --
 
-CREATE TABLE IF NOT EXISTS `log` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `log` (
+  `id` int(10) NOT NULL,
   `datum` datetime NOT NULL DEFAULT current_timestamp(),
   `tabla_nev` varchar(15) NOT NULL,
-  `tabla_id` varchar(254) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `tabla_id` varchar(254) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `log`
@@ -193,7 +184,9 @@ INSERT INTO `log` (`id`, `datum`, `tabla_nev`, `tabla_id`) VALUES
 (5, '2025-04-01 10:54:41', 'felhasznalok', 'marcifiola66@gmail.com'),
 (6, '2025-04-01 10:55:29', 'megrendeles', '3'),
 (7, '2025-04-02 22:43:29', 'felhasznalok', 'teszt.ember@gmail.com'),
-(8, '2025-04-02 23:29:49', 'felhasznalok', 'fenyojordan2005@gmail.com');
+(8, '2025-04-02 23:29:49', 'felhasznalok', 'fenyojordan2005@gmail.com'),
+(9, '2025-05-22 21:53:25', 'megrendeles', '4'),
+(10, '2025-05-22 21:57:40', 'megrendeles', '5');
 
 -- --------------------------------------------------------
 
@@ -201,8 +194,8 @@ INSERT INTO `log` (`id`, `datum`, `tabla_nev`, `tabla_id`) VALUES
 -- Tábla szerkezet ehhez a táblához `megrendeles`
 --
 
-CREATE TABLE IF NOT EXISTS `megrendeles` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `megrendeles` (
+  `id` int(11) NOT NULL,
   `email` varchar(254) NOT NULL,
   `nev` varchar(255) NOT NULL,
   `telefonszam` varchar(15) NOT NULL,
@@ -215,17 +208,19 @@ CREATE TABLE IF NOT EXISTS `megrendeles` (
   `szamlaz_telep` varchar(255) NOT NULL,
   `szamlaz_cim` varchar(255) NOT NULL,
   `statusz` enum('Feldolgozás alatt','Fizetésre vár','Fizetve','Szállítás alatt','Teljesítve','Törölve') NOT NULL DEFAULT 'Feldolgozás alatt',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `fiz_mod` enum('Bankkártyás fizetés','Utánvét (készpénz)','Banki átutalás') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `megrendeles`
 --
 
-INSERT INTO `megrendeles` (`id`, `email`, `nev`, `telefonszam`, `datum`, `osszeg`, `szallit_irsz`, `szallit_telep`, `szallit_cim`, `szamlaz_irsz`, `szamlaz_telep`, `szamlaz_cim`, `statusz`) VALUES
-(1, 'szautnerkaroly@gmail.com', 'Szautner Károly', '+36305198474', '2025-03-28 10:28:57', 35420, '8200', 'Veszprém', 'Muskátli utca 18/C', '8200', 'Veszprém', 'Muskátli utca 18/C', 'Feldolgozás alatt'),
-(2, 'szautnerkaroly@gmail.com', 'Szautner Károly', '+36305198474', '2025-03-28 10:30:47', 132000, '8200', 'Veszprém', 'Muskátli utca 18/C', '8200', 'Veszprém', 'Muskátli utca 18/C', 'Feldolgozás alatt'),
-(3, 'marcifiola66@gmail.com', 'Fiola Marcell Gyula', '+36702070462', '2025-04-01 10:55:29', 2738196, '8200', 'Veszprém', 'Ádám Iván utca 24.', '8200', 'Veszprém', 'Ádám Iván utca 24.', 'Törölve');
+INSERT INTO `megrendeles` (`id`, `email`, `nev`, `telefonszam`, `datum`, `osszeg`, `szallit_irsz`, `szallit_telep`, `szallit_cim`, `szamlaz_irsz`, `szamlaz_telep`, `szamlaz_cim`, `statusz`, `fiz_mod`) VALUES
+(1, 'szautnerkaroly@gmail.com', 'Szautner Károly', '+36305198474', '2025-03-28 10:28:57', 35420, '8200', 'Veszprém', 'Muskátli utca 18/C', '8200', 'Veszprém', 'Muskátli utca 18/C', 'Feldolgozás alatt', 'Bankkártyás fizetés'),
+(2, 'szautnerkaroly@gmail.com', 'Szautner Károly', '+36305198474', '2025-03-28 10:30:47', 132000, '8200', 'Veszprém', 'Muskátli utca 18/C', '8200', 'Veszprém', 'Muskátli utca 18/C', 'Feldolgozás alatt', 'Banki átutalás'),
+(3, 'marcifiola66@gmail.com', 'Fiola Marcell Gyula', '+36702070462', '2025-04-01 10:55:29', 2738196, '8200', 'Veszprém', 'Ádám Iván utca 24.', '8200', 'Veszprém', 'Ádám Iván utca 24.', 'Törölve', 'Bankkártyás fizetés'),
+(4, 'szautnerkaroly@gmail.com', 'Szautner Károly', '+36305198474', '2025-05-22 21:53:25', 15340, '8200', 'Veszprém', 'Muskátli utca 18/C', '8200', 'Veszprém', 'Muskátli utca 18/C', 'Feldolgozás alatt', 'Bankkártyás fizetés'),
+(5, 'szautnerkaroly@gmail.com', 'Szautner Károly', '+36305198474', '2025-05-22 21:57:40', 6270, '8200', 'Veszprém', 'Muskátli utca 18/C', '8200', 'Veszprém', 'Muskátli utca 18/C', 'Feldolgozás alatt', 'Utánvét (készpénz)');
 
 --
 -- Eseményindítók `megrendeles`
@@ -241,13 +236,12 @@ DELIMITER ;
 -- Tábla szerkezet ehhez a táblához `szallitasi_cim`
 --
 
-CREATE TABLE IF NOT EXISTS `szallitasi_cim` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `szallitasi_cim` (
+  `id` int(11) NOT NULL,
   `iranyitoszam` varchar(7) NOT NULL,
   `telepules` varchar(58) NOT NULL,
-  `utca_hazszam` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `utca_hazszam` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `szallitasi_cim`
@@ -266,13 +260,12 @@ INSERT INTO `szallitasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`)
 -- Tábla szerkezet ehhez a táblához `szamlazasi_cim`
 --
 
-CREATE TABLE IF NOT EXISTS `szamlazasi_cim` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `szamlazasi_cim` (
+  `id` int(11) NOT NULL,
   `iranyitoszam` varchar(7) NOT NULL,
   `telepules` varchar(58) NOT NULL,
-  `utca_hazszam` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `utca_hazszam` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `szamlazasi_cim`
@@ -291,7 +284,7 @@ INSERT INTO `szamlazasi_cim` (`id`, `iranyitoszam`, `telepules`, `utca_hazszam`)
 -- Tábla szerkezet ehhez a táblához `termekek`
 --
 
-CREATE TABLE IF NOT EXISTS `termekek` (
+CREATE TABLE `termekek` (
   `cikkszam` varchar(6) NOT NULL,
   `nev` varchar(70) NOT NULL,
   `egysegar` double NOT NULL,
@@ -299,10 +292,7 @@ CREATE TABLE IF NOT EXISTS `termekek` (
   `leiras` text NOT NULL,
   `gyarto_id` int(11) DEFAULT NULL,
   `kategoria_id` int(11) NOT NULL,
-  `darabszam` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`cikkszam`),
-  KEY `kategoria_id` (`kategoria_id`),
-  KEY `fk_gyarto` (`gyarto_id`)
+  `darabszam` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
@@ -310,10 +300,10 @@ CREATE TABLE IF NOT EXISTS `termekek` (
 --
 
 INSERT INTO `termekek` (`cikkszam`, `nev`, `egysegar`, `akcios_ar`, `leiras`, `gyarto_id`, `kategoria_id`, `darabszam`) VALUES
-('010001', 'OLYMPIC SZKIMMER', 12640, -1, 'Prémium szkimmer: kiváló megoldás fémfalas, PP és kompakt beépítést igénylő medencékhez. Kiemelkedő tulajdonsága a magasított nyak a könnyű járdaillesztéshez. Műszaki adatok: Csatlakozás: 6/4', 1, 10, 92),
+('010001', 'OLYMPIC SZKIMMER', 12640, -1, 'Prémium szkimmer: kiváló megoldás fémfalas, PP és kompakt beépítést igénylő medencékhez. Kiemelkedő tulajdonsága a magasított nyak a könnyű járdaillesztéshez. Műszaki adatok: Csatlakozás: 6/4', 1, 10, 91),
 ('010003', 'OLYMPIC SZKIMMER KOSÁR', 2100, 1999, 'Olympic szkimmer kosár: minőségi ABS műanyag alkatrész, speciálisan tervezett mechanikus szűrő a medence kiáramló vizéhez, a nagyobb szennyeződések összegyűjtésére. A szkimmer feladata a víz elszívása és a lebegő szennyeződések kiszűrése a szűrőkosárban, melyet hetente ellenőrizni kell. Optimális működéshez a vízszintet a nyílás közepére kell állítani. A kosárba lassan oldódó vegyszerek helyezhetők, és a legtöbb szkimmer alkalmas porszívózásra. ABS műanyag: jó ütésálló, kemény, szilárd, hő- és vegyszerálló, zaj- és rezgéscsillapító hőre lágyuló műanyag, melynek kiválósága az akrilnitril (hő- és kémiai ellenállás), butadién (tartósság, szívósság) és sztirol (megmunkálhatóság, költségcsökkentés, fényes felület) kombinációjából adódik.', 1, 10, 27),
-('010004', 'OLYMPIC SZKIMMER PORSZÍVÓTÁNYÉR', 2700, -1, 'Olympic szkimmer porszívótányér: kiváló alapanyagból készült ABS műanyag alkatrész. Minőségi szkimmer porszívótányér a medence aljának porszívózásakor a szűrőkosár tetejére helyezve hatékonyabb szívóerőt biztosít. A szkimmer feladata a víz elszívása és a lebegő szennyeződések kiszűrése a szűrőkosárban, melyet hetente ellenőrizni kell. Optimális működéshez a vízszintet a nyílás közepére kell állítani. A kosárba lassan oldódó vegyszerek helyezhetők, és a legtöbb szkimmer alkalmas porszívózásra. ABS műanyag: jó ütésálló, kemény, szilárd, hő- és vegyszerálló, zaj- és rezgéscsillapító hőre lágyuló műanyag, melynek kiválósága az akrilnitril (hő- és kémiai ellenállás), butadién (tartósság, szívósság) és sztirol (megmunkálhatóság, költségcsökkentés, fényes felület) kombinációjából adódik.', 1, 10, 48),
-('010012', 'OLYMPIC SZKIMMER TETŐ', 3570, -1, 'Olympic szkimmer tető: minőségi ABS műanyag alkatrész az Olympic szkimmerhez, a belső felület és tartalom takarására és védelmére szolgál. A szkimmer feladata a víz elszívása és a lebegő szennyeződések kiszűrése a szűrőkosárban, melyet hetente ellenőrizni kell. Optimális működéshez a vízszintet a nyílás közepére kell állítani. A kosárba lassan oldódó vegyszerek helyezhetők, és a legtöbb szkimmer alkalmas porszívózásra. ABS műanyag: jó ütésálló, kemény, szilárd, hő- és vegyszerálló, zaj- és rezgéscsillapító hőre lágyuló műanyag, melynek kiválósága az akrilnitril (hő- és kémiai ellenállás), butadién (tartósság, szívósság) és sztirol (megmunkálhatóság, költségcsökkentés, fényes felület) kombinációjából adódik.', 1, 10, 54),
+('010004', 'OLYMPIC SZKIMMER PORSZÍVÓTÁNYÉR', 2700, -1, 'Olympic szkimmer porszívótányér: kiváló alapanyagból készült ABS műanyag alkatrész. Minőségi szkimmer porszívótányér a medence aljának porszívózásakor a szűrőkosár tetejére helyezve hatékonyabb szívóerőt biztosít. A szkimmer feladata a víz elszívása és a lebegő szennyeződések kiszűrése a szűrőkosárban, melyet hetente ellenőrizni kell. Optimális működéshez a vízszintet a nyílás közepére kell állítani. A kosárba lassan oldódó vegyszerek helyezhetők, és a legtöbb szkimmer alkalmas porszívózásra. ABS műanyag: jó ütésálló, kemény, szilárd, hő- és vegyszerálló, zaj- és rezgéscsillapító hőre lágyuló műanyag, melynek kiválósága az akrilnitril (hő- és kémiai ellenállás), butadién (tartósság, szívósság) és sztirol (megmunkálhatóság, költségcsökkentés, fényes felület) kombinációjából adódik.', 1, 10, 46),
+('010012', 'OLYMPIC SZKIMMER TETŐ', 3570, -1, 'Olympic szkimmer tető: minőségi ABS műanyag alkatrész az Olympic szkimmerhez, a belső felület és tartalom takarására és védelmére szolgál. A szkimmer feladata a víz elszívása és a lebegő szennyeződések kiszűrése a szűrőkosárban, melyet hetente ellenőrizni kell. Optimális működéshez a vízszintet a nyílás közepére kell állítani. A kosárba lassan oldódó vegyszerek helyezhetők, és a legtöbb szkimmer alkalmas porszívózásra. ABS műanyag: jó ütésálló, kemény, szilárd, hő- és vegyszerálló, zaj- és rezgéscsillapító hőre lágyuló műanyag, melynek kiválósága az akrilnitril (hő- és kémiai ellenállás), butadién (tartósság, szívósság) és sztirol (megmunkálhatóság, költségcsökkentés, fényes felület) kombinációjából adódik.', 1, 10, 53),
 ('011460', 'DESIGN SZKIMMER BETON A400 FEHÉR', 55600, -1, 'Design Acis színes A400 szkimmer: egyszerű, funkcionális design elegáns vonalvezetéssel, 6/4', 2, 10, 27),
 ('011495', 'SZKIMMER AJTÓ FEHÉR', 11650, -1, 'Színes Acis szkimmer ajtók: minőségi fehér ABS műanyagból készült szkimmer ajtó, mely illeszkedik az Acis szkimmerekhez. A szkimmer feladata a víz elszívása és a lebegő szennyeződések kiszűrése a szűrőkosárban, melyet hetente ellenőrizni kell. Optimális működéshez a vízszintet a nyílás közepére kell állítani. A kosárba lassan oldódó vegyszerek helyezhetők, és a legtöbb szkimmer alkalmas porszívózásra. ABS műanyag: jó ütésálló, kemény, szilárd, hő- és vegyszerálló, zaj- és rezgéscsillapító hőre lágyuló műanyag, melynek kiválósága az akrilnitril (hő- és kémiai ellenállás), butadién (tartósság, szívósság) és sztirol (megmunkálhatóság, költségcsökkentés, fényes felület) kombinációjából adódik.', 2, 10, 73),
 ('020100', 'REFLEKTOR STD2002 BETONOS 300W', 28750, 27749, 'Reflektor STD2002: víz alatti világítás medencékhez, hagyományos halogén vagy RGB LED-es 12V PAR 56 izzóval, 2 x 4mm kábellel (2,5m). Előlap rozsdamentes rögzítéssel, opcionális rozsdamentes acél előlappal. Rozsdamentes acél (inox): magasabb krómtartalmú acélötvözet, ellenállóbb a rozsdával és foltosodással szemben a króm-oxid passzív rétegnek köszönhetően, de extrém körülmények között rozsdásodhat.', 3, 11, 83),
@@ -418,16 +408,13 @@ INSERT INTO `termekek` (`cikkszam`, `nev`, `egysegar`, `akcios_ar`, `leiras`, `g
 -- Tábla szerkezet ehhez a táblához `tetelek`
 --
 
-CREATE TABLE IF NOT EXISTS `tetelek` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `tetelek` (
+  `id` int(11) NOT NULL,
   `megrendeles_id` int(11) NOT NULL,
   `termek_id` varchar(6) NOT NULL,
   `darabszam` int(11) NOT NULL,
-  `egysegar` double NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `megrendeles_id` (`megrendeles_id`),
-  KEY `termek_id` (`termek_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
+  `egysegar` double NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `tetelek`
@@ -446,7 +433,135 @@ INSERT INTO `tetelek` (`id`, `megrendeles_id`, `termek_id`, `darabszam`, `egyseg
 (10, 3, '021200', 1, 23200),
 (11, 3, '054023', 1, 436000),
 (12, 3, '037111', 1, 1450000),
-(13, 3, '037101', 1, 705999);
+(13, 3, '037101', 1, 705999),
+(14, 4, '010001', 1, 12640),
+(15, 4, '010004', 1, 2700),
+(16, 5, '010004', 1, 2700),
+(17, 5, '010012', 1, 3570);
+
+--
+-- Indexek a kiírt táblákhoz
+--
+
+--
+-- A tábla indexei `felhasznalok`
+--
+ALTER TABLE `felhasznalok`
+  ADD PRIMARY KEY (`email`),
+  ADD KEY `szallitasi_cim_id` (`szallitasi_cim_id`),
+  ADD KEY `szamlazasi_cim_id` (`szamlazasi_cim_id`);
+
+--
+-- A tábla indexei `gyarto`
+--
+ALTER TABLE `gyarto`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `kategoria`
+--
+ALTER TABLE `kategoria`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `kosar`
+--
+ALTER TABLE `kosar`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `felhasznalo_id` (`felhasznalo_id`),
+  ADD KEY `termek_id` (`termek_id`);
+
+--
+-- A tábla indexei `log`
+--
+ALTER TABLE `log`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `megrendeles`
+--
+ALTER TABLE `megrendeles`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `szallitasi_cim`
+--
+ALTER TABLE `szallitasi_cim`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `szamlazasi_cim`
+--
+ALTER TABLE `szamlazasi_cim`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `termekek`
+--
+ALTER TABLE `termekek`
+  ADD PRIMARY KEY (`cikkszam`),
+  ADD KEY `kategoria_id` (`kategoria_id`),
+  ADD KEY `fk_gyarto` (`gyarto_id`);
+
+--
+-- A tábla indexei `tetelek`
+--
+ALTER TABLE `tetelek`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `megrendeles_id` (`megrendeles_id`),
+  ADD KEY `termek_id` (`termek_id`);
+
+--
+-- A kiírt táblák AUTO_INCREMENT értéke
+--
+
+--
+-- AUTO_INCREMENT a táblához `gyarto`
+--
+ALTER TABLE `gyarto`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT a táblához `kategoria`
+--
+ALTER TABLE `kategoria`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT a táblához `kosar`
+--
+ALTER TABLE `kosar`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT a táblához `log`
+--
+ALTER TABLE `log`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT a táblához `megrendeles`
+--
+ALTER TABLE `megrendeles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT a táblához `szallitasi_cim`
+--
+ALTER TABLE `szallitasi_cim`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT a táblához `szamlazasi_cim`
+--
+ALTER TABLE `szamlazasi_cim`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT a táblához `tetelek`
+--
+ALTER TABLE `tetelek`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- Megkötések a kiírt táblákhoz
