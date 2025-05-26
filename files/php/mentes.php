@@ -180,7 +180,7 @@ if (!$itemsChanged && !$statusChanged && !$detailsChanged && !$fizModChanged) {
             $osszeg_result = adatokLekerdezese($sql_osszeg);
             $total = ($osszeg_result !== "Nincs találat!") ? $osszeg_result[0]['osszeg'] : 0;
 
-            kuldRendelesModositas($email, $name, $megrendelesId, $cartItems, $total, $currentStatus, $szallitasiCim, $szamlazasiCim);
+            kuldRendelesModositas($email, $name, $megrendelesId, $cartItems, $total, $currentStatus, $currentFizMod, $szallitasiCim, $szamlazasiCim);
         }
     }
 }

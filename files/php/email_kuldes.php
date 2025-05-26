@@ -347,7 +347,7 @@ function kuldRendelesStatuszValtozas($email, $name, $orderId, $newStatus, $szall
     }
 }
 
-function kuldRendelesModositas($email, $name, $orderId, $cartItems, $total, $currentStatus, $szallitasiCim, $szamlazasiCim)
+function kuldRendelesModositas($email, $name, $orderId, $cartItems, $total, $currentStatus, $currentPayment, $szallitasiCim, $szamlazasiCim)
 {
     try {
         $mail = new PHPMailer(true);
@@ -367,6 +367,7 @@ function kuldRendelesModositas($email, $name, $orderId, $cartItems, $total, $cur
         $emailBody .= generateOrderTable($cartItems, $total);
         $emailBody .= generateAddressSection($szallitasiCim, $szamlazasiCim);
         $emailBody .= "<p style='margin-top: 20px;'>A rendelés jelenlegi státusza: <strong>" . htmlspecialchars($currentStatus) . "</strong>.</p>";
+        $emailBody .= "<p style='margin-top: 20px;'>A rendelés jelenlegi fizetési módja: <strong>" . htmlspecialchars($currentPayment) . "</strong>.</p>";
         $emailBody .= "<p>Amennyiben kérdése van a módosítással kapcsolatban, kérjük, vegye fel velünk a kapcsolatot ügyfélszolgálatunkon.</p>";
         $emailBody .= "<br><p>Üdvözlettel, <br><strong>A PoolPalace Csapata</strong></p>";
         $emailBody .= generateEmailFooter();
@@ -398,6 +399,7 @@ function kuldRendelesModositas($email, $name, $orderId, $cartItems, $total, $cur
         $altBody .= htmlspecialchars($szamlazasiCim['utca'] ?? '') . "\n";
         $altBody .= (isset($szamlazasiCim['adoszam']) && !empty($szamlazasiCim['adoszam']) ? "Adószám: " . htmlspecialchars($szamlazasiCim['adoszam']) . "\n" : '');
         $altBody .= "\nA rendelés jelenlegi státusza: " . htmlspecialchars($currentStatus) . "\n\n";
+        $altBody .= "\nA rendelés jelenlegi fizetési módja: " . htmlspecialchars($currentPayment) . "\n\n";
         $altBody .= "Amennyiben kérdése van a módosítással kapcsolatban, kérjük, vegye fel velünk a kapcsolatot.\n\n";
         $altBody .= "Üdvözlettel,\nA PoolPalace Csapata\n";
         $altBody .= "© " . date('Y') . " PoolPalace | http://localhost/PoolPalace/files/php";

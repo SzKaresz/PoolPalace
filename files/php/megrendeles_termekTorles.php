@@ -15,7 +15,7 @@ if ($cikkszam === null || $id === null) {
 
 $megrendelesId = intval($id);
 
-$sql_rendeles_adatok = "SELECT email, nev, statusz, osszeg FROM `megrendeles` WHERE id=$megrendelesId";
+$sql_rendeles_adatok = "SELECT email, nev, statusz, fiz_mod, osszeg FROM `megrendeles` WHERE id=$megrendelesId";
 $rendeles_adatok = adatokLekerdezese($sql_rendeles_adatok);
 if ($rendeles_adatok === "Nincs találat!") {
      echo json_encode(["status" => "error", "message" => "Nem található megrendelés ezzel az ID-val."]);
@@ -24,6 +24,7 @@ if ($rendeles_adatok === "Nincs találat!") {
 $email = $rendeles_adatok[0]['email'];
 $name = $rendeles_adatok[0]['nev'];
 $currentStatus = $rendeles_adatok[0]['statusz'];
+$currentPayment = $rendeles_adatok[0]['fiz_mod'];
 $originalTotal = $rendeles_adatok[0]['osszeg'];
 
 
@@ -66,7 +67,7 @@ if ($eredmeny === "Sikeres művelet!") {
         ];
     }
 
-    kuldRendelesModositas($email, $name, $megrendelesId, $maradtCartItems, $newTotal, $currentStatus, $szallitasiCim, $szamlazasiCim);
+    kuldRendelesModositas($email, $name, $megrendelesId, $maradtCartItems, $newTotal, $currentStatus, $currentPayment, $szallitasiCim, $szamlazasiCim);
 
     echo json_encode(["success" => true, "message" => "A(z) $cikkszam cikkszámú termék törlése sikeres!"]);
 } else {
