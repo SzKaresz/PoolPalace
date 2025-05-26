@@ -47,7 +47,7 @@ async function rendelesBetolt() {
                 "Fizetve": [],
                 "Szállítás alatt": [],
                 "Teljesítve": [],
-                "Törölve":[]
+                "Törölve": []
             };
 
             for (const item of valasz) {
@@ -76,7 +76,7 @@ async function rendelesBetolt() {
                 if (item.statusz !== "Törölve") {
                     document.getElementById("osszes").appendChild(accordionForOsszes);
                 }
-                
+
                 if (rendelesek.hasOwnProperty(item.statusz)) {
                     rendelesek[item.statusz].push({
                         accordion: accordionForTab,
@@ -194,7 +194,7 @@ function getTargetTabId(statusz) {
                         <option value="Fizetve">Fizetve</option>
                         <option value="Szállítás alatt">Szállítás alatt</option>
                         <option value="Teljesítve">Teljesítve</option>
-                        ${valasz[0].statusz=="Törölve"?`<option value="Törölve">Törölve</option>`:""}
+                        ${valasz[0].statusz == "Törölve" ? `<option value="Törölve">Törölve</option>` : ""}
                     </select>
                 </div>
                 <div class="mt-3">
@@ -471,7 +471,6 @@ let aktivTorlesAdatok = {};
 async function termekTorles(cikkszam, id, db) {
     try {
         if (db == 1) {
-            const loadingOverlay = document.getElementById("loading-overlay");
             let modal = new bootstrap.Modal(document.getElementById("termektorlesModal"));
             document.getElementById("cikkszam_torol").innerHTML = cikkszam
             modal.show();
@@ -535,27 +534,37 @@ async function torles() {
 }
 
 async function torlesTermek() {
+    const loadingOverlay = document.getElementById("loading-overlay");
     const modal = bootstrap.Modal.getInstance(document.getElementById("termekModal"));
-    let keres = await fetch("../php/megrendeles_termekTorles.php", {
-        method: "DELETE",
-        headers: { "Content-type": "application/json" },
-        body: JSON.stringify({
-            cikkszam: aktivTorlesAdatok.cikkszam,
-            megrendeles_id: aktivTorlesAdatok.id
-        })
-    });
+    loadingOverlay.style.display = "flex";
+    try {
+        let keres = await fetch("../php/megrendeles_termekTorles.php", {
+            method: "DELETE",
+            headers: { "Content-type": "application/json" },
+            body: JSON.stringify({
+                cikkszam: aktivTorlesAdatok.cikkszam,
+                megrendeles_id: aktivTorlesAdatok.id
+            })
+        });
 
-    let valasz = await keres.json();
+        let valasz = await keres.json();
 
-    if (valasz.success) {
-        showToast(valasz.message, "success");
-        document.getElementById(`accord_body_${aktivTorlesAdatok.id}`).innerHTML = "";
-        accordFeltolt(aktivTorlesAdatok.id);
-    } else {
-        showToast(valasz.message, "danger");
+        if (valasz.success) {
+            showToast(valasz.message, "success");
+            document.getElementById(`accord_body_${aktivTorlesAdatok.id}`).innerHTML = "";
+            let accordion = document.querySelector(`#flush-collapse-${aktivTorlesAdatok.id}`).closest('.accordion');
+            await accordFeltolt(accordion, aktivTorlesAdatok.id);
+        } else {
+            showToast(valasz.message, "danger");
+        }
+
+    } catch (error) {
+        console.log(error);
+        showToast("Hiba történt a törlés során!", "danger");
+    } finally {
+        loadingOverlay.style.display = "none";
+        modal.hide();
     }
-
-    modal.hide();
 }
 
 function showToast(message, type = "success") {
