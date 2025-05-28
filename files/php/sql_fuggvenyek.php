@@ -1,4 +1,5 @@
 <?php
+$db = new mysqli ('localhost', 'root', '', 'poolpalace');
 function adatokLekerdezese($muvelet) {
     $db = new mysqli ('localhost', 'root', '', 'poolpalace');
     if ($db->connect_errno == 0 ) {
@@ -38,5 +39,23 @@ function adatokValtoztatasa($muvelet) {
     else {
         return $db->connect_error;
     }
+}
+
+function lekerKategoria() {
+    $sql = "SELECT id, nev FROM kategoria ORDER BY nev ASC";
+    $eredmeny = adatokLekerdezese($sql);
+    if (is_array($eredmeny)) {
+        return $eredmeny;
+    }
+    return [];
+}
+
+function lekerGyarto() {
+    $sql = "SELECT id, nev FROM gyarto ORDER BY nev ASC";
+    $eredmeny = adatokLekerdezese($sql);
+    if (is_array($eredmeny)) {
+        return $eredmeny;
+    }
+    return [];
 }
 ?>

@@ -2,7 +2,7 @@ document.getElementById("felvitel_button").addEventListener("click", async funct
     event.preventDefault();
     const fileInput = document.getElementById("productImages");
     const files = fileInput.files;
-    
+
     let formData = new FormData();
 
     formData.append("cikkszam", document.getElementById("cikkszam").value);
@@ -23,7 +23,7 @@ document.getElementById("felvitel_button").addEventListener("click", async funct
         });
 
         let result = await response.json();
-        
+
         if (result.success) {
             showToast(result.message, "success");
             setTimeout(() => {
@@ -36,6 +36,98 @@ document.getElementById("felvitel_button").addEventListener("click", async funct
         console.error("Hiba történt:", error);
     }
 });
+
+const kategoriaForm = document.getElementById('kategoriaForm');
+if (kategoriaForm) {
+    kategoriaForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const formData = new FormData(kategoriaForm);
+        const ujKategoriaInput = document.getElementById('uj_kategoria');
+
+        if (!ujKategoriaInput || ujKategoriaInput.value.trim() === '') {
+            showToast('A kategória neve nem lehet üres!', 'danger'); // A meglévő showToast használata
+            return;
+        }
+
+        // Opcionális kliensoldali validáció (hossz, karakterek) itt is hozzáadható, ha szükséges.
+
+        try {
+            const response = await fetch('../php/kategoria_felvitel.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            const contentType = response.headers.get("content-type");
+            let result;
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                result = await response.json();
+            } else {
+                const textResponse = await response.text();
+                console.error('Nem JSON válasz érkezett a kategória feltöltésnél:', textResponse);
+                showToast('Szerver oldali hiba történt (nem JSON válasz).', 'danger');
+                return;
+            }
+
+            if (result.success) {
+                showToast(result.message, "success"); // A meglévő showToast használata
+                if (ujKategoriaInput) ujKategoriaInput.value = '';
+                // Oldal újratöltése a select lista frissítéséhez
+                // setTimeout(() => { location.reload(); }, 1500); // Rövidebb várakozás is elég lehet
+            } else {
+                showToast(result.message || 'Ismeretlen hiba történt a kategória feltöltésekor.', 'danger'); // A meglévő showToast használata
+            }
+        } catch (error) {
+            console.error('Hiba a kategória feltöltésekor:', error);
+            showToast('Hálózati hiba vagy feldolgozási probléma történt.', 'danger'); // A meglévő showToast használata
+        }
+    });
+}
+
+const gyartoForm = document.getElementById('gyartoForm');
+if (gyartoForm) {
+    gyartoForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const formData = new FormData(gyartoForm);
+        const ujGyartoInput = document.getElementById('uj_gyarto');
+
+        if (!ujGyartoInput || ujGyartoInput.value.trim() === '') {
+            showToast('A gyártó neve nem lehet üres!', 'danger'); // A meglévő showToast használata
+            return;
+        }
+
+        // Opcionális kliensoldali validáció (hossz, karakterek) itt is hozzáadható, ha szükséges.
+
+        try {
+            const response = await fetch('../php/gyarto_felvitel.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            const contentType = response.headers.get("content-type");
+            let result;
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                result = await response.json();
+            } else {
+                const textResponse = await response.text();
+                console.error('Nem JSON válasz érkezett a gyártó feltöltésnél:', textResponse);
+                showToast('Szerver oldali hiba történt (nem JSON válasz).', 'danger');
+                return;
+            }
+
+            if (result.success) {
+                showToast(result.message, 'success'); // A meglévő showToast használata
+                if (ujGyartoInput) ujGyartoInput.value = '';
+                // Oldal újratöltése a select lista frissítéséhez
+                setTimeout(() => { location.reload(); }, 1500);
+            } else {
+                showToast(result.message || 'Ismeretlen hiba történt a gyártó feltöltésekor.', 'danger'); // A meglévő showToast használata
+            }
+        } catch (error) {
+            console.error('Hiba a gyártó feltöltésekor:', error);
+            showToast('Hálózati hiba vagy feldolgozási probléma történt.', 'danger'); // A meglévő showToast használata
+        }
+    });
+}
 
 function showToast(message, type = "success") {
     let toastContainer = document.getElementById("toast-container");
