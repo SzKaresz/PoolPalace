@@ -45,11 +45,9 @@ if (kategoriaForm) {
         const ujKategoriaInput = document.getElementById('uj_kategoria');
 
         if (!ujKategoriaInput || ujKategoriaInput.value.trim() === '') {
-            showToast('A kategória neve nem lehet üres!', 'danger'); // A meglévő showToast használata
+            showToast('A kategória neve nem lehet üres!', 'danger');
             return;
         }
-
-        // Opcionális kliensoldali validáció (hossz, karakterek) itt is hozzáadható, ha szükséges.
 
         try {
             const response = await fetch('../php/kategoria_felvitel.php', {
@@ -69,16 +67,14 @@ if (kategoriaForm) {
             }
 
             if (result.success) {
-                showToast(result.message, "success"); // A meglévő showToast használata
+                showToast(result.message, "success");
                 if (ujKategoriaInput) ujKategoriaInput.value = '';
-                // Oldal újratöltése a select lista frissítéséhez
-                // setTimeout(() => { location.reload(); }, 1500); // Rövidebb várakozás is elég lehet
             } else {
-                showToast(result.message || 'Ismeretlen hiba történt a kategória feltöltésekor.', 'danger'); // A meglévő showToast használata
+                showToast(result.message || 'Ismeretlen hiba történt a kategória feltöltésekor.', 'danger');
             }
         } catch (error) {
             console.error('Hiba a kategória feltöltésekor:', error);
-            showToast('Hálózati hiba vagy feldolgozási probléma történt.', 'danger'); // A meglévő showToast használata
+            showToast('Hálózati hiba vagy feldolgozási probléma történt.', 'danger');
         }
     });
 }
@@ -91,11 +87,9 @@ if (gyartoForm) {
         const ujGyartoInput = document.getElementById('uj_gyarto');
 
         if (!ujGyartoInput || ujGyartoInput.value.trim() === '') {
-            showToast('A gyártó neve nem lehet üres!', 'danger'); // A meglévő showToast használata
+            showToast('A gyártó neve nem lehet üres!', 'danger');
             return;
         }
-
-        // Opcionális kliensoldali validáció (hossz, karakterek) itt is hozzáadható, ha szükséges.
 
         try {
             const response = await fetch('../php/gyarto_felvitel.php', {
@@ -115,16 +109,14 @@ if (gyartoForm) {
             }
 
             if (result.success) {
-                showToast(result.message, 'success'); // A meglévő showToast használata
+                showToast(result.message, 'success');
                 if (ujGyartoInput) ujGyartoInput.value = '';
-                // Oldal újratöltése a select lista frissítéséhez
-                setTimeout(() => { location.reload(); }, 1500);
             } else {
-                showToast(result.message || 'Ismeretlen hiba történt a gyártó feltöltésekor.', 'danger'); // A meglévő showToast használata
+                showToast(result.message || 'Ismeretlen hiba történt a gyártó feltöltésekor.', 'danger');
             }
         } catch (error) {
             console.error('Hiba a gyártó feltöltésekor:', error);
-            showToast('Hálózati hiba vagy feldolgozási probléma történt.', 'danger'); // A meglévő showToast használata
+            showToast('Hálózati hiba vagy feldolgozási probléma történt.', 'danger');
         }
     });
 }
